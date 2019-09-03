@@ -1,0 +1,213 @@
+<html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id="graph"></div>
+        <section class="section content" style="padding-top: 0">
+            <input id="py-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="py-output" for="py-slider">P(y) = 0.5</output>
+            <br>
+            <input id="pxy-slider" min="0" max="1" value="0.25" step="0.05" type="range">
+            <output id="pxy-output" for="pxy-slider">P(x, y) = 0.25 (P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75)</output>
+            <br>
+            <input id="px-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="px-output" for="px-slider">P(x) = 0.5 (P(x') = 0.5)</output>
+        </section>
+        <script>
+            const impossibleColor = 'rgba(0, 0, 0, 0.7)'
+            const monotonicityColor = 'rgba(255, 255, 255, 0.18)'
+
+            const urlParams = new URLSearchParams(window.location.search)
+            let py = parseFloat(urlParams.get('py') || '0.5')
+            let pxy = parseFloat(urlParams.get('pxy') || '0.25')
+            let px = parseFloat(urlParams.get('px') || '0.5')
+            let pxp = 1 - px
+
+            const contourData = py =>
+                ({ z:
+                    [ [py, py, py, 1]
+                    , [0, 0, 0, 1 - py]
+                    , [null, null, 0, 1 - py]
+                    ]
+                 , x: [0, py, py, 1]
+                 , y: [0, py, 1]
+                })
+
+            const data = {
+                type: 'contour',
+                line: { smoothing: 0 },
+                colorbar: {
+                    title: 'P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥'
+                }
+            }
+
+            const shapes = py =>
+                [ 
+                //   { type: 'rect'
+                //   , x0: pxy
+                //   , y0: py - pxy
+                //   , x1: pxy + pxp
+                //   , y1: py - pxy + px
+                //   , line: { color: 'rgba(128, 0, 128, 1)' }
+                //   , fillcolor: 'rgba(128, 0, 128, 0.5)'
+                //   }
+                , { type: 'rect'
+                  , x0: 0
+                  , y0: 0
+                  , x1: pxy
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: py - pxy + px
+                  , x1: pxy + pxp
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: 0
+                  , x1: pxy + pxp
+                  , y1: py - pxy
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy + pxp
+                  , y0: 0
+                  , x1: 1
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: py
+                  , y0: 0
+                  , x1: 1
+                  , y1: py
+                  , fillcolor: monotonicityColor
+                  , line: { width: 1 }
+                  }
+                ]  
+
+            const frames = n => prefix => Array(n)
+                .fill()
+                .map((x, i) => i / (n - 1))
+                .map(x =>
+                    ({ name: `${prefix}${x}`
+                     , data: [ contourData(x) ]
+                     , layout: { shapes: shapes(x) }
+                    })
+                )
+            
+            const steps = n => prefix => min => max => Array(n)
+                .fill()
+                .map((x, i) => i / (n - 1))
+                .filter(x => min <= x && x <= max)
+                .map(x =>
+                    ({ label: x
+                     , method: 'relayout'
+                     , args:
+                        [ [ `${prefix}${x}` ]
+                        , { mode: 'immediate'
+                          , transition: { duration: 300 }
+                          , frame: { duration: 300, redraw: true }
+                          }
+                        ]
+                    })
+                )
+
+            const sliders = () =>
+                [ { currentvalue: { prefix: 'P(y): ' }
+                    , transition: { duration: 300 }
+                    , steps: steps(21)('')(pxy)(pxy + pxp)
+                    , pad: { t: 50 }
+                  }
+                ]
+
+            const layout = () =>
+                ({ title: 'Lower Bounds on P(y<sub>x</sub>, y\'<sub>x\'</sub>)'
+                 , xaxis: { title: 'P(y<sub>x</sub>)'}
+                 , yaxis: { title: 'P(y<sub>x\'</sub>)'}
+                //  , sliders: sliders()
+                 , shapes: shapes(py)
+                 , width: 600
+                 , height: 600
+                })
+
+            const createGraph = graph =>
+                Plotly.newPlot
+                    ( graph
+                    , { data: [ Object.assign(contourData(py), data) ]
+                    , layout: layout()
+                    , frames: frames(21)('')
+                    }
+                    // , { showSendToCloud: true }
+                    )
+            graph = document.getElementById('graph')
+            pySlider = document.getElementById('py-slider')
+            pyOutput = document.getElementById('py-output')
+            pxySlider = document.getElementById('pxy-slider')
+            pxyOutput = document.getElementById('pxy-output')
+            pxSlider = document.getElementById('px-slider')
+            pxOutput = document.getElementById('px-output')
+            createGraph(graph)
+
+            const updatePY = newPY => {
+                py = newPY
+                pySlider.value = py
+                pyOutput.value = `P(y) = ${py}`
+            }
+            const updatePXY = newPXY => {
+                pxy = newPXY
+                pxySlider.value = pxy
+                pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+            }
+            const updatePX = newPX => {
+                px = newPX
+                pxp = 1 - px
+                pxSlider.value = px
+                pxOutput.value = `P(x) = ${px} (P(x') = ${pxp})`
+            }
+            document.getElementById('py-slider').addEventListener('input', e => {
+                py = e.target.valueAsNumber
+                if (py < pxy)
+                    updatePXY(py)
+                else if (py - pxy + px > 1)
+                    updatePXY(py - pxp)
+                else
+                    updatePXY(pxy)
+                pyOutput.value = `P(y) = ${py}`
+                createGraph(graph)
+            })
+            document.getElementById('pxy-slider').addEventListener('input', e => {
+                pxy = e.target.valueAsNumber
+                if (pxy + pxp > 1)
+                    updatePX(pxy)
+                else if (py - pxy + px > 1)
+                    updatePX(pxy - py + 1)
+                if (py < pxy)
+                    updatePY(pxy)
+                pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+                createGraph(graph)
+            })
+            document.getElementById('px-slider').addEventListener('input', e => {
+                px = e.target.valueAsNumber
+                pxp = 1 - px
+                if (py - pxy + px > 1)
+                    updatePXY(py - pxp)
+                else if (pxy + pxp > 1)
+                    updatePXY(px)
+                else
+                    updatePXY(pxy)
+                pxOutput.value = `P(x) = ${px} (P(x') = ${pxp})`
+                createGraph(graph)
+            })
+        </script>
+    </body>
+</html>
