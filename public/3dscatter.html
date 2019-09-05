@@ -1,7 +1,14 @@
 <html>
     <head>
+        <meta charset="utf-8">
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
+        <!-- <style>
+            #graph {
+                width: 600px;
+                height: 600px;
+            }
+        </style> -->
     </head>
     <body>
         <div id="graph"></div>
@@ -21,150 +28,146 @@
             <output id="pxy-output">P(x, y) = 0.25, P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75</output>
         </section>
         <script>
-            const impossibleColor = 'rgba(0, 0, 0, 0.7)'
-            const possibleColor = 'rgba(255, 255, 255, 0)'
-            const monotonicityColor = 'rgba(255, 255, 255, 0.18)'
-
             const urlParams = new URLSearchParams(window.location.search)
             let py = parseFloat(urlParams.get('py') || '0.5')
             let pxy = parseFloat(urlParams.get('pxy') || '0.25')
             let px = parseFloat(urlParams.get('px') || '0.5')
             let pxp = 1 - px
-
-            const contourData = py =>
-                ({ z:
-                    [ [py, py, py, 1]
-                    , [0, 0, 0, 1 - py]
-                    , [null, null, 0, 1 - py]
-                    ]
-                 , x: [0, py, py, 1]
-                 , y: [0, py, 1]
-                })
-
-            const data = {
-                type: 'contour',
-                line: { smoothing: 0 },
-                colorbar: {
-                    title: 'P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥'
-                }
+    
+            const DENSITY = 21
+    
+            const log = message => val => {
+                console.log(message, val)
+                return val
             }
 
-            const shapes = py =>
-                [ 
-                //   { type: 'rect'
-                //   , x0: pxy
-                //   , y0: py - pxy
-                //   , x1: pxy + pxp
-                //   , y1: py - pxy + px
-                //   , line: { color: 'rgba(128, 0, 128, 1)' }
-                //   , fillcolor: 'rgba(128, 0, 128, 0.5)'
-                //   }
-                // , 
-                { type: 'rect'
-                  , x0: 0
-                  , y0: 0
-                  , x1: pxy
-                  , y1: 1
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy
-                  , y0: py - pxy + px
-                  , x1: pxy + pxp
-                  , y1: 1
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy
-                  , y0: 0
-                  , x1: pxy + pxp
-                  , y1: py - pxy
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy + pxp
-                  , y0: 0
-                  , x1: 1
-                  , y1: 1
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy
-                  , y0: py - pxy
-                  , x1: pxy + pxp
-                  , y1: py - pxy + px
-                  , fillcolor: possibleColor
-                  , line: { color: 'yellow', width: 2 }
-                  }
-                , { type: 'rect'
-                  , x0: py
-                  , y0: 0
-                  , x1: 1
-                  , y1: py
-                  , fillcolor: monotonicityColor
-                  , line: { width: 1 }
-                  }
-                ]  
+            const fracRangeReduce = init => f => n =>
+                Array(n).fill().reduce((acc, _, i) => f(acc)(i / (n - 1)), init)
+    
+            // const initialCheaterPlot = {a: [], b: [], y: []}
+    
+            const maxLB = py_x => py_xp => py =>
+                Math.max(0, py_x - py_xp, py - py_xp, py_x - py)
+    
+            const possible = py_x => py_xp =>
+                pxy <= py_x && py_x <= pxp + pxy
+                    && py - pxy <= py_xp && py_xp <= py - pxy + px
+    
+            const necessaryMonotonic = py_x => py_xp =>
+                py <= py_x && py_xp <= py
+    
+            // const pointSize = poss => necMono =>
+            //     poss
+            //         ? necMono
+            //             ? 7
+            //             : 5
+            //         : necMono
+            //             ? 3
+            //             : 1
+                
+            // const genData = py =>
+            //     fracRangeReduce([])(outerPlot => py_x =>
+            //         fracRangeReduce(outerPlot)(plot => py_xp =>
+            //             [ ...plot
+            //             , [ py_x
+            //             , py_xp
+            //             , maxLB(py_x)(py_xp)(py)
+            //             , pointSize(possible(py_x)(py_xp))(necessaryMonotonic(py_x)(py_xp))
+            //             ]
+            //             ]
+            //         )(DENSITY)
+            //     )(DENSITY)
+    
+            // const data = genData(py)
 
-            const frames = n => prefix => Array(n)
-                .fill()
-                .map((x, i) => i / (n - 1))
-                .map(x =>
-                    ({ name: `${prefix}${x}`
-                     , data: [ contourData(x) ]
-                     , layout: { shapes: shapes(x) }
-                    })
-                )
-            
-            const steps = n => prefix => min => max => Array(n)
-                .fill()
-                .map((x, i) => i / (n - 1))
-                .filter(x => min <= x && x <= max)
-                .map(x =>
-                    ({ label: x
-                     , method: 'relayout'
-                     , args:
-                        [ [ `${prefix}${x}` ]
-                        , { mode: 'immediate'
-                          , transition: { duration: 300 }
-                          , frame: { duration: 300, redraw: true }
-                          }
-                        ]
-                    })
+            const pushXyz = trace => x => y => z =>
+                Object.assign({}, trace,
+                    { x: [...trace.x, x]
+                    , y: [...trace.y, y]
+                    , z: [...trace.z, z]
+                    }
                 )
 
-            const sliders = () =>
-                [ { currentvalue: { prefix: 'P(y): ' }
-                    , transition: { duration: 300 }
-                    , steps: steps(21)('')(pxy)(pxy + pxp)
-                    , pad: { t: 50 }
-                  }
-                ]
+            const pushXyzOf4 = a => b => c => d => b1 => b0 => x => y => z =>
+                b1
+                    ? b0
+                        ? [pushXyz(a)(x)(y)(z), b, c, d]
+                        : [a, pushXyz(b)(x)(y)(z), c, d]
+                    : b0
+                        ? [a, b, pushXyz(c)(x)(y)(z), d]
+                        : [a, b, c, pushXyz(d)(x)(y)(z)]
 
-            const layout = () =>
+            const pushOntoSplitData = py_x => ([imp, mon, pos, posMon]) => py_xp =>
+                pushXyzOf4(imp)(mon)(pos)(posMon)(possible(py_x)(py_xp))(necessaryMonotonic(py_x)(py_xp))(py_x)(py_xp)(maxLB(py_x)(py_xp)(py))
+
+            const colors = [ 'red', 'green', 'blue', 'gray' ]
+            const names = [ 'possible<br>monotonicity', 'possible but<br>no monotonicity', 'monotonicity<br>region', 'impossible<br>region' ]
+
+            const initialData = Array(4).fill(
+                { opacity: 0.4
+                , mode: 'markers'
+                , type: 'scatter3d'
+                , x: []
+                , y: []
+                , z: []
+                }).map((trace, i) =>
+                    Object.assign({}, trace, { color: colors[i], name: names[i] })
+                )
+
+            const data = () =>
+                fracRangeReduce(initialData)(outerPlot => py_x =>
+                    fracRangeReduce(outerPlot)(pushOntoSplitData(py_x))(DENSITY)
+                )(DENSITY)
+
+            // const data = {
+            //     type: 'contour',
+            //     line: { smoothing: 0 },
+            //     colorbar: {
+            //         title: 'P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥'
+            //     }
+            // }
+
+            const layout =
                 ({ title: 'Lower Bounds on P(y<sub>x</sub>, y\'<sub>x\'</sub>)'
-                 , xaxis: { title: 'P(y<sub>x</sub>)'}
-                 , yaxis: { title: 'P(y<sub>x\'</sub>)'}
-                //  , sliders: sliders()
-                 , shapes: shapes(py)
-                 , width: 600
+                 , scene:
+                    { xaxis: { title: 'P(y<sub>x</sub>)'}
+                    , yaxis: { title: 'P(y<sub>x\'</sub>)'}
+                    , zaxis: { title: 'P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥'}
+                    }
+                 , width: 800
                  , height: 600
                 })
 
+            // const createGraph = graph =>
+            //     echarts.init
+            //         ( graph
+            //         )
             const createGraph = graph =>
-                Plotly.newPlot
-                    ( graph
-                    , { data: [ Object.assign(contourData(py), data) ]
-                    , layout: layout()
-                    , frames: frames(21)('')
-                    }
+                Plotly.newPlot(graph, { data: data() , layout })
                     // , { showSendToCloud: true }
-                    )
+
             graph = document.getElementById('graph')
+            // createGraph(graph).setOption({
+            //         visualMap: {
+            //             show: true,
+            //             min: 0,
+            //             max: 8,
+            //             inRange: {
+            //                 symbolSize: [0.5, 10],
+            //                 color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
+            //                 colorAlpha: [0.2, 1]
+            //             }
+            //         }
+            //         , xAxis3D: { type: 'value' }
+            //         , yAxis3D: { type: 'value' }
+            //         , zAxis3D: { type: 'value' }
+            //         , grid3D:
+            //             { axisLine: { lineStyle: { color: '#fff' } }
+            //             , axisPointer: { lineStyle: { color: '#fff' } }
+            //             }
+            //         , series: [{ type: 'scatter3D', data }]
+            //     })
+
             pySlider = document.getElementById('py-slider')
             pyOutput = document.getElementById('py-output')
             pycxSlider = document.getElementById('pycx-slider')

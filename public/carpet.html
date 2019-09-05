@@ -9,22 +9,28 @@
             <input id="py-slider" min="0" max="1" value="0.5" step="0.05" type="range">
             <output id="py-output" for="py-slider">P(y) = 0.5</output>
             <br>
+            <input id="pycx-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="pycx-output" for="pycx-slider">P(y|x) = 0.5</output>
+            <!-- <br>
             <input id="pxy-slider" min="0" max="1" value="0.25" step="0.05" type="range">
-            <output id="pxy-output" for="pxy-slider">P(x, y) = 0.25 (P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75)</output>
+            <output id="pxy-output" for="pxy-slider">P(x, y) = 0.25 (P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75)</output> -->
             <br>
             <input id="px-slider" min="0" max="1" value="0.5" step="0.05" type="range">
             <output id="px-output" for="px-slider">P(x) = 0.5 (P(x') = 0.5)</output>
+            <br>
+            <output id="pxy-output">P(x, y) = 0.25, P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75</output>
         </section>
         <script>
             const impossibleColor = 'rgba(0, 0, 0, 0.7)'
             const monotonicityColor = 'rgba(255, 255, 255, 0.18)'
-            const DENSITY = 11
 
             const urlParams = new URLSearchParams(window.location.search)
             let py = parseFloat(urlParams.get('py') || '0.5')
             let pxy = parseFloat(urlParams.get('pxy') || '0.25')
             let px = parseFloat(urlParams.get('px') || '0.5')
             let pxp = 1 - px
+
+            const DENSITY = 11
 
             const fracRangeReduce = init => f => n =>
                 Array(n).fill().reduce((acc, _, i) => f(acc)(i / (n - 1)), init)
@@ -117,17 +123,30 @@
                 pyOutput.value = `P(y) = ${py}`
                 createGraph(graph)
             })
-            document.getElementById('pxy-slider').addEventListener('input', e => {
-                pxy = e.target.valueAsNumber
+            document.getElementById('pycx-slider').addEventListener('input', e => {
+                const pycx = e.target.valueAsNumber
+                pxy = pycx * px
                 if (pxy + pxp > 1)
                     updatePX(pxy)
                 else if (py - pxy + px > 1)
                     updatePX(pxy - py + 1)
                 if (py < pxy)
                     updatePY(pxy)
-                pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+                pycxOutput.value = `P(y|x) = ${pycx}`
+                pxyOutput.value = `P(x, y) = ${pxy}, P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy}`
                 createGraph(graph)
             })
+            // document.getElementById('pxy-slider').addEventListener('input', e => {
+            //     pxy = e.target.valueAsNumber
+            //     if (pxy + pxp > 1)
+            //         updatePX(pxy)
+            //     else if (py - pxy + px > 1)
+            //         updatePX(pxy - py + 1)
+            //     if (py < pxy)
+            //         updatePY(pxy)
+            //     pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+            //     createGraph(graph)
+            // })
             document.getElementById('px-slider').addEventListener('input', e => {
                 px = e.target.valueAsNumber
                 pxp = 1 - px
