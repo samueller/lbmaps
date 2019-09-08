@@ -2,6 +2,7 @@
     <head>
         <meta charset="utf-8">
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="util.js"></script>
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
         <!-- <style>
             #graph {
@@ -36,11 +37,6 @@
     
             const DENSITY = 21
     
-            const log = message => val => {
-                console.log(message, val)
-                return val
-            }
-
             const fracRangeReduce = init => f => n =>
                 Array(n).fill().reduce((acc, _, i) => f(acc)(i / (n - 1)), init)
     
@@ -107,6 +103,14 @@
                 { opacity: 0.4
                 , mode: 'markers'
                 , type: 'scatter3d'
+                // , marker: { symbol: 'circle' }
+                // , projection:
+                //     { x: { show: true }
+                //     , y: { show: true }
+                //     , z: { show: true }
+                //     }
+                // , hoverinfo: 'text'
+                , hovertemplate: 'P(y<sub>x</sub>) = %{x}<br>P(y<sub>x\'</sub>) = %{y}<br>P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥ %{z}'
                 , x: []
                 , y: []
                 , z: []
