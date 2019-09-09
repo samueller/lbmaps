@@ -27,15 +27,22 @@
             const floatParam = name => def =>
                 parseFloat(urlParams.get(name) || def)
 
+            const disableInput = disabled => input => input.disabled = disabled
+            const disableObservationalInputs = disabled =>
+                [ pyCxSlider
+                , pyCxpSlider
+                , pxSlider
+                ].map(disableInput(disabled))
+
             let contourType = floatParam('data')(0)
             let observations = floatParam('obs')(1) == 1
-            let py = floatParam('py')('0.5')
-            let pxy = floatParam('pxy')('0.25')
+            let pyCx = floatParam('pycx')('0.5')
+            let pyCxp = floatParam('pycxp')('0.5')
             let px = floatParam('px')('0.5')
             let pxp = 1 - px
-            let pxpy = py - pxy
-            let pycx = pxy / px
-            let pycxp = pxpy / pxp
+            let pxy
+            let pxpy
+            let py
 
             const contourDataFuncs =
                 [ py =>
@@ -117,6 +124,68 @@
                     { title: 'P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥'
                     }
                 }
+
+            const shapes = py =>
+                [ { type: 'rect'
+                  , x0: 0
+                  , y0: 0
+                  , x1: pxy
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: py - pxy + px
+                  , x1: pxy + pxp
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: 0
+                  , x1: py//pxy + pxp
+                  , y1: py - pxy
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy + pxp
+                  , y0: py//0
+                  , x1: 1
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'line'
+                  , x0: 0
+                  , y0: 0
+                  , x1: 1
+                  , y1: 1
+                  , line:
+                    { color: 'red'
+                    , width: 2
+                    , dash: 'dot'
+                    }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: py - pxy
+                  , x1: pxy + pxp
+                  , y1: py - pxy + px
+                  , fillcolor: possibleColor
+                  , line: { color: 'yellow', width: 2 }
+                  }
+                , { type: 'rect'
+                  , x0: py
+                  , y0: 0
+                  , x1: 1
+                  , y1: py
+                //   , fillcolor: monotonicityColor
+                  , line: { color: 'orange', width: 2 }
+                  }
+                ]  
         </script>
     </head>
     <body>
@@ -154,93 +223,7 @@
             <br><br>
             <p><a href="3dscatter.html">3d scatter plot version</a></p>
         </section>
-        <script>
-            const shapes = py =>
-                [ { type: 'rect'
-                  , x0: 0
-                  , y0: 0
-                  , x1: pxy
-                  , y1: 1
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy
-                  , y0: py - pxy + px
-                  , x1: pxy + pxp
-                  , y1: 1
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy
-                  , y0: 0
-                  , x1: py//pxy + pxp
-                  , y1: py - pxy
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy + pxp
-                  , y0: py//0
-                  , x1: 1
-                  , y1: 1
-                  , fillcolor: impossibleColor
-                  , line: { width: 0 }
-                  }
-                , { type: 'rect'
-                  , x0: pxy
-                  , y0: py - pxy
-                  , x1: pxy + pxp
-                  , y1: py - pxy + px
-                  , fillcolor: possibleColor
-                  , line: { color: 'yellow', width: 2 }
-                  }
-                , { type: 'rect'
-                  , x0: py
-                  , y0: 0
-                  , x1: 1
-                  , y1: py
-                //   , fillcolor: monotonicityColor
-                  , line: { color: 'orange', width: 2 }
-                  }
-                ]  
-
-            // const frames = n => prefix => Array(n)
-            //     .fill()
-            //     .map((x, i) => i / (n - 1))
-            //     .map(x =>
-            //         ({ name: `${prefix}${x}`
-            //          , data: [ contourDataCompliers(x) ]
-            //          , layout: { shapes: shapes(x) }
-            //         })
-            //     )
-            
-            // const steps = n => prefix => min => max => Array(n)
-            //     .fill()
-            //     .map((x, i) => i / (n - 1))
-            //     .filter(x => min <= x && x <= max)
-            //     .map(x =>
-            //         ({ label: x
-            //          , method: 'relayout'
-            //          , args:
-            //             [ [ `${prefix}${x}` ]
-            //             , { mode: 'immediate'
-            //               , transition: { duration: 300 }
-            //               , frame: { duration: 300, redraw: true }
-            //               }
-            //             ]
-            //         })
-            //     )
-
-            // const sliders = () =>
-            //     [ { currentvalue: { prefix: 'P(y): ' }
-            //         , transition: { duration: 300 }
-            //         , steps: steps(21)('')(pxy)(pxy + pxp)
-            //         , pad: { t: 50 }
-            //       }
-            //     ]
-
+        <script>            
             const mapNames =
                 [ 'P(y<sub>x</sub>, y\'<sub>x\'</sub>)'
                 , 'P(y<sub>x</sub>, y<sub>x\'</sub>)'
@@ -252,7 +235,6 @@
                 ({ title: `Lower Bounds on ${mapNames[contourType]}`
                  , xaxis: { title: 'P(y<sub>x</sub>)'}
                  , yaxis: { title: 'P(y<sub>x\'</sub>)'}
-                //  , sliders: sliders()
                  , shapes: observations ? shapes(py) : {}
                  , width: 600
                  , height: 600
@@ -270,7 +252,6 @@
                 Plotly.newPlot
                     ( graph
                     , dataAndLayout(contourType)(observations)
-                    // , { showSendToCloud: true }
                     )
             const animateGraph = graph => contourType =>
                 Plotly.react
@@ -279,43 +260,76 @@
                     )
 
             const graph = document.getElementById('graph')
-            const pySlider = document.getElementById('py-slider')
+            // const pySlider = document.getElementById('py-slider')
             const pyOutput = document.getElementById('py-output')
-            const pycxSlider = document.getElementById('pycx-slider')
-            const pycxpSlider = document.getElementById('pycxp-slider')
-            // const pxySlider = document.getElementById('pxy-slider')
-            const pycxOutput = document.getElementById('pycx-output')
-            const pycxpOutput = document.getElementById('pycxp-output')
+            const pyCxSlider = document.getElementById('pycx-slider')
+            const pyCxpSlider = document.getElementById('pycxp-slider')
+            const pyCxOutput = document.getElementById('pycx-output')
+            const pyCxpOutput = document.getElementById('pycxp-output')
             const pxyOutput = document.getElementById('pxy-output')
             const pxSlider = document.getElementById('px-slider')
             const pxOutput = document.getElementById('px-output')
-            createGraph(graph)(contourType)
 
             const round2 = x =>
                 Math.round(x * 100) / 100
+            const updatePyCxOutput = pyCx =>
+                pyCxOutput.value = `P(y|x) = ${round2(pyCx)}`
+            const updatePyCxpOutput = pyCxp =>
+                pyCxpOutput.value = `P(y|x') = ${round2(pyCxp)}`
+            const updatePxOutput = px =>
+                pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(pxp)})`
 
-            const updatePY = newPY => {
-                py = newPY
-                const pycxp = (newPY - pxy) / pxp
-                // pySlider.value = py
-                pycxpSlider.value = pycxp
-                pycxpOutput.value = `P(y|x') = ${round2(pycxp)}`
+            const updateDepVars = () => {
+                pxy = pyCx * px
+                pxpy = pyCxp * pxp
+                py = pxy + pxpy
+                pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(pxpy)}, P(x', y') = ${round2(pxp - pxpy)}`
                 pyOutput.value = `P(y) = ${round2(py)}`
             }
-            const updatePXY = newPXY => {
-                pxy = newPXY
-                const pycx = newPXY / px
-                pycxSlider.value = pycx
-                pycxOutput.value = `P(y|x) = ${round2(pycx)}`
-                pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(py - pxy)}, P(x', y') = ${round2(pxp - py + pxy)}`
-                // pxySlider.value = pxy
-                // pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+
+            const update = graph => contourType => {
+                updateDepVars()
+                animateGraph(graph)(contourType)
             }
-            const updatePX = newPX => {
+
+            updatePyCxOutput(pyCx)
+            updatePyCxpOutput(pyCxp)
+            updatePxOutput(px)
+            updateDepVars()
+            disableObservationalInputs(!observations)
+            createGraph(graph)(contourType)
+            // const updatePY = newPY => {
+            //     py = newPY
+            //     const pycxp = (newPY - pxy) / pxp
+            //     // pySlider.value = py
+            //     pycxpSlider.value = pycxp
+            //     pycxpOutput.value = `P(y|x') = ${round2(pycxp)}`
+            //     pyOutput.value = `P(y) = ${round2(py)}`
+            // }
+            // const updatePXY = newPXY => {
+            //     pxy = newPXY
+            //     const pycx = newPXY / px
+            //     pycxSlider.value = pycx
+            //     pycxOutput.value = `P(y|x) = ${round2(pycx)}`
+            //     pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(py - pxy)}, P(x', y') = ${round2(pxp - py + pxy)}`
+            //     // pxySlider.value = pxy
+            //     // pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+            // }            
+            const updatePyCx = newPyCx => {
+                pyCx = newPyCx
+                updatePyCxOutput(pyCx)
+                update(graph)(contourType)
+            }
+            const updatePyCxp = newPyCxp => {
+                pyCxp = newPyCxp
+                updatePyCxpOutput(pyCxp)
+                update(graph)(contourType)
+            }
+            const updatePx = newPX => {
                 px = newPX
                 pxp = 1 - px
-                pxSlider.value = px
-                pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(pxp)})`
+                updatePxOutput(px)
+                update(graph)(contourType)
             }
             // document.getElementById('py-slider').addEventListener('input', e => {
             //     py = e.target.valueAsNumber
@@ -328,36 +342,43 @@
             //     pyOutput.value = `P(y) = ${round2(py)}`
             //     createGraph(graph)(contourType)
             // })
-            document.getElementById('pycx-slider').addEventListener('input', e => {
-                pycx = e.target.valueAsNumber
-                pxy = pycx * px
-                py = pxy + pxpy
-                if (pxy + pxp > 1)
-                    updatePX(pxy)
-                else if (py - pxy + px > 1)
-                    updatePX(pxy - py + 1)
-                if (py < pxy)
-                    updatePY(pxy)
-                pycxOutput.value = `P(y|x) = ${round2(pycx)}`
-                pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(py - pxy)}, P(x', y') = ${round2(pxp - py + pxy)}`
-                pyOutput.value = `P(y) = ${round2(py)}`
+
+            const onTargetNumber = f => e => f(e.target.valueAsNumber)
+
+            document
+                .getElementById('pycx-slider')
+                .addEventListener('input', onTargetNumber(updatePyCx))
+                // pycx = e.target.valueAsNumber
+                // pxy = pycx * px
+                // py = pxy + pxpy
+                // if (pxy + pxp > 1)
+                //     updatePX(pxy)
+                // else if (py - pxy + px > 1)
+                //     updatePX(pxy - py + 1)
+                // if (py < pxy)
+                //     updatePY(pxy)
+                // pyCxOutput.value = `P(y|x) = ${round2(pyCx)}`
+                // pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(py - pxy)}, P(x', y') = ${round2(pxp - py + pxy)}`
+                // pyOutput.value = `P(y) = ${round2(py)}`
                 // createGraph(graph)(contourType)
-                animateGraph(graph)(contourType)
-            })
-            document.getElementById('pycxp-slider').addEventListener('input', e => {
-                pycxp = e.target.valueAsNumber
-                pxpy = pycxp * pxp
-                py = pxpy + pxy
-                if (py < pxy)
-                    updatePXY(py)
-                else if (py - pxy + px > 1)
-                    updatePXY(py - pxp)
-                else
-                    updatePXY(pxy)
-                pycxpOutput.value = `P(y|x') = ${round2(pycxp)}`
-                pyOutput.value = `P(y) = ${round2(py)}`
-                animateGraph(graph)(contourType)
-            })
+                // animateGraph(graph)(contourType)
+            // })
+            document
+                .getElementById('pycxp-slider')
+                .addEventListener('input', onTargetNumber(updatePyCxp))
+                // pycxp = e.target.valueAsNumber
+                // pxpy = pycxp * pxp
+                // py = pxpy + pxy
+                // if (py < pxy)
+                //     updatePXY(py)
+                // else if (py - pxy + px > 1)
+                //     updatePXY(py - pxp)
+                // else
+                //     updatePXY(pxy)
+                // pyCxpOutput.value = `P(y|x') = ${round2(pyCxp)}`
+                // pyOutput.value = `P(y) = ${round2(py)}`
+                // animateGraph(graph)(contourType)
+            // })
             // document.getElementById('pxy-slider').addEventListener('input', e => {
             //     pxy = e.target.valueAsNumber
             //     if (pxy + pxp > 1)
@@ -370,16 +391,20 @@
             //     createGraph(graph)(contourType)
             // })
             document.getElementById('px-slider').addEventListener('input', e => {
-                px = e.target.valueAsNumber
-                pxp = 1 - px
-                if (py - pxy + px > 1)
-                    updatePXY(py - pxp)
-                else if (pxy + pxp > 1)
-                    updatePXY(px)
+                if (py - pxy + px > 1 || pxy + pxp > 1)
+                    pxSlider.value = px
                 else
-                    updatePXY(pxy)
-                pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(pxp)})`
-                animateGraph(graph)(contourType)
+                    updatePx(e.target.valueAsNumber)
+                // px = e.target.valueAsNumber
+                // pxp = 1 - px
+                // if (py - pxy + px > 1)
+                //     updatePXY(py - pxp)
+                // else if (pxy + pxp > 1)
+                //     updatePXY(px)
+                // else
+                //     updatePXY(pxy)
+                // pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(pxp)})`
+                // animateGraph(graph)(contourType)
             })
             const setContourType = newContourType => {
                 contourType = newContourType
@@ -393,12 +418,6 @@
             alwaysTakersButton.addEventListener('input', e => setContourType(1))
             neverTakersButton.addEventListener('input', e => setContourType(2))
             defiersButton.addEventListener('input', e => setContourType(3))
-            const disableInput = disabled => input => input.disabled = disabled
-            const disableObservationalInputs = disabled =>
-                [ pycxSlider
-                , pycxpSlider
-                , pxSlider
-                ].map(disableInput(disabled))
 
             document.getElementById('observations').addEventListener('change', e => {
                 observations = e.target.checked
