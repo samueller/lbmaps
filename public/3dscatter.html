@@ -29,16 +29,12 @@
             <output id="pxy-output">P(x, y) = 0.25, P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75</output>
         </section>
         <script>
-            const urlParams = new URLSearchParams(window.location.search)
             let py = parseFloat(urlParams.get('py') || '0.5')
             let pxy = parseFloat(urlParams.get('pxy') || '0.25')
             let px = parseFloat(urlParams.get('px') || '0.5')
             let pxp = 1 - px
     
             const DENSITY = 21
-    
-            const fracRangeReduce = init => f => n =>
-                Array(n).fill().reduce((acc, _, i) => f(acc)(i / (n - 1)), init)
     
             // const initialCheaterPlot = {a: [], b: [], y: []}
     
@@ -181,9 +177,6 @@
             pxSlider = document.getElementById('px-slider')
             pxOutput = document.getElementById('px-output')
             createGraph(graph)
-
-            const round2 = x =>
-                Math.round(x * 100) / 100
 
             const updatePY = newPY => {
                 py = newPY

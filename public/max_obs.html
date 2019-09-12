@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="util.js"></script>
+    </head>
+    <body>
+        <script>
+            const possible = pxy => pxpy => px => py_x => py_xp =>
+                pxy <= py_x
+                    && py_x <= pxy + 1 - px
+                    && pxpy <= py_xp
+                    && py_xp <= pxpy + px
+
+            const obsExpDiff = py_x => py_xp => pyCx => pyCxp => px => {
+                const pxp = 1 - px
+                const pxy = pyCx * px
+                const pxyp = px - pxy
+                const pxpy = pyCxp * pxp
+                const pxpyp = pxp - pxpy
+                const py = pxy + pxpy
+                return Math.max(py - py_xp, py_x - py) - Math.max(0, py_x - py_xp) // LB
+                    + Math.min(py_x, 1 - py_xp) - /*Math.max(0, */Math.min(pxy + pxpyp, py_x - py_xp + pxpy + pxyp)//) // UB
+            }
+
+            const betterOutcome = py_x => py_xp => pyCx => pyCxp => soFar => px => {
+                const result = obsExpDiff(py_x)(py_xp)(pyCx)(pyCxp)(px)
+                return possible(pyCx * px)(pyCxp * (1 - px))(px)(py_x)(py_xp)
+                        && soFar.result < result
+                    ? { py_x, py_xp, pyCx, pyCxp, px, result }
+                    : soFar
+            }
+
+            const close = x => y =>
+                Math.abs(x - y) < 0.0001
+
+            const equalOutcomes = r => py_x => py_xp => pyCx => pyCxp => soFar => px => {
+                const result = obsExpDiff(py_x)(py_xp)(pyCx)(pyCxp)(px)
+                return possible(pyCx * px)(pyCxp * (1 - px))(px)(py_x)(py_xp)
+                        && close(r)(result)
+                    ? [...soFar, { py_x, py_xp, pyCx, pyCxp, px }]
+                    : soFar
+            }
+
+            console.log(fracRangeReduce([]/*/{result: 0}*/)(out1 => py_x =>
+                fracRangeReduce(out1)(out2 => py_xp =>
+                    fracRangeReduce(out2)(out3 => pyCx =>
+                        fracRangeReduce(out3)(out4 => pyCxp =>
+                            // fracRangeReduce(out4)(betterOutcome(py_x)(py_xp)(pyCx)(pyCxp))(21)
+                            fracRangeReduce(out4)(equalOutcomes(0.5)(py_x)(py_xp)(pyCx)(pyCxp))(21)
+                        )(21)
+                    )(21)
+                )(21)
+            )(21))
+        </script>
+    </body>
+</html>

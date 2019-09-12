@@ -1,0 +1,388 @@
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.min.js"></script>
+        <script src="util.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
+        <link href="main.css" rel="stylesheet">
+        <style>
+            #stats-window {
+                display: none;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 10.75em;
+                border-radius: 5px;
+                border: 1px solid black;
+                background-color: rgba(255, 255, 255, 0.8);
+                color: 'black';
+                line-height: 1.1;
+                padding: 4px 7px;
+            }
+        </style>
+        <script>
+            let boundsType = floatParam('bounds')(2)
+
+            const contourColors =
+                [ '#210bac'
+                , '#2732c4'
+                , '#455bdc'
+                , '#6583f3'
+                , '#9faad3'
+                , '#cfb39e'
+                , '#e39968'
+                , '#d96e4a'
+                , '#c53b32'
+                , '#b2151b'
+                ]
+        </script>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title">Fréchet Inequalities</h1>
+                <div class="control">
+                    <label class="radio" for="lower-bound"><input id="lower-bound" name="bound" value="0" type="radio"> Lower bounds</label>
+                    <label class="radio" for="upper-bound"><input id="upper-bound" name="bound" value="1" type="radio"> Upper bounds</label>
+                    <label class="radio" for="combo-bound"><input id="combo-bound" name="bound" value="2" type="radio"> Combined</label>
+                    <label class="radio" for="diff-bound"><input id="diff-bound" name="bound" value="3" type="radio"> Difference</label>
+                </div>
+                <div id="plot"></div>
+                <div id="stats-window"></div>
+            </div>
+        </section>
+        <script>            
+            const plot = document.getElementById('plot')
+                , plotLeft = 50
+                , plotTop = 52
+                , plotRight = 60
+                , plotBottom = 45
+                , numContours = 10
+                , boundsButtons = document.querySelectorAll('input[name=bound]')
+                , statsWindow = document.getElementById('stats-window')
+                , statsWindowWidth = 170
+                , statsWindowHeight = 77
+            boundsButtons[boundsType].checked = true
+
+            const boundsNames =
+                [ 'Lower Bounds'
+                , 'Upper Bounds'
+                , 'Bounds'
+                , 'Range of Bounds'
+                ]
+            
+            const colorBarTitles =
+                [ 'P(A, B) ≥'
+                , 'P(A, B) ≤'
+                , 'P(A, B) ≤'
+                , 'Range']
+
+            const title = boundsType =>
+                    `${boundsNames[boundsType]} on P(A, B)`
+                , titleXAxis = 'P(A)'
+                , titleYAxis = 'P(B)'
+                , titleColorBar = boundsType =>
+                    `${colorBarTitles[boundsType]}`
+
+            const coords = plotWidth => plotHeight => ([x, y]) =>
+                [ plotWidth * x + plotLeft
+                , plotHeight - plotHeight * y + plotTop
+                ]
+            
+            const makeColorBar = n => draw => plotWidth => plotHeight => boundsType => {
+                const coords = coordsColorBar(plotHeight)(numContours)(boundsType)
+                return {
+                      boxes: mapRange(n)(i =>
+                        draw.rect(30, coords.boxes[i].height)
+                            .move(plotLeft + plotWidth + 7, plotTop + coords.boxes[i].y)
+                            .fill(contourColors[n - i - 1])
+                            .stroke({ color: 'black' })
+                      )
+                    , ticks: mapRange(n + 1)(i =>
+                        draw.text(`${round1(1 - i / numContours)}`)
+                            .opacity(coords.ticks[i] == -1 ? 0 : 1)
+                            .x(plotLeft + plotWidth + 40)
+                            .y(plotTop + coords.ticks[i] - 7)
+                            .font(
+                                { family: 'Open Sans'
+                                , size: 13
+                                , anchor: 'start'
+                                , color: 'rgb(60, 60, 60)'
+                                }
+                            )
+                      )
+                    }
+            }
+
+            const coordsColorBar = plotHeight => numContours => boundsType => {
+                const dispContours = boundsType == 3
+                    ? Math.floor(numContours / 2)
+                    : numContours
+                const tickSpace = plotHeight / dispContours
+                return {
+                      boxes:
+                        Array(numContours - dispContours).fill(
+                            { y: 0
+                            , height: 0
+                            }
+                        ).concat(mapRange(dispContours)(i =>
+                            ({ y: i * tickSpace
+                             , height: tickSpace + 1
+                             })
+                        ))
+                    , ticks:
+                        Array(numContours - dispContours).fill(-1)
+                            .concat(mapRange
+                                (dispContours + 1)
+                                (i => i * tickSpace)
+                            )
+                    }
+            }
+
+            const coordsContours =
+                [ n =>
+                    mapRange(n)(i =>
+                        [ [ i/n, 1 ]
+                        , [ (1 + i/n) / 2, 1 - (1 - i/n) / 2 ]
+                        , [ 1, i/n ]
+                        , [ 1, (i + 1)/n ]
+                        , [ (i + 1 + n) / (2 * n), 1 - (n - i - 1) / (2 * n) ]
+                        , [ (i + 1)/n, 1 ]
+                        ]
+                    )
+                , n =>
+                    mapRange(n)(i =>
+                        [ [ i/n, 1 ]
+                        , [ i/n, i/n ]
+                        , [ 1, i/n ]
+                        , [ 1, (i + 1)/n ]
+                        , [ (i + 1)/n, (i + 1)/n ]
+                        , [ (i + 1)/n, 1 ]
+                        ]
+                    )
+                , n =>
+                    mapRange(n)(i =>
+                        [ [ i/n, 1 ]
+                        , [ i/n, i/n ]
+                        , [ 1, i/n ]
+                        , [ 1, (i + 1)/n ]
+                        , [ (i + 1)/n, (i + 1)/n ]
+                        , [ (i + 1)/n, 1 ]
+                        ]
+                    )
+                , n =>
+                    mapRange(n)(i =>
+                        i < numContours / 2
+                            ? [ [ i/n, 1 - i/n ]
+                              , [ i/n, i/n ]
+                              , [ 1 - i/n, i/n ]
+                              , [ 1 - i/n, (i + 1)/n ]
+                              , [ 1 - i/n, 1 - i/n ]
+                              , [ (i + 1)/n, 1 - i/n ]
+                              ]
+                            : Array(6).fill([ 0.5, 0.5 ])
+                    )
+                ]
+            
+            const coordsLowerBoundLines = n =>
+                mapRange(n)(i => 
+                    [ [ i/n, 1 ]
+                    , [ 1, i/n ]
+                    ]
+                )
+
+            const lowerBound = pa => pb =>
+                round2(Math.max(0, pa + pb - 1))
+
+            const upperBound = pa => pb =>
+                round2(Math.min(pa, pb))
+            
+            const upperLowerDiff = pa => pb =>
+                round2(Math.min(pa, pb) - Math.max(0, pa + pb - 1))
+
+            const stats = e => {
+                const pa = (e.offsetX - plotLeft) / model.plotWidth
+                const pb = 1 - (e.offsetY - plotTop) / model.plotHeight
+                statsWindow.style.left = `${e.offsetX - statsWindowWidth/2}px`
+                statsWindow.style.top = `${e.offsetY + statsWindowHeight/2 - 40}px`
+                statsWindow.style.display = 'block'
+                statsWindow.innerHTML = `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${lowerBound(pa)(pb)} ≤ P(A, B) ≤ ${upperBound(pa)(pb)}<br>Difference = ${upperLowerDiff(pa)(pb)}`
+            }
+            
+            const noStats = e =>
+                statsWindow.style.display = 'none'
+            
+            const makePolygons = draw => contours =>
+                contours.map((contour, i) =>
+                    draw.polygon(contour)
+                        .fill(contourColors[i])
+                        .stroke({ color: contourColors[i] })
+                        .on('mousemove', stats)
+                        .on('touchmove', stats)
+                        .on('mouseleave', noStats)
+                        .on('touchleave', noStats)
+                )
+            
+            const makeLowerBoundLines = draw => lines => visible =>
+                lines.map((line, i) =>
+                    [ draw.line(line)
+                        .stroke(
+                            { width: 2
+                            , color: 'black'
+                            , opacity: visible ? 0.9 : 0
+                            }
+                        )
+                    , draw.line(line)
+                        .stroke(
+                            { dasharray: [ 15, 15 ]
+                            , width: 2
+                            , color: contourColors[i]
+                            , opacity: visible ? 0.9 : 0
+                            }
+                        )
+                    ]
+                ).flat()
+
+            const model = {}
+
+            const contoursByBoundsType = boundsType =>
+                Math.min(1, boundsType)
+
+            const createGraph = plot => boundsType => {
+                const width = Math.min(plot.scrollWidth, 640)
+                    , height = width - 13
+                model.draw = SVG().addTo(plot).size(width, height)
+                model.plotWidth = width - plotLeft - plotRight
+                model.plotHeight = height - plotTop - plotBottom
+                model.unitSquare = model.draw
+                    .rect(model.plotWidth, model.plotHeight)
+                    .move(plotLeft, plotTop)
+                    .fill('white')
+                    .on('mousemove', stats)
+                    .on('touchmove', stats)
+                    .on('mouseleave', noStats)
+                    .on('touchleave', noStats)
+                model.unitCoords = coords(model.plotWidth)(model.plotHeight)
+                model.contours = coordsContours
+                    .map(contours => contours(numContours)
+                        .map(contour => contour
+                            .map(model.unitCoords)
+                        )
+                    )
+                model.lowerBoundLinesCoords =
+                    coordsLowerBoundLines(numContours)
+                        .map(line => line.map(model.unitCoords))
+                model.polygons = makePolygons
+                    (model.draw)
+                    (model.contours[boundsType])//[contoursByBoundsType(boundsType)])
+                model.lowerBoundLines = makeLowerBoundLines
+                    (model.draw)
+                    (model.lowerBoundLinesCoords)
+                    (boundsType == 2)
+                model.draw.line
+                    ( plotLeft - 1
+                    , plotTop
+                    , plotLeft - 1
+                    , plotTop + model.plotHeight + 1
+                    ).stroke({ color: 'black' })
+                model.draw.line
+                    ( plotLeft - 1.5
+                    , plotTop + model.plotHeight + 1
+                    , plotLeft + model.plotWidth + 0.5
+                    , plotTop + model.plotHeight + 1
+                    ).stroke({ color: 'black' })
+                model.title = model.draw.text(title(boundsType))
+                    .move(plotLeft + model.plotWidth/2, plotTop/2 - 17)
+                    .font({ size: 24, anchor: 'middle', family: 'Open Sans' })
+                model.draw.text(titleXAxis)
+                    .move(plotLeft + model.plotWidth/2, plotTop + model.plotHeight + 25)
+                    .font({ size: 16, anchor: 'middle', family: 'Open Sans' })
+                model.draw.text(titleYAxis)
+                    .move(plotLeft - 40, plotTop + model.plotHeight/2)
+                    .font({ size: 16, anchor: 'middle', family: 'Open Sans' })
+                    .transform({ rotate: -90 })
+                model.titleColorBar = model.draw.text(titleColorBar(boundsType))
+                    .move(plotLeft + model.plotWidth + 6, plotTop - 25)
+                    .font({ size: 13, anchor: 'start', family: 'Open Sans' })
+                const tickSpace = model.plotHeight / numContours
+                mapRange(numContours + 1)(i => {
+                    model.draw.line(
+                        [ [ plotLeft - 2, plotTop + i*tickSpace ]
+                        , [ plotLeft - 5, plotTop + i*tickSpace ]
+                        ]
+                    ).stroke({ color: 'black' })
+                    model.draw.line(
+                        [ [ plotLeft + i*tickSpace, plotTop + model.plotHeight + 2 ]
+                        , [ plotLeft + i*tickSpace, plotTop + model.plotHeight + 6 ]
+                        ]
+                    ).stroke({ color: 'black' })
+                    model.draw.text(`${round1(1 - i / numContours)}`)
+                        .move(plotLeft - 7, plotTop + i*tickSpace - 7)
+                        .font(
+                            { family: 'Open Sans'
+                            , size: 13
+                            , anchor: 'end'
+                            , color: 'rgb(60, 60, 60)'
+                            }
+                        )
+                    model.draw.text(`${round1(i / numContours)}`)
+                        .move(plotLeft + i*tickSpace, plotTop + model.plotHeight + 7)
+                        .font(
+                            { family: 'Open Sans'
+                            , size: 13
+                            , anchor: 'middle'
+                            , color: 'rgb(60, 60, 60)'
+                            }
+                        )
+                })
+                model.colorBar = makeColorBar(numContours)(model.draw)(model.plotWidth)(model.plotHeight)(boundsType)
+            }
+
+            const updateColorBar = numContours => colorBar => coords => {
+                colorBar.boxes.map((box, i) =>
+                    box.animate(1000)
+                        .y(plotTop + coords.boxes[i].y)
+                        .height(coords.boxes[i].height)
+                )
+                colorBar.ticks.map((tick, i) =>
+                    tick.animate(1000)
+                        .opacity(coords.ticks[i] == -1 ? 0 : 1)
+                        .cy(plotTop + coords.ticks[i])
+                )
+            }
+
+            const updatedBounds = newBoundsType => {
+                boundsType = newBoundsType
+                const contours =
+                    model.contours[boundsType]//[contoursByBoundsType(boundsType)]
+                model.polygons.map((polygon, i) =>
+                    polygon.animate(1000).plot(contours[i])
+                )
+                model.lowerBoundLines.map((line, i) =>
+                    line.animate(1000)
+                        .plot(boundsType == 2
+                            ? model.lowerBoundLinesCoords[Math.floor(i/2)]
+                            :
+                                [ model.unitCoords([1, 1])
+                                , model.unitCoords([1, 0])
+                                ]
+                        )
+                        .attr({ opacity: boundsType == 2 ? 0.9 : 0 })
+                )
+                updateColorBar
+                    (numContours)
+                    (model.colorBar)
+                    (coordsColorBar
+                        (model.plotHeight)
+                        (numContours)
+                        (boundsType)
+                    )
+                model.title.text(title(boundsType))
+                model.titleColorBar.text(titleColorBar(boundsType))
+            }
+
+            createGraph(plot)(boundsType)
+
+            addEventListeners(boundsButtons)('input')(updatedBounds)
+        </script>
+    </body>
+</html>
