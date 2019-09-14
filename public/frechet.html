@@ -19,6 +19,9 @@
                 line-height: 1.1;
                 padding: 4px 7px;
             }
+            #plot {
+                position: relative;
+            }
         </style>
         <script>
             let boundsType = floatParam('bounds')(2)
@@ -47,8 +50,9 @@
                     <label class="radio" for="combo-bound"><input id="combo-bound" name="bound" value="2" type="radio"> Combined</label>
                     <label class="radio" for="diff-bound"><input id="diff-bound" name="bound" value="3" type="radio"> Difference</label>
                 </div>
-                <div id="plot"></div>
-                <div id="stats-window"></div>
+                <div id="plot">
+                    <div id="stats-window"></div>
+                </div>
             </div>
         </section>
         <script>            
@@ -68,7 +72,7 @@
                 [ 'Lower Bounds'
                 , 'Upper Bounds'
                 , 'Bounds'
-                , 'Range of Bounds'
+                , 'Bounds Range'
                 ]
             
             const colorBarTitles =
@@ -201,10 +205,14 @@
                 round2(Math.min(pa, pb) - Math.max(0, pa + pb - 1))
 
             const stats = e => {
-                const pa = (e.offsetX - plotLeft) / model.plotWidth
-                const pb = 1 - (e.offsetY - plotTop) / model.plotHeight
-                statsWindow.style.left = `${e.offsetX - statsWindowWidth/2}px`
-                statsWindow.style.top = `${e.offsetY + statsWindowHeight/2 - 40}px`
+                // const pa = (e.offsetX - plotLeft) / model.plotWidth
+                // const pb = 1 - (e.offsetY - plotTop) / model.plotHeight
+                const unitSquareX = e.pageX - model.unitSquareRect.left
+                const unitSquareY = e.pageY - model.unitSquareRect.top
+                const pa = unitSquareX / model.plotWidth
+                const pb = 1 - unitSquareY / model.plotHeight
+                statsWindow.style.left = `${unitSquareX + plotLeft - statsWindowWidth/2}px`
+                statsWindow.style.top = `${unitSquareY + plotTop - statsWindowHeight - 15}px`
                 statsWindow.style.display = 'block'
                 statsWindow.innerHTML = `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${lowerBound(pa)(pb)} ≤ P(A, B) ≤ ${upperBound(pa)(pb)}<br>Difference = ${upperLowerDiff(pa)(pb)}`
             }
@@ -254,6 +262,7 @@
                 model.draw = SVG().addTo(plot).size(width, height)
                 model.plotWidth = width - plotLeft - plotRight
                 model.plotHeight = height - plotTop - plotBottom
+                model.plotRect = plot.getBoundingClientRect()
                 model.unitSquare = model.draw
                     .rect(model.plotWidth, model.plotHeight)
                     .move(plotLeft, plotTop)
@@ -262,6 +271,7 @@
                     .on('touchmove', stats)
                     .on('mouseleave', noStats)
                     .on('touchleave', noStats)
+                model.unitSquareRect = document.querySelector('rect').getBoundingClientRect()
                 model.unitCoords = coords(model.plotWidth)(model.plotHeight)
                 model.contours = coordsContours
                     .map(contours => contours(numContours)
