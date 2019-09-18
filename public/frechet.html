@@ -3,7 +3,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.min.js"></script>
         <script src="util.js"></script>
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
-        <link href="main.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">        <link href="main.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
             #stats-window {
@@ -21,6 +21,13 @@
             }
             #plot {
                 position: relative;
+            }
+            #choose-bound label {
+                margin-left: 10px;
+            }
+            #choose-bound input {
+                position: relative;
+                top: -2px;
             }
         </style>
         <script>
@@ -44,15 +51,23 @@
         <section class="section">
             <div class="container">
                 <h1 class="title">Fréchet Inequalities</h1>
-                <div class="control">
-                    <label class="radio" for="lower-bound"><input id="lower-bound" name="bound" value="0" type="radio"> Lower bounds</label>
-                    <label class="radio" for="upper-bound"><input id="upper-bound" name="bound" value="1" type="radio"> Upper bounds</label>
-                    <label class="radio" for="combo-bound"><input id="combo-bound" name="bound" value="2" type="radio"> Combined</label>
-                    <label class="radio" for="diff-bound"><input id="diff-bound" name="bound" value="3" type="radio"> Difference</label>
+                <div id="choose-bound" class="control">
+                    <label class="radio" for="lower-bound"><input id="lower-bound" name="bound" value="0" type="radio"> Lower bounds</label> <span aria-label="Plot below will display minimum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="upper-bound"><input id="upper-bound" name="bound" value="1" type="radio"> Upper bounds</label> <span aria-label="Plot below will display maximum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="combo-bound"><input id="combo-bound" name="bound" value="2" type="radio"> Combined</label> <span aria-label="Plot below will display maximum values of P(A, B) for each P(A) and P(B) along with lines representing the lower bounds in order to see both lower and upper bounds together." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="diff-bound"><input id="diff-bound" name="bound" value="3" type="radio"> Difference</label> <span aria-label="Plot below will display the range (maximum - minimum) of P(A, B) for each P(A) and P(B). Notice the range goes towards 0 further from the center. This means the bounds are tight near edges, when P(A) or P(B) is close to 0 or 1." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
                 </div>
                 <div id="plot">
                     <div id="stats-window"></div>
                 </div>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <p>
+                    The above visualization plots <code>max(0, P(A) + P(B) − 1) ≤ P(A, B) ≤ min(P(A), P(B))</code> on the unit square with axes P(A) and P(B). This is a special case (n = 2) of Fréchet inequalities:
+                    <pre>max(0, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>) − (n − 1)) ≤ P(A<sub>1</sub>, A<sub>2</sub>, …, A<sub>n</sub>) ≤ min(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>))</pre>
+                </p>
             </div>
         </section>
         <script>            

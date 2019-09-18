@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <script src="heatmap.min.js"></script>
+        <script src="util.js"></script>
+        <style>
+            #heat {
+                width: 600px;
+                height: 600px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="heat"></div>
+        <script>
+            const width = height = 600;
+            const config =
+                { container: document.getElementById('heat')
+                , radius: 10
+                }
+            const heatInstance = h337.create(config)
+
+            let pxy = pxpy = 0.25
+                , py = pxy + pxpy
+                , px = 0.5
+                , pxp = 1 - px
+
+            const minUpperBound = py => py_xp => py_x =>
+                Math.max(0, Math.min(py_x, 1 - py_xp, pxy + pxp - pxpy, py_x - py_xp + pxpy + px - pxy))
+
+            const steps = 101
+            const increment = 1 / (steps - 1)
+            const zeroTo1 = rangeStep(steps)(increment)
+            const data = zeroTo1.flatMap(x =>
+                zeroTo1.map(y => ({ x, y, value: minUpperBound(0.5)(y)(x) }))
+            ).map(({ x, y, value}) => ({ x: x * width, y: y * height, value }))
+
+            heatInstance.setData(
+                { max: 1
+                , min: 0
+                , data
+                }
+            )
+        </script>
+    </body>
+</html>
