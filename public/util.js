@@ -36,3 +36,6 @@ const addEventListener = event => f => element =>
 const addEventListeners = elements => event => f =>
     Array.from(elements)
         .map(addEventListener(event)(f))
+
+const compose = fs => arg =>
+    fs.reduceRight((acc, f) => f(acc), arg)

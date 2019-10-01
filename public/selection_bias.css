@@ -1,0 +1,22 @@
+text {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 7pt;
+}
+.axis-label {
+    font-size: 9pt;
+    text-anchor: middle;
+}
+tspan.sub {
+    font-size: 70%;
+}
+line.grid {
+    stroke: black;
+    opacity: 0.1;
+}
+#plot-controls div.field {
+    margin-bottom: 0;
+}
+.impossible {
+    fill: black;
+    fill-opacity: 0.3;
+}

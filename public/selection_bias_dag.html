@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.10.0/dist/cytoscape.min.js"></script>
+        <style>
+            #cy {
+                width: 300px;
+                height: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="cy"></div>
+        <script>
+            const cy = cytoscape(
+                { container: document.getElementById('cy') // container to render in
+                , elements:
+                    [ { data: { id: 'Gender' } }
+                    , { data: { id: 'Drug' } }
+                    , { data: { id: 'Recovery' } }
+                    , { data: { id: 'α', source: 'Gender', target: 'Drug' } }
+                    , { data: { id: 'β', source: 'Gender', target: 'Recovery' } }
+                    , { data: { id: 'γ', source: 'Drug', target: 'Recovery' } }
+                    ]
+                , style:
+                    [ { selector: 'node'
+                      , style:
+                        { label: 'data(id)'
+                        , 'background-color': '#666'
+                        }
+                      }
+                    , { selector: 'edge'
+                      , style:
+                        { label: 'data(id)'
+                        , width: 3
+                        , 'line-color': '#ccc'
+                        , 'target-arrow-color': '#ccc'
+                        , 'target-arrow-shape': 'triangle'
+                        }
+                      }
+                    ]
+                }
+            )
+        </script>
+    </body>
+</html>
