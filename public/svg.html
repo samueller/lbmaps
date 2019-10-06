@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Playing with SVG</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.min.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="util.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            /* #choose-bound {
+                display: none;
+            } */
+            #choose-bound label {
+                margin-left: 10px;
+            }
+            #choose-bound input {
+                position: relative;
+                top: -2px;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title">Playing with SVG</h1>
+                <div id="choose-bound" class="control">
+                    <label class="radio" for="lower-bound"><input id="lower-bound" name="bound" value="0" type="radio"> Lower bounds</label> <span aria-label="Plot below will display minimum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="upper-bound"><input id="upper-bound" name="bound" value="1" type="radio"> Upper bounds</label> <span aria-label="Plot below will display maximum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="independent"><input id="independent" name="bound" value="2" type="radio"> A, B independent</label> <span aria-label="Plot below will display maximum values of P(A, B) for each P(A) and P(B) along with lines representing the lower bounds in order to see both lower and upper bounds together." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="diff-bound"><input id="diff-bound" name="bound" value="3" type="radio"> Difference</label> <span aria-label="Plot below will display the range (maximum - minimum) of P(A, B) for each P(A) and P(B). Notice the range goes towards 0 further from the center. This means the bounds are tight near edges, when P(A) or P(B) is close to 0 or 1." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                </div>
+                <svg id="plot" width="600" height="600"></svg>
+            </div>
+        </section>
+        <script>
+            const plot = document.getElementById('plot')
+                , width = height = 600
+                , draw = SVG().addTo(plot).size(width, height)
+                , scaleX = d3.scaleLinear()
+                    .range([0, width - 1])
+                    .domain([0, 1])
+                , scaleY = d3.scaleLinear()
+                    .range([height - 1, 0])
+                    .domain([0, 1])
+                , n = 10
+                , scaleD = d3.scaleLinear()
+                    .range([0, 0.0525, 0.07, 0.075, 0.075, 0.07, 0.06, 0.05, 0.05, 0.05, 0.05])
+                    .domain(d3.range(n))
+                , contourColors =
+                    [ '#210bac'
+                    , '#2732c4'
+                    , '#455bdc'
+                    , '#6583f3'
+                    , '#9faad3'
+                    , '#cfb39e'
+                    , '#e39968'
+                    , '#d96e4a'
+                    , '#c53b32'
+                    , '#b2151b'
+                    ]
+                , scaleColor = d3.scaleQuantize()
+                    .range(contourColors)
+                , m = x => y =>
+                    `M ${scaleX(x)} ${scaleY(y)}`
+                , h = x =>
+                    `H ${scaleX(x)}`
+                , v = y =>
+                    `V ${scaleY(y)}`
+                , c = x1 => y1 => x2 => y2 => x => y =>
+                    `C ${scaleX(x1)} ${scaleY(y1)} ${scaleX(x2)} ${scaleY(y2)} ${scaleX(x)} ${scaleY(y)}`
+                , cStraight = prevX => prevY => x => y =>
+                    c((prevX + x)/2)((prevY + y)/2)((prevX + x)/2)((prevY + y)/2)(x)(y)
+                , cDot = x => y =>
+                    c(x)(y)(x)(y)(x)(y)
+                , plots =
+                    [ mapRange(n)(i => {
+                        const x = i/n
+                        const xNext = (i + 1)/n
+                        return [
+                              m(x)(1)
+                            , cStraight(x)(1)((1 + x)/2)(1 - (1 - x)/2)
+                            , cStraight((1 + x)/2)(1 - (1 - x)/2)(1)(x)
+                            , v(xNext)
+                            , cStraight(1)(xNext)((i + 1 + n) / (2 * n))(1 - (n - i - 1) / (2 * n))
+                            , cStraight((i + 1 + n) / (2 * n))(1 - (n - i - 1) / (2 * n))(xNext)(1)
+                            , h(x)
+                            ].join(' ')
+                      })
+                    , mapRange(n)(i => {
+                        const x = y = i/n
+                        const xNext = yNext = (i + 1)/n
+                        return [
+                              `M ${scaleX(x)} ${scaleY(1)}`
+                            , `C ${scaleX(x)} ${scaleY((1 + x)/2)} ${scaleX(x)} ${scaleY((1 + x)/2)} ${scaleX(x)} ${scaleY(x)}`
+                            , `C ${scaleX((1 + x)/2)} ${scaleY(x)} ${scaleX((1 + x)/2)} ${scaleY(x)} ${scaleX(1)} ${scaleY(x)}`
+                            , `V ${scaleY(xNext)}`
+                            , `C ${scaleX((1 + xNext)/2)} ${scaleY(xNext)} ${scaleX((1 + xNext)/2)} ${scaleY(xNext)} ${scaleX(xNext)} ${scaleY(xNext)}`
+                            , `C ${scaleX(xNext)} ${scaleY((1 + xNext)/2)} ${scaleX(xNext)} ${scaleY((1 + xNext)/2)} ${scaleX(xNext)} ${scaleY(1)}`
+                            , `H ${scaleX(x)}`
+                            ].join(' ')
+                      })
+                    , mapRange(n)(i => {
+                        const x = y = i/n
+                        const xNext = yNext = (i + 1)/n
+                        const mid = Math.sqrt(x)
+                        const midNext = Math.sqrt(xNext)
+                        const d = scaleD(i)
+                        return [
+                              `M ${scaleX(x)} ${scaleY(1)}`
+                            , i == 0
+                                ? `C ${scaleX(0)} ${scaleY(0.5)} ${scaleX(0)} ${scaleY(0.5)} ${scaleX(0)} ${scaleY(0)}`
+                                : `C ${scaleX(x + d)} ${scaleY(1 - d / x)} ${scaleX(mid - d)} ${scaleY(mid + d)} ${scaleX(mid)} ${scaleY(mid)}`
+                            , i == 0
+                                ? `C ${scaleX(0.5)} ${scaleY(0)} ${scaleX(0.5)} ${scaleY(0)} ${scaleX(1)} ${scaleY(0)}`
+                                : `C ${scaleX(mid + d)} ${scaleY(mid - d)} ${scaleX(1 - d / x)} ${scaleY(x + d)} ${scaleX(1)} ${scaleY(x)}`
+                            , `V ${scaleY(xNext)}`
+                            , `C ${scaleX(1 - d / xNext)} ${scaleY(xNext + d)} ${scaleX(midNext + d)} ${scaleY(midNext - d)} ${scaleX(midNext)} ${scaleY(midNext)}`
+                            , `C ${scaleX(midNext - d)} ${scaleY(midNext + d)} ${scaleX(xNext + d)} ${scaleY(1 - d / xNext)} ${scaleX(xNext)} ${scaleY(1)}`
+                            , `H ${scaleX(x)}`
+                            ].join(' ')
+                      })
+                    , mapRange(n)(i => {
+                        const x = i/n
+                        const xNext = (i + 1)/n
+                        return ( i < n / 2
+                            ? [ m(x)(1 - x)
+                              , cStraight(x)(1 - x)(x)(x)
+                              , cStraight(x)(x)(1 - x)(x)
+                              , v(xNext)
+                              , cStraight(1 - x)(xNext)(1 - x)(1 - x)
+                              , cStraight(1 - x)(1 - x)(xNext)(1 - x)
+                              , h(x)
+                              ]
+                            : [ m(0.5)(0.5)
+                              , cDot(0.5)(0.5)
+                              , cDot(0.5)(0.5)
+                              , v(0.5)
+                              , cDot(0.5)(0.5)
+                              , cDot(0.5)(0.5)
+                              , h(0.5)
+                              ]
+                        ).join(' ')
+                      })
+                    ]
+                , contourPlots =
+                    plots[0].map((contour, i) =>
+                        draw.path(contour)
+                            .fill(contourColors[i])
+                            .stroke({ color: contourColors[i] })
+                    )
+                , boundsButtons = document.querySelectorAll('input[name=bound]')
+
+            addEventListeners(boundsButtons)('input')(bounds =>
+                contourPlots.map((contour, i) =>
+                    contour.animate(1000).plot(plots[bounds][i])
+                )
+            )
+        </script>
+    </body>
+</html>

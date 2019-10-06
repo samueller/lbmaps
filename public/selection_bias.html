@@ -14,30 +14,77 @@
             <div class="container">
                 <h1 class="title">Exposing Selection Bias</h1>
                 <svg id="plot" width="575" height="575"></svg>
+                <div id="stats-window"></div>
                 <form id="plot-controls">
                     <div class="field">
                         <div class="control">
-                            <input id="pycx-slider" name="pycx" min="0" max="1" value="0.5" step="0.02" type="range">
-                            <output id="pycx-output" for="pycx-slider">P(y|x) = 0.5</output>
+                            <input id="pycx-slider" name="pycx" min="0" max="1" value="0.53" step="0.01" type="range">
+                            <output id="pycx-output" for="pycx-slider">P(y|x) = 0.53</output>
                         </div>
                     </div>
                     <div class="field">
                         <div class="control">
-                            <input id="pycxp-slider" name="pycxp" min="0" max="1" value="0.5" step="0.02" type="range">
-                            <output id="pycxp-output" for="pycxp-slider">P(y|x') = 0.5</output>
+                            <input id="pycxp-slider" name="pycxp" min="0" max="1" value="0.2" step="0.01" type="range">
+                            <output id="pycxp-output" for="pycxp-slider">P(y|x') = 0.2</output>
                         </div>
                     </div>
                     <div class="field">
                         <div class="control">
-                            <input id="px-slider" name="px" min="0" max="1" value="0.5" step="0.02" type="range">
-                            <output id="px-output" for="px-slider">P(x) = 0.5 (P(x') = 0.5)</output>
+                            <input id="px-slider" name="px" min="0" max="1" value="0.95" step="0.01" type="range">
+                            <output id="px-output" for="px-slider">P(x) = 0.95 (P(x') = 0.05)</output>
                         </div>
                     </div>
                     <div class="field">
+                        <div class="control">
+                            <input id="pmcs-slider" name="pmcs" min="0" max="1" value="0.9" step="0.01" type="range">
+                            <output id="pmcs-output" for="pmcs-slider">P(m|s) = 0.9 (P(m'|s) = 0.1)</output>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <input id="pycxms-slider" name="pycxms" min="0" max="1" value="0.61" step="0.01" type="range">
+                            <output id="pycxms-output" for="pycxms-slider">P(y|x, m, s) = 0.61</output>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <input id="pycxmps-slider" name="pycxmps" min="0" max="1" value="0.5" step="0.01" type="range">
+                            <output id="pycxmps-output" for="pycxmps-slider">P(y|x, m', s) = 0.5</output>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <input id="pycxpms-slider" name="pycxpms" min="0" max="1" value="0.5" step="0.01" type="range">
+                            <output id="pycxpms-output" for="pycxpms-slider">P(y|x', m, s) = 0.5</output>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <input id="pycxpmps-slider" name="pycxpmps" min="0" max="1" value="0.5" step="0.01" type="range">
+                            <output id="pycxpmps-output" for="pycxpmps-slider">P(y|x', m', s) = 0.5</output>
+                        </div>
+                    </div>
+                    <div>
+                        <output id="pyx-output">P(y<sub>x</sub>|s) = 0.5, P(y<sub>x'</sub>|s) = 0.5</output>,
                         <output id="py-output">P(y) = 0.5</output>,
                         <output id="pxy-output">P(x, y) = 0.25, P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75</output>
                     </div>
                 </form>
+                <div class="next">
+                    <table class="variables table is-striped is-narrow is-hoverable">
+                        <caption>Variables</caption>
+                        <thead>
+                            <tr><th>Var</th><th>Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>X</td><td>Eating lobster</td></tr>
+                            <tr><td>Y</td><td>Happiness</td></tr>
+                            <tr><td>M</td><td>Income<br>m is ≥ poverty<br>m' is &lt; poverty</td></tr>
+                            <tr><td>S</td><td>Selection</td></tr>
+                        </tbody>
+                    </table>
+                    <img id="sel-bias-dag" src="selection_bias_dag_2.png">
+                </div>
                 <script src="selection_bias.js"></script>
             </div>
         </section>

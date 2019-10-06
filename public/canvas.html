@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Playing with Canvas</title>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="util.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title">Playing with Canvas</h1>
+                <canvas id="plot" width="600" height="600"></canvas>
+            </div>
+        </section>
+        <script>
+            const canvas = document.getElementById('plot')
+                , ctx = canvas.getContext('2d')
+                , width = height = 600
+                , intervals = 600
+                , scaleX = d3.scaleLinear()
+                    .range([0, width - 1])
+                    .domain([0, 1])
+                , scaleY = d3.scaleLinear()
+                    .range([height - 1, 0])
+                    .domain([0, 1])
+                , scaleIntervals = d3.scaleLinear()
+                    .range([0, 1])
+                    .domain([0, intervals - 1])
+                , contourColors =
+                    [ '#210bac'
+                    , '#2732c4'
+                    , '#455bdc'
+                    , '#6583f3'
+                    , '#9faad3'
+                    , '#cfb39e'
+                    , '#e39968'
+                    , '#d96e4a'
+                    , '#c53b32'
+                    , '#b2151b'
+                    ]
+                , scaleColor = d3.scaleQuantize()
+                    .range(contourColors)
+                , pixel = ctx => c => x => y => {
+                    ctx.fillStyle = c
+                    ctx.fillRect(scaleX(x), scaleY(y), intervals/width, intervals/height)
+                }
+                // , scaleColor = d3.scaleSequential(d3.interpolateRainbow)
+                mapRange(intervals)(x =>
+                    mapRange(intervals)(y =>
+                        pixel(ctx)(scaleColor(scaleX.invert(x)*scaleX.invert(y)))(scaleIntervals(x))(scaleIntervals(y))
+                    )
+                )
+        </script>
+    </body>
+</html>
