@@ -48,11 +48,21 @@
                     ctx.fillRect(scaleX(x), scaleY(y), intervals/width, intervals/height)
                 }
                 // , scaleColor = d3.scaleSequential(d3.interpolateRainbow)
-                mapRange(intervals)(x =>
-                    mapRange(intervals)(y =>
-                        pixel(ctx)(scaleColor(scaleX.invert(x)*scaleX.invert(y)))(scaleIntervals(x))(scaleIntervals(y))
-                    )
+                , conjunctionRange = pa => pb =>
+                    Math.min(1, pa + pb) - Math.max(pa, pb)
+                , conjunctionLB = pa => pb =>
+                    Math.max(pa, pb)
+                , conjunctionUB = pa => pb =>
+                    Math.min(1, pa + pb)
+                , conjunctionIndependent = pa => pb =>
+                    pa + pb - pa * pb
+                , disjunctionIndependent = pa => pb =>
+                    pa * pb
+            mapRange(intervals)(x =>
+                mapRange(intervals)(y =>
+                    pixel(ctx)(scaleColor(disjunctionIndependent(scaleX.invert(x))(scaleX.invert(y))))(scaleIntervals(x))(scaleIntervals(y))
                 )
+            )
         </script>
     </body>
 </html>
