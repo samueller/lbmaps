@@ -48,15 +48,15 @@
                     ctx.fillRect(scaleX(x), scaleY(y), intervals/width, intervals/height)
                 }
                 // , scaleColor = d3.scaleSequential(d3.interpolateRainbow)
-                , conjunctionRange = pa => pb =>
-                    Math.min(1, pa + pb) - Math.max(pa, pb)
-                , conjunctionLB = pa => pb =>
+                , disjunctionRange = pa => pb =>
+                    disjunctionUB(pa)(pb) - disjunctionLB(pa)(pb)
+                , disjunctionLB = pa => pb =>
                     Math.max(pa, pb)
-                , conjunctionUB = pa => pb =>
+                , disjunctionUB = pa => pb =>
                     Math.min(1, pa + pb)
-                , conjunctionIndependent = pa => pb =>
-                    pa + pb - pa * pb
                 , disjunctionIndependent = pa => pb =>
+                    pa + pb - pa * pb
+                , conjunctionIndependent = pa => pb =>
                     pa * pb
             mapRange(intervals)(x =>
                 mapRange(intervals)(y =>
