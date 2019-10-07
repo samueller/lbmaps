@@ -33,39 +33,30 @@
             p:not(:first-child) {
                 margin-top: 20px;
             }
+            table.table {
+                margin-top: 10px;
+            }
         </style>
-        <script>
-            let truthFunc = floatParam('truth')(0)
-            let boundsType = floatParam('bounds')(2)
-
-            const contourColors =
-                [ '#210bac'
-                , '#2732c4'
-                , '#455bdc'
-                , '#6583f3'
-                , '#9faad3'
-                , '#cfb39e'
-                , '#e39968'
-                , '#d96e4a'
-                , '#c53b32'
-                , '#b2151b'
-                ]
-        </script>
     </head>
     <body>
         <section class="section">
             <div class="container">
                 <h1 class="title">Fréchet Inequalities</h1>
-                <div id="choose-truth" class="choose control">
-                    <label class="radio" for="conjunction"><input id="conjunction" name="truth" value="0" type="radio"> Conjunction</label> <span aria-label="Plot below will display selected values for P(A, B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="disjunction"><input id="disjunction" name="truth" value="1" type="radio"> Disjunction</label> <span aria-label="Plot below will display selected values for P(A ∨ B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                <div class="choose control">
+                    <label class="radio" for="conj-lower-bound"><strong>Conjunction</strong>:</label>
+                    <label class="radio" for="conj-lower-bound"><input id="conj-lower-bound" name="bound" value="0" type="radio"> Lower bounds</label> <span aria-label="Display minimum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="conj-upper-bound"><input id="conj-upper-bound" name="bound" value="1" type="radio"> Upper bounds</label> <span aria-label="Display maximum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="conj-combo-bound"><input id="conj-combo-bound" name="bound" value="2" type="radio"> Combined</label> <span aria-label="Display maximum values of P(A, B) for each P(A) and P(B) along with lines representing the lower bounds in order to see both lower and upper bounds together." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="conj-diff-bound"><input id="conj-diff-bound" name="bound" value="3" type="radio"> Range</label> <span aria-label="Display the range (maximum - minimum) of P(A, B) for each P(A) and P(B). Notice the range goes towards 0 further from the center. This means the bounds are tight near edges, when P(A) or P(B) is close to 0 or 1." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="conj-independent"><input id="conj-independent" name="bound" value="4" type="radio"> Independent</label> <span aria-label="Display P(A, B)'s exact values with the assumption that A and B are independent." data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
                 </div>
-                <div id="choose-bound" class="choose control">
-                    <label class="radio" for="lower-bound"><input id="lower-bound" name="bound" value="0" type="radio"> Lower bounds</label> <span aria-label="Plot below will display minimum values of P(A, B) or P(A ∨ B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="upper-bound"><input id="upper-bound" name="bound" value="1" type="radio"> Upper bounds</label> <span aria-label="Plot below will display maximum values of P(A, B) or P(A ∨ B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="combo-bound"><input id="combo-bound" name="bound" value="2" type="radio"> Combined</label> <span aria-label="Plot below will display maximum values of P(A, B) or P(A ∨ B) for each P(A) and P(B) along with lines representing the lower bounds in order to see both lower and upper bounds together." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="diff-bound"><input id="diff-bound" name="bound" value="3" type="radio"> Range</label> <span aria-label="Plot below will display the range (maximum - minimum) of P(A, B) or P(A ∨ B) for each P(A) and P(B). Notice the range goes towards 0 further from the center. This means the bounds are tight near edges, when P(A) or P(B) is close to 0 or 1." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="independent"><input id="independent" name="bound" value="4" type="radio"> Independent</label> <span aria-label="Plot below will display P(A, B) or P(A ∨ B)'s exact values with the assumption that A and B are independent." data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                <div class="choose control">
+                    <label class="radio" for="disj-lower-bound"><strong>Disjunction</strong>:</label>
+                    <label class="radio" for="disj-lower-bound"><input id="disj-lower-bound" name="bound" value="5" type="radio"> Lower bounds</label> <span aria-label="Display minimum values of P(A ∨ B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="disj-upper-bound"><input id="disj-upper-bound" name="bound" value="6" type="radio"> Upper bounds</label> <span aria-label="Display maximum values of P(A ∨ B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="disj-combo-bound"><input id="disj-combo-bound" name="bound" value="7" type="radio"> Combined</label> <span aria-label="Display minimum values of P(A ∨ B) for each P(A) and P(B) along with lines representing the upper bounds in order to see both lower and upper bounds together." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="disj-diff-bound"><input id="disj-diff-bound" name="bound" value="8" type="radio"> Range</label> <span aria-label="Display the range (maximum - minimum) of P(A ∨ B) for each P(A) and P(B). Notice the range goes towards 0 further from the center. This means the bounds are tight near edges, when P(A) or P(B) is close to 0 or 1." data-balloon-length="large" data-balloon-pos="down">ⓘ</span>
+                    <label class="radio" for="disj-independent"><input id="disj-independent" name="bound" value="9" type="radio"> Independent</label> <span aria-label="Display P(A ∨ B)'s exact values with the assumption that A and B are independent." data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
                 </div>
                 <div id="plot">
                     <div id="stats-window"></div>
@@ -75,8 +66,7 @@
         <section class="section">
             <div class="container">
                 <p>
-                    The above visualization plots the lower bounds, upper bounds, range, and exact values of P(A, B) (if conjunction is selected) or P(A ∨ B) (if disjunction is selected) on the unit square with axes P(A) and P(B). The following inequalities are used for the plots:
-
+                    The above visualization plots the lower bounds, upper bounds, range, and exact values of P(A, B) (conjunction) or P(A ∨ B) (disjunction) on the unit square with axes P(A) and P(B). The following inequalities are used for the plots:
                     <table class="table is-striped is-narrow is-hoverable">
                         <thead>
                             <tr><th>Truth Function</th><th>Inequality</th></tr>
@@ -92,22 +82,50 @@
                     <pre>max(0, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>) − (n − 1)) ≤ P(A<sub>1</sub>, A<sub>2</sub>, …, A<sub>n</sub>) ≤ min(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>))
 max(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)) ≤ P(A<sub>1</sub> ∨ A<sub>2</sub> ∨ … ∨ A<sub>n</sub>) ≤ min(1, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>))</pre>
                 </p>
+                <p>
+                    If A and B are independent, then we can plot exact values for P(A, B) or P(A ∨ B):
+                    <table class="table is-striped is-narrow is-hoverable">
+                        <thead>
+                            <tr><th>Truth Function</th><th>Exact Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Conjunction</td><td><code>P(A)·P(B)</code></td></tr>
+                            <tr><td>Disjunction</td><td><code>P(A) + P(B) - P(A)·P(B)</code></td></tr>
+                        </tbody>
+                    </table>
+                </p>
             </div>
         </section>
         <script>            
-            const plot = document.getElementById('plot')
+            const contourColors =
+                [ '#210bac'
+                , '#2732c4'
+                , '#455bdc'
+                , '#6583f3'
+                , '#9faad3'
+                , '#cfb39e'
+                , '#e39968'
+                , '#d96e4a'
+                , '#c53b32'
+                , '#b2151b'
+                ]
+                , plot = document.getElementById('plot')
                 , plotLeft = 50
                 , plotTop = 52
                 , plotRight = 60
                 , plotBottom = 45
                 , numContours = 10
-                , truthFuncButtons = document.querySelectorAll('input[name=truth]')
                 , boundsButtons = document.querySelectorAll('input[name=bound]')
                 , statsWindow = document.getElementById('stats-window')
                 , statsWindowWidth = 186
                 , statsWindowHeight = 90
-            truthFuncButtons[truthFunc].checked = true
+
+            let boundsType = floatParam('bounds')(2)
+                , truthFromBoundsType = boundsType =>
+                    boundsType < 5 ? 0 : 1
+                , truthFunc = truthFromBoundsType(boundsType)
             boundsButtons[boundsType].checked = true
+            boundsType = boundsType % 5
 
             const boundsNames =
                 [ [ 'Lower Bounds on P(A, B)'
@@ -414,7 +432,7 @@ max(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)) ≤ P(A<sub>1</su
                 )
             
             const makeLowerBoundLines = draw => lines => boundsType =>
-                lines[boundsType == 7 ? 1 : 0].map((line, i) =>
+                lines[truthFunc].map((line, i) =>
                     [ draw.line(line)
                         .stroke(
                             { width: 2
@@ -554,7 +572,8 @@ max(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)) ≤ P(A<sub>1</su
             }
 
             const updatedBounds = newBoundsType => {
-                boundsType = newBoundsType
+                truthFunc = truthFromBoundsType(newBoundsType)
+                boundsType = newBoundsType % 5
                 const contours =
                     model.contours[truthFunc][boundsType]
                 model.polygons.map((polygon, i) =>
@@ -586,7 +605,6 @@ max(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)) ≤ P(A<sub>1</su
             createGraph(plot)(boundsType)
 
             addEventListeners(boundsButtons)('input')(updatedBounds)
-            addEventListeners(truthFuncButtons)('input')(updatedTruthFunc)
         </script>
     </body>
 </html>
