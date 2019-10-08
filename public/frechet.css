@@ -1,0 +1,54 @@
+#stats-window {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 170px;
+    border-radius: 5px;
+    border: 1px solid black;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: 'black';
+    line-height: 1.1;
+    padding: 4px 7px;
+}
+#plot {
+    position: relative;
+}
+.choose label {
+    margin-left: 10px;
+}
+.choose input {
+    position: relative;
+    top: -2px;
+}
+p:not(:first-child), h2.title:not(:first-child) {
+    margin-top: 20px;
+}
+table.table {
+    margin-top: 10px;
+}
+ol.references {
+    list-style-type: none;
+    counter-reset: references;
+}
+ol.references li {
+    counter-increment: references;
+}
+ol.references li::before {
+    content: "[" counter(references) "] ";
+    color: gray;
+}
+blockquote {
+    margin: 5px 0;
+}
+blockquote p {
+    padding: 8px 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+blockquote p::before {
+    content: '\201C';
+}
+blockquote p::after {
+    content: '\201D';
+}

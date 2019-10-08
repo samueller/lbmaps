@@ -5,43 +5,13 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
         <link href="https://unpkg.com/balloon-css/balloon.min.css" rel="stylesheet">
         <link href="main.css" rel="stylesheet">
+        <link href="frechet.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            #stats-window {
-                display: none;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 170px;
-                border-radius: 5px;
-                border: 1px solid black;
-                background-color: rgba(255, 255, 255, 0.8);
-                color: 'black';
-                line-height: 1.1;
-                padding: 4px 7px;
-            }
-            #plot {
-                position: relative;
-            }
-            .choose label {
-                margin-left: 10px;
-            }
-            .choose input {
-                position: relative;
-                top: -2px;
-            }
-            p:not(:first-child) {
-                margin-top: 20px;
-            }
-            table.table {
-                margin-top: 10px;
-            }
-        </style>
     </head>
     <body>
         <section class="section">
             <div class="container">
-                <h1 class="title">Fréchet Inequalities</h1>
+                <h1 class="title is-1">Fréchet Inequalities</h1>
                 <div class="choose control">
                     <label class="radio" for="conj-lower-bound"><strong>Conjunction</strong>:</label>
                     <label class="radio" for="conj-lower-bound"><input id="conj-lower-bound" name="bound" value="0" type="radio"> Lower bounds</label> <span aria-label="Display minimum values of P(A, B) for each P(A) and P(B)" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
@@ -66,7 +36,7 @@
         <section class="section">
             <div class="container">
                 <p>
-                    The above visualization plots the lower bounds, upper bounds, range, and exact values of P(A, B) (conjunction) or P(A ∨ B) (disjunction) on the unit square with axes P(A) and P(B). The following inequalities are used for the plots:
+                    The above visualization plots the Fréchet inequalities<cite id="cite-ref-1"><sup><a href="#ref-1">1</a></sup></cite>. I hadn't seen these inequalities visualized before. Hopefully, this is of help to people studying and using probability bounds. These bounds have wide application, including logic<cite id="cite-ref-2"><sup><a href="#ref-2">2</a></sup></cite>, artificial intelligence<cite id="cite-ref-3"><sup><a href="#ref-3">3</a></sup></cite>, statistics<cite id="cite-ref-4"><sup><a href="#ref-4">4</a></sup></cite>, quantum mechanics<cite id="cite-ref-5"><sup><a href="#ref-5">5</a></sup></cite>, and reliability theory<cite id="cite-ref-6"><sup><a href="#ref-6">6</a></sup></cite>. The plots display lower bounds, upper bounds, range, and exact values of P(A, B) (conjunction) or P(A ∨ B) (disjunction) on the unit square with axes P(A) and P(B). The following inequalities are used:
                     <table class="table is-striped is-narrow is-hoverable">
                         <thead>
                             <tr><th>Truth Function</th><th>Inequality</th></tr>
@@ -79,532 +49,49 @@
                 </p>
                 <p>
                     These are special cases (n = 2) of Fréchet inequalities:
-                    <pre>max(0, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>) − (n − 1)) ≤ P(A<sub>1</sub>, A<sub>2</sub>, …, A<sub>n</sub>) ≤ min(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>))
-max(P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)) ≤ P(A<sub>1</sub> ∨ A<sub>2</sub> ∨ … ∨ A<sub>n</sub>) ≤ min(1, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>))</pre>
+                    <pre>max{0, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>) − (n − 1)} ≤ P(A<sub>1</sub>, A<sub>2</sub>, …, A<sub>n</sub>) ≤ min{P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)}
+max{P(A<sub>1</sub>), P(A<sub>2</sub>), …, P(A<sub>n</sub>)} ≤ P(A<sub>1</sub> ∨ A<sub>2</sub> ∨ … ∨ A<sub>n</sub>) ≤ min{1, P(A<sub>1</sub>) + P(A<sub>2</sub>) + … + P(A<sub>n</sub>)}</pre>
                 </p>
                 <p>
-                    If A and B are independent, then we can plot exact values for P(A, B) or P(A ∨ B):
+                    If A and B are <em>independent</em>, then we can plot exact values for P(A, B) or P(A ∨ B):
                     <table class="table is-striped is-narrow is-hoverable">
                         <thead>
                             <tr><th>Truth Function</th><th>Exact Value</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>Conjunction</td><td><code>P(A)·P(B)</code></td></tr>
-                            <tr><td>Disjunction</td><td><code>P(A) + P(B) - P(A)·P(B)</code></td></tr>
+                            <tr><td>Conjunction</td><td><code>P(A) · P(B)</code></td></tr>
+                            <tr><td>Disjunction</td><td><code>P(A) + P(B) - P(A) · P(B)</code></td></tr>
                         </tbody>
                     </table>
                 </p>
+                <h2 class="title is-2">Maurice Fréchet</h2>
+                <p>Maurice Fréchet was a significant French mathematician with contributions to <em>topology of point sets</em>, <em>metric spaces</em>, <em>statistics and probability</em>, and <em>calculus</em><cite id="cite-ref-7"><sup><a href="#ref-7">7</a></sup></cite>. Fréchet published the above inequalities in the French journal <a href="https://www.impan.pl/en/publishing-house/journals-and-series/fundamenta-mathematicae">Fundamenta Mathaticae</a> in 1935<cite id="cite-ref-8"><sup><a href="#ref-8">8</a></sup></cite>. During that time, he was Professor and Chair of Differential and Integral Calculus at <a href="https://www.sorbonne-universite.fr">the Sorbonne</a><cite id="cite-ref-9"><sup><a href="#ref-9">9</a></sup></cite>.</p>
+                <p>Jacques Fréchet, Maurice's father, was head of a school in Paris<cite id="cite-ref-10"><sup><a href="#ref-10">10</a></sup></cite> while Maurice was young. Maurice then went to secondary school where he was taught math by the legendary French mathematician <a href="https://en.wikipedia.org/wiki/Jacques_Hadamard">Jacques Hadamard</a>. Hadamard would soon after become a professor at the University of Bordeaux. Eventually, Hadamard would become Fréchet's advisor for his doctorate. An educator like his father, Maurice was a schoolteacher in 1907, a lecturer in 1908, and then a professor in 1910<cite id="cite-ref-11"><sup><a href="#ref-11">11</a></sup></cite>. Probability research came later in his life. Unfortunately, his work wasn't always appreciated as the renowned Swedish mathematician Harald Cramér wrote<cite id="cite-ref-12"><sup><a href="#ref-12">12</a></sup></cite>:
+                <blockquote><p>In early years Fréchet had been an outstanding mathematician, doing pathbreaking work in functional analysis. He had taken up probabilistic work at a fairly advanced age, and I am bound to say that his work in this field did not seem very impressive to me.</p></blockquote>
+                Nevertheless, Fréchet would go on to become very influential in probability and statistics. As a great response to Cramér's former criticism, an important bound is named after both Fréchet and Cramér, the <em>Fréchet–Darmois–Cramér–Rao inequality</em> (though more commonly known as <em>Cramér–Rao bound</em>)!</p>
             </div>
         </section>
-        <script>            
-            const contourColors =
-                [ '#210bac'
-                , '#2732c4'
-                , '#455bdc'
-                , '#6583f3'
-                , '#9faad3'
-                , '#cfb39e'
-                , '#e39968'
-                , '#d96e4a'
-                , '#c53b32'
-                , '#b2151b'
-                ]
-                , plot = document.getElementById('plot')
-                , plotLeft = 50
-                , plotTop = 52
-                , plotRight = 60
-                , plotBottom = 45
-                , numContours = 10
-                , boundsButtons = document.querySelectorAll('input[name=bound]')
-                , statsWindow = document.getElementById('stats-window')
-                , statsWindowWidth = 186
-                , statsWindowHeight = 90
-
-            let boundsType = floatParam('bounds')(2)
-                , truthFromBoundsType = boundsType =>
-                    boundsType < 5 ? 0 : 1
-                , truthFunc = truthFromBoundsType(boundsType)
-            boundsButtons[boundsType].checked = true
-            boundsType = boundsType % 5
-
-            const boundsNames =
-                [ [ 'Lower Bounds on P(A, B)'
-                  , 'Upper Bounds on P(A, B)'
-                  , 'Bounds on P(A, B)'
-                  , 'Bounds Range on P(A, B)'
-                  , 'P(A, B) with A ⫫ B'
-                  ]
-                , [ 'Lower Bounds on P(A ∨ B)'
-                  , 'Upper Bounds on P(A ∨ B)'
-                  , 'Bounds on P(A ∨ B)'
-                  , 'Bounds Range on P(A ∨ B)'
-                  , 'P(A ∨ B) with A ⫫ B'
-                  ]
-                ]
-            
-            const colorBarTitles =
-                [ [ 'P(A, B) ≥'
-                  , 'P(A, B) ≤'
-                  , 'P(A, B) ≤'
-                  , 'Range'
-                  , 'P(A, B) ='
-                  ]
-                , [ 'P(A ∨ B) ≥'
-                  , 'P(A ∨ B) ≤'
-                  , 'P(A ∨ B) ≤'
-                  , 'Range'
-                  , 'P(A ∨ B) ='
-                  ]
-                ]
-
-            const title = truthFunc => boundsType =>
-                    boundsNames[truthFunc][boundsType]
-                , titleXAxis = 'P(A)'
-                , titleYAxis = 'P(B)'
-                , titleColorBar = truthFunc => boundsType =>
-                    `${colorBarTitles[truthFunc][boundsType]}`
-
-            const coordX = plotWidth => x =>
-                    plotWidth * x + plotLeft
-                , coordY = plotHeight => y =>
-                    plotHeight * (1 - y) + plotTop
-                , coords = plotWidth => plotHeight => ([x, y]) =>
-                    [ plotWidth * x + plotLeft
-                    , plotHeight * (1 - y) + plotTop
-                    ]
-            
-            const makeColorBar = n => draw => plotWidth => plotHeight => boundsType => {
-                const coords = coordsColorBar(plotHeight)(numContours)(boundsType)
-                return {
-                      boxes: mapRange(n)(i =>
-                        draw.rect(30, coords.boxes[i].height)
-                            .move(plotLeft + plotWidth + 7, plotTop + coords.boxes[i].y)
-                            .fill(contourColors[n - i - 1])
-                            .stroke({ color: 'black' })
-                      )
-                    , ticks: mapRange(n + 1)(i =>
-                        draw.text(`${round1(1 - i / numContours)}`)
-                            .opacity(coords.ticks[i] == -1 ? 0 : 1)
-                            .x(plotLeft + plotWidth + 40)
-                            .y(plotTop + coords.ticks[i] - 7)
-                            .font(
-                                { family: 'Open Sans'
-                                , size: 13
-                                , anchor: 'start'
-                                , color: 'rgb(60, 60, 60)'
-                                }
-                            )
-                      )
-                    }
-            }
-
-            const coordsColorBar = plotHeight => numContours => boundsType => {
-                const dispContours = boundsType == 3
-                    ? Math.floor(numContours / 2)
-                    : numContours
-                const tickSpace = plotHeight / dispContours
-                return {
-                      boxes:
-                        Array(numContours - dispContours).fill(
-                            { y: 0
-                            , height: 0
-                            }
-                        ).concat(mapRange(dispContours)(i =>
-                            ({ y: i * tickSpace
-                             , height: tickSpace + 1
-                             })
-                        ))
-                    , ticks:
-                        Array(numContours - dispContours).fill(-1)
-                            .concat(mapRange
-                                (dispContours + 1)
-                                (i => i * tickSpace)
-                            )
-                    }
-            }
-
-            const slopeDistances = [0, 0.0525, 0.07, 0.075, 0.075, 0.07, 0.06, 0.05, 0.05, 0.05, 0.05]
-                , pathM = x => y =>
-                    `M ${model.scaleX(x)} ${model.scaleY(y)}`
-                , pathL = x => y =>
-                    `L ${model.scaleX(x)} ${model.scaleY(y)}`
-                , pathH = x =>
-                    `H ${model.scaleX(x)}`
-                , pathV = y =>
-                    `V ${model.scaleY(y)}`
-                , pathC = x1 => y1 => x2 => y2 => x => y =>
-                    `C ${model.scaleX(x1)} ${model.scaleY(y1)} ${model.scaleX(x2)} ${model.scaleY(y2)} ${model.scaleX(x)} ${model.scaleY(y)}`
-                , pathCStraight = prevX => prevY => x => y =>
-                    pathC((prevX + x)/2)((prevY + y)/2)((prevX + x)/2)((prevY + y)/2)(x)(y)
-                , pathCStraightWithMid = prevX => prevY => x => y => {
-                    const midX = (prevX + x) / 2
-                    const midY = (prevY + y) / 2
-                    return [ 
-                          pathCStraight(prevX)(prevY)(midX)(midY)
-                        , pathCStraight(midX)(midY)(x)(y)
-                        ]
-                  }
-                , pathCDot = x => y =>
-                    pathC(x)(y)(x)(y)(x)(y)
-                , aAndBLowerBoundContour = n => i => x => xNext =>
-                    [ pathM(x)(1)
-                    , pathCStraight(x)(1)((1 + x)/2)(1 - (1 - x)/2)
-                    , pathCStraight((1 + x)/2)(1 - (1 - x)/2)(1)(x)
-                    , pathL(1)(xNext)
-                    , pathCStraight(1)(xNext)((i + 1 + n) / (2 * n))(1 - (n - i - 1) / (2 * n))
-                    , pathCStraight((i + 1 + n) / (2 * n))(1 - (n - i - 1) / (2 * n))(xNext)(1)
-                    , pathL(x)(1)
-                    ].join(' ')
-                , aAndBUpperBoundContour = n => i => x => xNext =>
-                    [ pathM(x)(1)
-                    , pathCStraight(x)(1)(x)(x)
-                    , pathCStraight(x)(x)(1)(x)
-                    , pathL(1)(xNext)
-                    , pathCStraight(1)(xNext)(xNext)(xNext)
-                    , pathCStraight(xNext)(xNext)(xNext)(1)
-                    , pathL(x)(1)
-                    ].join(' ')
-                , aAndBIndependentContour = n => i => x => xNext => {
-                    const mid = Math.sqrt(x)
-                        , midNext = Math.sqrt(xNext)
-                        , d = slopeDistances[i]
-                        , dNext = slopeDistances[i + 1]
-                    return [
-                          pathM(x)(1)
-                        , i == 0
-                            ? pathCStraight(0)(1)(0)(0)
-                            : pathC(x + d)(1 - d / x)(mid - d)(mid + d)(mid)(mid)
-                        , i == 0
-                            ? pathCStraight(0)(0)(1)(0)
-                            : pathC(mid + d)(mid - d)(1 - d / x)(x + d)(1)(x)
-                        , pathL(1)(xNext)
-                        , i == n - 1
-                            ? pathCDot(1)(1)
-                            : pathC(1 - dNext / xNext)(xNext + dNext)(midNext + dNext)(midNext - dNext)(midNext)(midNext)
-                        , i == n - 1
-                            ? pathCDot(1)(1)
-                            : pathC(midNext - dNext)(midNext + dNext)(xNext + dNext)(1 - dNext / xNext)(xNext)(1)
-                        , pathL(x)(1)
-                        ].join(' ')
-                  }
-                , aAndBDifferenceContour = n => i => x => xNext =>
-                    ( i < n / 2
-                        ? [ pathM(x)(1 - x)
-                          , pathCStraight(x)(1 - x)(x)(x)
-                          , pathCStraight(x)(x)(1 - x)(x)
-                          , pathL(1 - x)(xNext)
-                          , pathCStraight(1 - x)(xNext)(1 - x)(1 - x)
-                          , pathCStraight(1 - x)(1 - x)(xNext)(1 - x)
-                          , pathL(x)(1 - x)
-                          ]
-                        : [ pathM(0.5)(0.5)
-                          , pathCDot(0.5)(0.5)
-                          , pathCDot(0.5)(0.5)
-                          , pathL(0.5)(0.5)
-                          , pathCDot(0.5)(0.5)
-                          , pathCDot(0.5)(0.5)
-                          , pathL(0.5)(0.5)
-                          ]
-                    ).join(' ')
-                , aOrBLowerBoundContour = n => i => x => xNext =>
-                    [ pathM(0)(x)
-                    , pathCStraight(0)(x)(x)(x)
-                    , pathCStraight(x)(x)(x)(0)
-                    , pathL(xNext)(0)
-                    , pathCStraight(xNext)(0)(xNext)(xNext)
-                    , pathCStraight(xNext)(xNext)(0)(xNext)
-                    , pathL(0)(x)
-                    ].join(' ')
-                , aOrBUpperBoundContour = n => i => x => xNext =>
-                    [ pathM(0)(x)
-                    , pathCStraightWithMid(0)(x)(x)(0)
-                    , pathL(xNext)(0)
-                    , i == n - 1
-                        ? [ pathCStraight(xNext)(0)(1)(1)
-                          , pathCStraight(1)(1)(0)(1)
-                          ]
-                        : pathCStraightWithMid(xNext)(0)(0)(xNext)
-                    , pathL(0)(x)
-                    ].flat().join(' ')
-                , aOrBIndependentContour = n => i => x => xNext => {
-                    const mid = 1 - Math.sqrt(1 - x)
-                        , midNext = 1 - Math.sqrt(1 - xNext)
-                        , slopePb = x - 1 // slope along P(A) axis is 1/slopePb
-                        , slopePbNext = xNext - 1
-                        , d = slopeDistances[n - i]
-                        , dNext = slopeDistances[n - i - 1]
-                    return [
-                          pathM(0)(x)
-                        , i == 0
-                            ? pathCDot(0)(0)
-                            : pathC(-d / slopePb)(x - d)(mid - d)(mid + d)(mid)(mid)
-                        , i == 0
-                            ? pathCDot(0)(0)
-                            : pathC(mid + d)(mid - d)(x - d)(-d / slopePb)(x)(0)
-                        , pathL(xNext)(0)
-                        , i == n - 1
-                            ? pathCStraight(1)(0)(1)(1)
-                            : pathC(xNext - dNext)(-dNext / slopePbNext)(midNext + dNext)(midNext - dNext)(midNext)(midNext)
-                        , i == n - 1
-                            ? pathCStraight(1)(1)(0)(1)
-                            : pathC(midNext - dNext)(midNext + dNext)(-dNext / slopePbNext)(xNext - dNext)(0)(xNext)
-                        , pathL(0)(x)
-                        ].join(' ')
-                  }
-
-            const coordsContours =
-                [ [ n => mapRange(n)(i => aAndBLowerBoundContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aAndBUpperBoundContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aAndBUpperBoundContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aAndBDifferenceContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aAndBIndependentContour(n)(i)(i/n)((i+1)/n))
-                  ]
-                , [ n => mapRange(n)(i => aOrBLowerBoundContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aOrBUpperBoundContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aOrBLowerBoundContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aAndBDifferenceContour(n)(i)(i/n)((i+1)/n))
-                  , n => mapRange(n)(i => aOrBIndependentContour(n)(i)(i/n)((i+1)/n))
-                  ]
-                ]
-            
-            const coordsLowerBoundLines = n =>
-                [ mapRange(n)(i => 
-                    [ [ i/n, 1 ]
-                    , [ 1, i/n ]
-                    ]
-                  )
-                , mapRange(n)(i =>
-                    [ [ 0, i/n ]
-                    , [ i/n, 0 ]
-                    ]
-                  )
-                ]
-
-            const conjLowerBound = pa => pb =>
-                round2(Math.max(0, pa + pb - 1))
-
-            const conjUpperBound = pa => pb =>
-                round2(Math.min(pa, pb))
-            
-            const conjUpperLowerDiff = pa => pb =>
-                round2(Math.min(pa, pb) - Math.max(0, pa + pb - 1))
-
-            const conjIndependent = pa => pb =>
-                round2(pa * pb)
-
-            const disjLowerBound = pa => pb =>
-                round2(Math.max(pa, pb))
-
-            const disjUpperBound = pa => pb =>
-                round2(Math.min(1, pa + pb))
-            
-            const disjUpperLowerDiff = pa => pb =>
-                round2(Math.min(1, pa + pb) - Math.max(pa, pb))
-
-            const disjIndependent = pa => pb =>
-                round2(pa + pb - pa * pb)
-
-            const stats = e => {
-                const unitSquareX = e.pageX - model.unitSquareRect.left
-                const unitSquareY = e.pageY - model.unitSquareRect.top
-                const pa = unitSquareX / model.plotWidth
-                const pb = 1 - unitSquareY / model.plotHeight
-                statsWindow.style.left = `${unitSquareX + plotLeft - statsWindowWidth/2}px`
-                statsWindow.style.top = `${unitSquareY + plotTop - statsWindowHeight - 15}px`
-                statsWindow.style.display = 'block'
-                statsWindow.innerHTML = truthFunc == 0
-                    ? `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${conjLowerBound(pa)(pb)} ≤ P(A,B) ≤ ${conjUpperBound(pa)(pb)}<br>Range = ${conjUpperLowerDiff(pa)(pb)}<br>P(A,B) = ${conjIndependent(pa)(pb)} (A⫫B)`
-                    : `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${disjLowerBound(pa)(pb)} ≤ P(A∨B) ≤ ${disjUpperBound(pa)(pb)}<br>Range = ${disjUpperLowerDiff(pa)(pb)}<br>P(A∨B) = ${disjIndependent(pa)(pb)} (A⫫B)`
-            }
-            
-            const noStats = e =>
-                statsWindow.style.display = 'none'
-            
-            const makePolygons = draw => contours =>
-                contours.map((contour, i) =>
-                    draw.path(contour)
-                        .fill(contourColors[i])
-                        .stroke({ color: contourColors[i] })
-                        .on('mousemove', stats)
-                        .on('touchmove', stats)
-                        .on('mouseleave', noStats)
-                        .on('touchleave', noStats)
-                )
-            
-            const makeLowerBoundLines = draw => lines => boundsType =>
-                lines[truthFunc].map((line, i) =>
-                    [ draw.line(line)
-                        .stroke(
-                            { width: 2
-                            , color: 'black'
-                            }
-                        )
-                        .opacity(boundsType == 2 || boundsType == 7
-                            ? 0.9
-                            : 0
-                        )
-                    , draw.line(line)
-                        .stroke(
-                            { dasharray: [ 15, 15 ]
-                            , width: 2
-                            , color: contourColors[i]
-                            }
-                        )
-                        .opacity(boundsType == 2 || boundsType == 7
-                            ? 0.9
-                            : 0
-                        )
-                    ]
-                ).flat()
-
-            const model = {}
-
-            const createGraph = plot => boundsType => {
-                const width = Math.min(plot.scrollWidth, 640)
-                    , height = width - 13
-                model.draw = SVG().addTo(plot).size(width, height)
-                model.plotWidth = width - plotLeft - plotRight
-                model.plotHeight = height - plotTop - plotBottom
-                model.plotRect = plot.getBoundingClientRect()
-                model.unitSquare = model.draw
-                    .rect(model.plotWidth, model.plotHeight)
-                    .move(plotLeft, plotTop)
-                    .fill('white')
-                    .on('mousemove', stats)
-                    .on('touchmove', stats)
-                    .on('mouseleave', noStats)
-                    .on('touchleave', noStats)
-                model.unitSquareRect = document.querySelector('rect').getBoundingClientRect()
-                model.scaleX = coordX(model.plotWidth)
-                model.scaleY = coordY(model.plotHeight)
-                model.unitCoords = coords(model.plotWidth)(model.plotHeight)
-                model.contours = coordsContours
-                    .map(conjOrDisj => conjOrDisj
-                        .map(contours => contours(numContours))
-                    )
-                model.lowerBoundLinesCoords =
-                    coordsLowerBoundLines(numContours)
-                        .map(conjOrDisj => conjOrDisj
-                            .map(line => line.map(model.unitCoords))
-                        )
-                model.polygons = makePolygons
-                    (model.draw)
-                    (model.contours[truthFunc][boundsType])
-                model.lowerBoundLines = makeLowerBoundLines
-                    (model.draw)
-                    (model.lowerBoundLinesCoords)
-                    (boundsType)
-                model.draw.line
-                    ( plotLeft - 1
-                    , plotTop
-                    , plotLeft - 1
-                    , plotTop + model.plotHeight + 1
-                    ).stroke({ color: 'black' })
-                model.draw.line
-                    ( plotLeft - 1.5
-                    , plotTop + model.plotHeight + 1
-                    , plotLeft + model.plotWidth + 0.5
-                    , plotTop + model.plotHeight + 1
-                    ).stroke({ color: 'black' })
-                model.title = model.draw.text(title(truthFunc)(boundsType))
-                    .move(plotLeft + model.plotWidth/2, plotTop/2 - 17)
-                    .font({ size: 24, anchor: 'middle', family: 'Open Sans' })
-                model.draw.text(titleXAxis)
-                    .move(plotLeft + model.plotWidth/2, plotTop + model.plotHeight + 25)
-                    .font({ size: 16, anchor: 'middle', family: 'Open Sans' })
-                model.draw.text(titleYAxis)
-                    .move(plotLeft - 40, plotTop + model.plotHeight/2)
-                    .font({ size: 16, anchor: 'middle', family: 'Open Sans' })
-                    .transform({ rotate: -90 })
-                model.titleColorBar = model.draw.text(titleColorBar(truthFunc)(boundsType))
-                    .move(plotLeft + model.plotWidth + 30, plotTop - 25)
-                    .font({ size: 13, anchor: 'middle', family: 'Open Sans' })
-                const tickSpace = model.plotHeight / numContours
-                mapRange(numContours + 1)(i => {
-                    model.draw.line(
-                        [ [ plotLeft - 2, plotTop + i*tickSpace ]
-                        , [ plotLeft - 5, plotTop + i*tickSpace ]
-                        ]
-                    ).stroke({ color: 'black' })
-                    model.draw.line(
-                        [ [ plotLeft + i*tickSpace, plotTop + model.plotHeight + 2 ]
-                        , [ plotLeft + i*tickSpace, plotTop + model.plotHeight + 6 ]
-                        ]
-                    ).stroke({ color: 'black' })
-                    model.draw.text(`${round1(1 - i / numContours)}`)
-                        .move(plotLeft - 7, plotTop + i*tickSpace - 7)
-                        .font(
-                            { family: 'Open Sans'
-                            , size: 13
-                            , anchor: 'end'
-                            , color: 'rgb(60, 60, 60)'
-                            }
-                        )
-                    model.draw.text(`${round1(i / numContours)}`)
-                        .move(plotLeft + i*tickSpace, plotTop + model.plotHeight + 7)
-                        .font(
-                            { family: 'Open Sans'
-                            , size: 13
-                            , anchor: 'middle'
-                            , color: 'rgb(60, 60, 60)'
-                            }
-                        )
-                })
-                model.colorBar = makeColorBar(numContours)(model.draw)(model.plotWidth)(model.plotHeight)(boundsType)
-            }
-
-            const updateColorBar = numContours => colorBar => coords => {
-                colorBar.boxes.map((box, i) =>
-                    box.animate(1000)
-                        .y(plotTop + coords.boxes[i].y)
-                        .height(coords.boxes[i].height)
-                )
-                colorBar.ticks.map((tick, i) =>
-                    tick.animate(1000)
-                        .opacity(coords.ticks[i] == -1 ? 0 : 1)
-                        .cy(plotTop + coords.ticks[i])
-                )
-            }
-
-            const updatedTruthFunc = newTruthFunc => {
-                truthFunc = newTruthFunc
-                updatedBounds(boundsType)
-            }
-
-            const updatedBounds = newBoundsType => {
-                truthFunc = truthFromBoundsType(newBoundsType)
-                boundsType = newBoundsType % 5
-                const contours =
-                    model.contours[truthFunc][boundsType]
-                model.polygons.map((polygon, i) =>
-                    polygon.animate(1000).plot(contours[i])
-                )
-                model.lowerBoundLines.map((line, i) =>
-                    line.animate(1000)
-                        .plot(boundsType == 2
-                            ? model.lowerBoundLinesCoords[truthFunc][Math.floor(i/2)]
-                            :
-                                [ model.unitCoords([1, 1])
-                                , model.unitCoords([1, 0])
-                                ]
-                        )
-                        .opacity(boundsType == 2 ? 0.9 : 0)
-                )
-                updateColorBar
-                    (numContours)
-                    (model.colorBar)
-                    (coordsColorBar
-                        (model.plotHeight)
-                        (numContours)
-                        (boundsType)
-                    )
-                model.title.text(title(truthFunc)(boundsType))
-                model.titleColorBar.text(titleColorBar(truthFunc)(boundsType))
-            }
-
-            createGraph(plot)(boundsType)
-
-            addEventListeners(boundsButtons)('input')(updatedBounds)
-        </script>
+        <script src="frechet.js"></script>
+        <footer class="footer">
+            <h2 class="title is-2">References</h2>
+            <ol class="references">
+                <li id="ref-1">Wikipedia Contributors, "Fréchet inequalities," <em>en.wikipedia.org</em>, para. 1, Aug. 4,
+                        2019. [Online]. Available: <a href="https://en.wikipedia.org/wiki/Fréchet_inequalities">https://en.wikipedia.org/wiki/Fréchet_inequalities</a>. [Accessed Oct.
+                        7, 2019].</li>
+                <li id="ref-2">Carl G. Wagner, "Modus tollens probabilized," <em>Journal for the Philosophy of Science</em>, vol. 55, pp. 747–753, 2004. [Online serial]. Available: <a href="http://www.math.utk.edu/~wagner/papers/2004.pdf">http://www.math.utk.edu/~wagner/papers/2004.pdf</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-3">Ben P. Wise and Max Henrion, "A Framework for Comparing Uncertain Inference Systems to Probability," In Proc. of the First Conference on Uncertainty in Artificial Intelligence (UAI1985), 1985. [Online]. Available: <a href="https://arxiv.org/abs/1304.3430">https://arxiv.org/abs/1304.3430</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-4">L. Rüschendorf, "Fréchet-bounds and their applications," <em>Advances in Probability Distributions with Given Marginals, Mathematics and Its Applications</em>, pp. 151–187, 1991. [Online]. Available: <a href="https://books.google.com/books?id=4uNCdVrrw2cC">https://books.google.com/books?id=4uNCdVrrw2cC</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-5">Alessio Benavoli, Alessandro Facchini, and Marco Zaffalon, "Quantum mechanics: The Bayesian theory generalised to the space of Hermitian matrices," <em>Physics Review A</em>, vol. 94, no. 4, pp. 1-26, Oct. 10, 2016. [Online]. Available: <a href="https://arxiv.org/abs/1605.08177">https://arxiv.org/abs/1605.08177</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-6">J. Collet, "Some remarks on rare-event approximation," <em>IEEE Transactions on Reliability</em>, vol. 45, no. 1, pp. 106-108, Mar 1996. [Online]. Available: <a href="https://ieeexplore.ieee.org/document/488924">https://ieeexplore.ieee.org/document/488924</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-7">Wikipedia Contributors, "Maurice René Fréchet," <em>en.wikipedia.org</em>, para. 1, Oct. 7,
+                        2019. [Online]. Available: <a href="https://en.wikipedia.org/wiki/Maurice_René_Fréchet">https://en.wikipedia.org/wiki/Maurice_René_Fréchet</a>. [Accessed Oct.
+                        7, 2019].</li>
+                <li id="ref-8">Maurice Fréchet, "Généralisations du théorème des probabilités totales," <em>Fundamenta Mathematicae</em>, vol. 25, no. 1, pp. 379–387, 1935. [Online]. Available: <a href="http://matwbn.icm.edu.pl/ksiazki/fm/fm25/fm25132.pdf">http://matwbn.icm.edu.pl/ksiazki/fm/fm25/fm25132.pdf</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-9">Harald Sack, "Maurice René Fréchet and the Theory of Abstract Spaces," <em>SciHi Blog</em>, Sept. 2016. [Online]. Available: <a href="http://scihi.org/maurice-rene-frechet/">http://scihi.org/maurice-rene-frechet/</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-10">J J O'Connor and E F Robertson, "René Maurice Fréchet," <em>MacTutor History of Mathematics archive</em>. [Online]. Available: <a href="http://www-groups.dcs.st-and.ac.uk/history/Biographies/Frechet.html">http://www-groups.dcs.st-and.ac.uk/history/Biographies/Frechet.html</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-11">B. Bru and S. Hertz, "Maurice Fréchet," <em>Statisticians of the Centuries</em>, pp. 331-334, . [Online]. Available: <a href="https://books.google.com/books?id=6DD1FKq6fFoC&pg=PA331">https://books.google.com/books?id=6DD1FKq6fFoC&pg=PA331</a>. [Accessed Oct. 7, 2019].</li>
+                <li id="ref-12">"Fréchet, Maurice," <em>Encyclopedia of Mathematics</em>. [Online]. Available: <a href="https://www.encyclopediaofmath.org/index.php/Fr%C3%A9chet,_Maurice">https://www.encyclopediaofmath.org/index.php/Fr%C3%A9chet,_Maurice</a>. [Accessed Oct. 7, 2019].</li>
+            </ol>
+        </footer>
     </body>
 </html>
