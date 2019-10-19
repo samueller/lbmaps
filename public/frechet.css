@@ -24,6 +24,12 @@
 p:not(:first-child), h2.title:not(:first-child) {
     margin-top: 20px;
 }
+.title.is-5, .title.is-6 {
+    margin: 20px 0 0 0;
+}
+.title.is-5 + p, .title.is-6 + p {
+    margin-top: 0;
+}
 table.table {
     margin-top: 10px;
 }
@@ -51,4 +57,17 @@ blockquote p::before {
 }
 blockquote p::after {
     content: '\201D';
+}
+code {
+    font-size: 1em;
+    padding: 0.1em 0.2em;
+    vertical-align: bottom;
+}
+table.table td {
+    vertical-align: bottom;
+}
+pre.excerpt {
+    white-space: pre-wrap;
+    padding: 8px 15px;
+    border-radius: 5px;
 }
