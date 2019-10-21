@@ -178,6 +178,12 @@ const width = height = 575
         possible
             ? scaleDiverging(cost)
             : 'red'
+    , parseRgb = color =>
+        color.substring(4, color.length - 1).split(', ')
+    , rgb = cost => possible =>
+        possible
+            ? parseRgb(scaleDiverging(cost)).map(n => parseInt(n))
+            : [255, 0, 0]
     , pyx = ({pycxm, pycxmp, pm}) =>
         pycxm * pm + pycxmp * (1 - pm)
     , pyxp = ({pycxpm, pycxpmp, pm}) =>
@@ -226,15 +232,31 @@ const width = height = 575
             , pyx_ = pyx(model)
             , pyxp_ = pyxp(model)
             , pyxcs_ = pyxcs(model)
-        mapRange(intervals)(x =>
-            mapRange(intervals)(y => {
+        console.log(new Date())
+        for (let x = 0; x < intervals; x++)
+            for (let y = 0; y < intervals; y++) {
                 const pscm = scaleX.invert(x + plotLeft)
                     , pscmp = scaleY.invert(y + plotTop)
                     , [pyxcs_2, pyxpcs_2] = pyxcs_(pscm)(pscmp)
                     , cRD = cRDDiff(pyx_)(pyxp_)(pyxcs_2)(pyxpcs_2)
-                return p(color(cRD)(poss(pscm)(pscmp)))(x)(y)
-            })
-        )
+                    , dataLoc = y * (plotWidth * 4) + x * 4
+                    , colors = rgb(cRD)(poss(pscm)(pscmp))
+                model.data[dataLoc] = colors[0]
+                model.data[dataLoc + 1] = colors[1]
+                model.data[dataLoc + 2] = colors[2]
+                model.data[dataLoc + 3] = 255
+            }
+        console.log(new Date())
+        model.context.putImageData(model.imageData, 0, 0)
+        // mapRange(intervals)(x =>
+        //     mapRange(intervals)(y => {
+        //         const pscm = scaleX.invert(x + plotLeft)
+        //             , pscmp = scaleY.invert(y + plotTop)
+        //             , [pyxcs_2, pyxpcs_2] = pyxcs_(pscm)(pscmp)
+        //             , cRD = cRDDiff(pyx_)(pyxp_)(pyxcs_2)(pyxpcs_2)
+        //         return p(color(cRD)(poss(pscm)(pscmp)))(x)(y)
+        //     })
+        // )
     }
     , move = () => {
         const pscm = scaleX.invert(d3.event.pageX - svgRect.x)
@@ -311,7 +333,9 @@ const width = height = 575
         const canvas = d3.select('#plot')
         canvas.call(events)
         model.context = canvas.node().getContext('2d')
-        updatePlot(canvas)(model)
+        model.imageData = model.context.getImageData(0, 0, plotWidth, plotHeight)
+        model.data = model.imageData.data
+    updatePlot(canvas)(model)
         Array.from(document.querySelectorAll('input[type=range]'))
             .map(range =>
                 range.addEventListener('input', updatePlotWithInputNumber(svg)(model))
