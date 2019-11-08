@@ -350,3 +350,103 @@ const width = height = 575
          
 
 createPlot('svg')
+
+const randomFrom = k =>
+    (1 - k) * Math.random() + k
+
+const randoms = n =>
+    [...Array(n)].map(_ => Math.random())
+
+const random8DimPoint = k => {
+    const [px, pm, pycxm, pycxmp, pycxpm, pycxpmp] = randoms(6)
+        , pscm = randomFrom(k)
+        , pscmp = pscm - k
+    return {px: 0, pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp}
+}
+
+const possiblePoint = k => {
+    const point = random8DimPoint(k)
+    return possible(point)(point.pscm)(point.pscmp)
+        ? point
+        : possiblePoint(k)
+}
+
+const probsArray = ({px, pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp}) =>
+    [pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp, px]
+
+const probsObject = ([pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp, px]) =>
+    ({ px, pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp })
+
+const c = k => ([pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm]) => {
+    const point = { pm, pycxm, pycxmp, pycxpm, pycxpmp }
+        , pyx_ = pyx(point)
+        , pyxp_ = pyxp(point)
+        , [pyxcs_, pyxpcs_] = pyxcs(point)(pscm)(pscm - k)
+    return cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_)
+}
+
+const alpha = 0.0001
+    , alpha2 = 0.000001
+    , gradientDelta = 0.000001
+    , epsilon = 0.000001
+
+// const gradientC = point1 => point2 =>
+//     (c(point1) - c(point2)) / gradientDelta
+
+const increasePoint = increase => point => pos =>
+    point.map((x, i) => i == pos
+        ? Math.min(x + increase, 1)
+        : x
+    )
+
+const gradients = f => fPoint => point =>
+    mapRange(6)(i => {
+        const pointPlusH = increasePoint(gradientDelta)(point)(i)
+            , h = pointPlusH[i] - point[i]
+        return h == 0
+            ? 0
+            : (f(pointPlusH) - fPoint) / h
+    })
+
+const ascendPoint = k => increase => point => pos =>
+    point.map((x, i) => i == pos
+        ? clamp(i == 5 ? k : 0)(1)(x + increase)
+        : x
+    )
+
+const tryAscendPoint = k => grads => acc => pos => {
+    const ascended = ascendPoint(k)(grads[pos] * alpha)(acc)(pos)
+    if (possible(probsObject(ascended))(ascended[5])(ascended[5] - k))
+        return ascended
+    else {
+        const ascended2 = ascendPoint(k)(grads[pos] * alpha2)(acc)(pos)
+        return possible(probsObject(ascended2))(ascended2[5])(ascended2[5] - k)
+            ? ascended2
+            : acc
+    }
+}
+
+const ascend = grads => point => k =>
+    foldRange(tryAscendPoint(k)(grads))(point)(6)
+
+const changed = point1 => point2 =>
+    point1.find((x, i) => Math.abs(point2[i] - x) > epsilon)
+
+const ascendUntilNoChange = pointObject => k => {
+    let previousPoint = [0.5, 0, 1, 1, 0, clamp(0)(1)(0.4 + k), 0, 0.5]//probsArray(pointObject)
+        , cOfPoint = c(k)(previousPoint)
+        , grads = gradients(c(k))(cOfPoint)(previousPoint)
+        , nextPoint = ascend(grads)(previousPoint)(k)
+    while (changed(previousPoint)(nextPoint)) {
+        previousPoint = nextPoint
+        cOfPoint = c(k)(previousPoint)
+        grads = gradients(c(k))(cOfPoint)(previousPoint)
+        nextPoint = ascend(grads)(previousPoint)(k)
+    }
+    return {cOfPoint, point: nextPoint}
+}
+
+mapRangeStep(101)(0.01)(k => {
+    const ascended = ascendUntilNoChange(possiblePoint(k))(k)
+    console.log(`c_max(${k}):`, ascended)
+})

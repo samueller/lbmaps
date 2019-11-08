@@ -20,13 +20,16 @@ const fracRangeReduce = init => f => n =>
     [...Array(n)].reduce((acc, _, i) => f(acc)(i / (n - 1)), init)
 
 const mapRange = n => f =>
-    [...Array(n)].map((_, i) => f(i))
+    [...Array(n).keys()].map(f)
 
 const rangeStep = n => step =>
     mapRange(n)(i => i * step)
 
 const mapRangeStep = n => step => f =>
     mapRange(n)(i => f(i * step))
+
+const foldRange = f => init => n =>
+    [...Array(n)].reduceRight((acc, _, i) => f(acc)(i), init)
 
 const onTargetNumber = f => e => f(e.target.valueAsNumber)
 
@@ -39,3 +42,6 @@ const addEventListeners = elements => event => f =>
 
 const compose = fs => arg =>
     fs.reduceRight((acc, f) => f(acc), arg)
+
+const clamp = min => max => x =>
+    Math.max(min, Math.min(x, max))
