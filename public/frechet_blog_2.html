@@ -2,7 +2,7 @@
 <script src="https://sup.ai/js/util.js"></script>
 <link href="https://unpkg.com/balloon-css/balloon.min.css" rel="stylesheet">
 <link href="https://sup.ai/css/main.css" rel="stylesheet">
-<link href="https://sup.ai/css/frechet.css" rel="stylesheet">
+<link href="https://sup.ai/css/frechet2.css" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <p style="text-align: right;"><em><strong>Scott Mueller and Judea Pearl</strong></em></p>
 <p>This post introduces readers to Fréchet inequalities using modern visualization techniques and discusses their applications and their fascinating history.</p>
@@ -60,7 +60,7 @@
 <div id="plot">
     <div id="stats-window"></div>
 </div>
-<script src="https://sup.ai/js/frechet.js"></script>    
+<script src="https://sup.ai/js/frechet2.js"></script>    
 <p>The plots visualize probability bounds of two events using logical conjunction, P(A,B), and logical disjunction, P(A∨B), with their marginals, P(A) and P(B), as axes on the unit square. Bounds for particular values of P(A) and P(B) can be seen by clicking on a type of bounds next to conjunction or disjunction and tracing the position on the plot to a color between blue and red. The color bar next to the plot indicates the probability. Clicking a different type of bounds animates the plot to demonstrate how the bounds changes. Hovering over or tapping on the plot reveals more information about the position being pointed at.</p>
 <p>The gap between upper bounds and lower bounds gets vanishingly narrow near the edges of the unit square, which means that we can accurately determine the probability of the intersection given the probability of the marginal probabilities. The range plots make this very clear and they are the exact same plots for both P(A,B) and P(A∨B). Notice that the center holds the widest gaps. Every plot is symmetric around the P(B) = P(A) diagonal, this should be expected as P(A) and P(B) play interchangeable rolls in Fréchet inequalities.</p>
 

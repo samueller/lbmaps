@@ -306,16 +306,17 @@ const disjIndependent = pa => pb =>
 round2(pa + pb - pa * pb)
 
 const stats = e => {
-const unitSquareX = e.pageX - model.unitSquareRect.left
-const unitSquareY = e.pageY - model.unitSquareRect.top
-const pa = unitSquareX / model.plotWidth
-const pb = 1 - unitSquareY / model.plotHeight
-statsWindow.style.left = `${unitSquareX + plotLeft - statsWindowWidth/2}px`
-statsWindow.style.top = `${unitSquareY + plotTop - statsWindowHeight - 15}px`
-statsWindow.style.display = 'block'
-statsWindow.innerHTML = truthFunc == 0
-    ? `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${conjLowerBound(pa)(pb)} ≤ P(A,B) ≤ ${conjUpperBound(pa)(pb)}<br>Range = ${conjUpperLowerDiff(pa)(pb)}<br>P(A,B) = ${conjIndependent(pa)(pb)} (A⫫B)`
-    : `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${disjLowerBound(pa)(pb)} ≤ P(A∨B) ≤ ${disjUpperBound(pa)(pb)}<br>Range = ${disjUpperLowerDiff(pa)(pb)}<br>P(A∨B) = ${disjIndependent(pa)(pb)} (A⫫B)`
+    const unitSquareBounds = model.unitSquareRect.getBoundingClientRect()
+    const unitSquareX = e.clientX - unitSquareBounds.left
+    const unitSquareY = e.clientY - unitSquareBounds.top
+    const pa = unitSquareX / model.plotWidth
+    const pb = 1 - unitSquareY / model.plotHeight
+    statsWindow.style.left = `${unitSquareX + plotLeft - statsWindowWidth/2}px`
+    statsWindow.style.top = `${unitSquareY + plotTop - statsWindowHeight - 15}px`
+    statsWindow.style.display = 'block'
+    statsWindow.innerHTML = truthFunc == 0
+        ? `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${conjLowerBound(pa)(pb)} ≤ P(A,B) ≤ ${conjUpperBound(pa)(pb)}<br>Range = ${conjUpperLowerDiff(pa)(pb)}<br>P(A,B) = ${conjIndependent(pa)(pb)} (A⫫B)`
+        : `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${disjLowerBound(pa)(pb)} ≤ P(A∨B) ≤ ${disjUpperBound(pa)(pb)}<br>Range = ${disjUpperLowerDiff(pa)(pb)}<br>P(A∨B) = ${disjIndependent(pa)(pb)} (A⫫B)`
 }
 
 const noStats = e =>
@@ -326,10 +327,10 @@ contours.map((contour, i) =>
     draw.path(contour)
         .fill(contourColors[i])
         .stroke({ color: contourColors[i] })
-        .on('mousemove', stats)
-        .on('touchmove', stats)
-        .on('mouseleave', noStats)
-        .on('touchleave', noStats)
+        // .on('mousemove', stats)
+        // .on('touchmove', stats)
+        // .on('mouseleave', noStats)
+        // .on('touchleave', noStats)
 )
 
 const makeLowerBoundLines = draw => lines => boundsType =>
@@ -371,11 +372,9 @@ model.unitSquare = model.draw
     .rect(model.plotWidth, model.plotHeight)
     .move(plotLeft, plotTop)
     .fill('white')
-    .on('mousemove', stats)
-    .on('touchmove', stats)
-    .on('mouseleave', noStats)
-    .on('touchleave', noStats)
-model.unitSquareRect = document.querySelector('rect').getBoundingClientRect()
+    .on(['mousemove', 'touchmove'], stats)
+    .on(['mouseleave', 'touchleave'], noStats)
+model.unitSquareRect = document.querySelector('rect')//.getBoundingClientRect()
 model.scaleX = coordX(model.plotWidth)
 model.scaleY = coordY(model.plotHeight)
 model.unitCoords = coords(model.plotWidth)(model.plotHeight)
