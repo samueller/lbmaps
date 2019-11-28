@@ -1,7 +1,7 @@
 const width = height = 575
     , marginLeft = marginBottom = 50
     , marginTop = marginRight = 25
-    , svgRect = document.getElementById('axes').getBoundingClientRect()
+    , svgEl = document.getElementById('axes')
     , probLocationRadius = 6
     , plotLeft = marginLeft
     , plotRight = width - marginRight + 1
@@ -265,15 +265,19 @@ const width = height = 575
         // )
     }
     , move = () => {
-        const pscm = scaleX.invert(d3.event.pageX - svgRect.x)
-        const pscmp = scaleY.invert(d3.event.pageY - svgRect.y)
+        // const plotBounds = plotEl.getBoundingClientRect()
+        const [x, y] = d3.mouse(svgEl)
+        const pscm = scaleX.invert(x)
+        const pscmp = scaleY.invert(y)
         const pyx_ = pyx(model)
         const pyxp_ = pyxp(model)
         const [pyxcs_, pyxpcs_] = pyxcs(model)(pscm)(pscmp)
         d3.select('#stats-window')
-            .html(`P(s|m) = ${round2(pscm)}, P(s|m') = ${round2(pscmp)}<br>P(y<sub>x</sub>) = ${round2(pyx_)}, P(y<sub>x'</sub>) = ${round2(pyxp_)}<br>P(y<sub>x</sub>|s) = ${round2(pyxcs_)}, P(y<sub>x'</sub>|s) = ${round2(pyxpcs_)}<br>C<sub>RD<sub>YX</sub>,RD<sub>YX|S</sub></sub> = ${round2(cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}<br>C<sub>RR<sub>YX</sub>,RR<sub>YX|S</sub></sub> = ${round2(cRRDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)
-            .style('left', `${d3.event.pageX - 150}px`)
-            .style('top', `${d3.event.pageY - 150}px`)
+            .html(`P(s|m) = ${round2(pscm)}, P(s|m') = ${round2(pscmp)}<br>P(y<sub>x</sub>) = ${round2(pyx_)}, P(y<sub>x'</sub>) = ${round2(pyxp_)}<br>P(y<sub>x</sub>|s) = ${round2(pyxcs_)}, P(y<sub>x'</sub>|s) = ${round2(pyxpcs_)}<br>C<sub>RD<sub>YX</sub>,RD<sub>YX|S</sub></sub> = ${round2(cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)//<br>C<sub>RR<sub>YX</sub>,RR<sub>YX|S</sub></sub> = ${round2(cRRDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)
+            .style('left', `${x - 125}px`)
+            .style('top', `${y - 125}px`)
+            .style('background-color', _ => pscmp > 0.75 ? `rgba(255, 255, 255, ${2.4 * pscmp - 1.4})` : null)
+            .style('border', _ => pscmp > 0.9 ? '1px solid black' : null)
             .transition()
             .duration(100)
             .style('opacity', 1)
@@ -433,7 +437,7 @@ const changed = point1 => point2 =>
     point1.find((x, i) => Math.abs(point2[i] - x) > epsilon)
 
 const ascendUntilNoChange = pointObject => k => {
-    let previousPoint = [0.5, 0, 1, 1, 0, clamp(0)(1)(0.4 + k), 0, 0.5]//probsArray(pointObject)
+    let previousPoint = probsArray(pointObject)//[0.5, 0, 1, 1, 0, clamp(0)(1)(0.4 + k), 0, 0.5]
         , cOfPoint = c(k)(previousPoint)
         , grads = gradients(c(k))(cOfPoint)(previousPoint)
         , nextPoint = ascend(grads)(previousPoint)(k)
@@ -446,7 +450,7 @@ const ascendUntilNoChange = pointObject => k => {
     return {cOfPoint, point: nextPoint}
 }
 
-mapRangeStep(101)(0.01)(k => {
+mapRangeStep(1/*01*/)(0.01)(k => {
     const ascended = ascendUntilNoChange(possiblePoint(k))(k)
     console.log(`c_max(${k}):`, ascended)
 })

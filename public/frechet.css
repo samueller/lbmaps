@@ -3,13 +3,14 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 170px;
+    width: 143px;
     border-radius: 5px;
-    border: 1px solid black;
-    background-color: rgba(255, 255, 255, 0.8);
+    /* border: 1px solid black; */
+    background-color: rgba(255, 255, 255, 0.4);
     color: 'black';
     line-height: 1.1;
     padding: 4px 7px;
+    font: normal normal 400 normal 16px / normal Times;
 }
 #plot {
     position: relative;
@@ -93,7 +94,4 @@ img.right {
 }
 svg :not(rect), #stats-window {
     pointer-events: none;
-}
-svg rect {
-    cursor: crosshair;
 }

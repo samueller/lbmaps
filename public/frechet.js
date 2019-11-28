@@ -18,7 +18,7 @@ const contourColors =
     , numContours = 10
     , boundsButtons = document.querySelectorAll('input[name=bound]')
     , statsWindow = document.getElementById('stats-window')
-    , statsWindowWidth = 186
+    , statsWindowWidth = 156
     , statsWindowHeight = 90
 
 let boundsType = floatParam('bounds')(2)
@@ -312,11 +312,19 @@ const stats = e => {
     const pa = unitSquareX / model.plotWidth
     const pb = 1 - unitSquareY / model.plotHeight
     statsWindow.style.left = `${unitSquareX + plotLeft - statsWindowWidth/2}px`
-    statsWindow.style.top = `${unitSquareY + plotTop - statsWindowHeight - 15}px`
+    statsWindow.style.top = `${unitSquareY + plotTop - statsWindowHeight - 28}px`
     statsWindow.style.display = 'block'
+    if (pb > 0.75)
+        statsWindow.style.backgroundColor = `rgba(255, 255, 255, ${2.4 * pb - 1.4})`
+    else
+        statsWindow.style.removeProperty('background-color')
+    if (pb > 0.9)
+        statsWindow.style.border = '1px solid black'
+    else
+        statsWindow.style.removeProperty('border')
     statsWindow.innerHTML = truthFunc == 0
-        ? `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${conjLowerBound(pa)(pb)} ≤ P(A,B) ≤ ${conjUpperBound(pa)(pb)}<br>Range = ${conjUpperLowerDiff(pa)(pb)}<br>P(A,B) = ${conjIndependent(pa)(pb)} (A⫫B)`
-        : `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${disjLowerBound(pa)(pb)} ≤ P(A∨B) ≤ ${disjUpperBound(pa)(pb)}<br>Range = ${disjUpperLowerDiff(pa)(pb)}<br>P(A∨B) = ${disjIndependent(pa)(pb)} (A⫫B)`
+        ? `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${conjLowerBound(pa)(pb)} ≤ P(A,B) ≤ ${conjUpperBound(pa)(pb)}<br>Range = ${conjUpperLowerDiff(pa)(pb)}`
+        : `P(A) = ${round2(pa)}<br>P(B) = ${round2(pb)}<br>${disjLowerBound(pa)(pb)} ≤ P(A∨B) ≤ ${disjUpperBound(pa)(pb)}<br>Range = ${disjUpperLowerDiff(pa)(pb)}`
 }
 
 const noStats = e =>
@@ -374,7 +382,7 @@ model.unitSquare = model.draw
     .fill('white')
     .on(['mousemove', 'touchmove'], stats)
     .on(['mouseleave', 'touchleave'], noStats)
-model.unitSquareRect = document.querySelector('rect')//.getBoundingClientRect()
+model.unitSquareRect = document.querySelector('rect')
 model.scaleX = coordX(model.plotWidth)
 model.scaleY = coordY(model.plotHeight)
 model.unitCoords = coords(model.plotWidth)(model.plotHeight)

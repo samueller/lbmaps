@@ -341,7 +341,7 @@ const width = height = 575
         model.context = canvas.node().getContext('2d')
         model.imageData = model.context.getImageData(0, 0, plotWidth, plotHeight)
         model.data = model.imageData.data
-    updatePlot(canvas)(model)
+        updatePlot(canvas)(model)
         Array.from(document.querySelectorAll('input[type=range]'))
             .map(range =>
                 range.addEventListener('input', updatePlotWithInputNumber(svg)(model))
