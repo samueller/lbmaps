@@ -195,10 +195,21 @@ const width = height = 575
         const psm = pscm * pm
         const psmp = pscmp * (1 - pm)
         const ps = psm + psmp
+        // console.log(`pm: ${pm}, pycxm: ${pycxm}, pycxmp: ${pycxmp}, pycxpm: ${pycxpm}, pycxpmp: ${pycxpmp}, pscm: ${pscm}, pscmp: ${pscmp}, psm: ${psm}, psmp: ${psmp}`)
         return [
               (pycxm * psm + pycxmp * psmp) / ps
             , (pycxpm * psm + pycxpmp * psmp) / ps
             ]
+    }
+    , pyxcsLog = ({pycxm, pycxmp, pycxpm, pycxpmp, pm}) => pscm => pscmp => {
+        const psm = pscm * pm
+        const psmp = pscmp * (1 - pm)
+        const ps = psm + psmp
+        console.log(`pm: ${pm}, pycxm: ${pycxm}, pycxmp: ${pycxmp}, pycxpm: ${pycxpm}, pycxpmp: ${pycxpmp}, pscm: ${pscm}, pscmp: ${pscmp}, psm: ${psm}, psmp: ${psmp}`)
+        return log('a')([
+              (pycxm * psm + pycxmp * psmp) / ps
+            , (pycxpm * psm + pycxpmp * psmp) / ps
+            ])
     }
     , cRDDiff = pyx => pyxp => pyxcs => pyxpcs =>
         pyx - pyxp - (pyxcs - pyxpcs)
@@ -213,6 +224,7 @@ const width = height = 575
         const pxp = 1 - px
         const pxy = pyx_ * px
         const pxpy = pyxp_ * pxp
+        // check P(yₓ|s) and P(yₓ'|s) are possible within observed prob dist
         return inPossibilityWindow(pxy)(pxpy)(pyxcs_)(pyxpcs_)(px)(pxp)
     }
     , updatePlot = canvas => model => {
@@ -230,8 +242,8 @@ const width = height = 575
         //     .attr('cx', scaleX(model.pyxcs))
         //     .attr('cy', scaleY(model.pyxpcs))
         //     .classed('danger', !inPossibilityWindow(model))
-        const p = pixel(model.context)(intervals/plotWidth)(intervals/plotHeight)
-            , poss = possible(model)
+        const //p = pixel(model.context)(intervals/plotWidth)(intervals/plotHeight)
+            /*,*/ poss = possible(model)
             , pyx_ = pyx(model)
             , pyxp_ = pyxp(model)
             , pyxcs_ = pyxcs(model)
@@ -267,20 +279,26 @@ const width = height = 575
     , move = () => {
         // const plotBounds = plotEl.getBoundingClientRect()
         const [x, y] = d3.mouse(svgEl)
-        const pscm = scaleX.invert(x)
-        const pscmp = scaleY.invert(y)
-        const pyx_ = pyx(model)
-        const pyxp_ = pyxp(model)
-        const [pyxcs_, pyxpcs_] = pyxcs(model)(pscm)(pscmp)
-        d3.select('#stats-window')
-            .html(`P(s|m) = ${round2(pscm)}, P(s|m') = ${round2(pscmp)}<br>P(y<sub>x</sub>) = ${round2(pyx_)}, P(y<sub>x'</sub>) = ${round2(pyxp_)}<br>P(y<sub>x</sub>|s) = ${round2(pyxcs_)}, P(y<sub>x'</sub>|s) = ${round2(pyxpcs_)}<br>C<sub>RD<sub>YX</sub>,RD<sub>YX|S</sub></sub> = ${round2(cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)//<br>C<sub>RR<sub>YX</sub>,RR<sub>YX|S</sub></sub> = ${round2(cRRDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)
-            .style('left', `${x - 125}px`)
-            .style('top', `${y - 125}px`)
-            .style('background-color', _ => pscmp > 0.75 ? `rgba(255, 255, 255, ${2.4 * pscmp - 1.4})` : null)
-            .style('border', _ => pscmp > 0.9 ? '1px solid black' : null)
-            .transition()
-            .duration(100)
-            .style('opacity', 1)
+            , pscm = scaleX.invert(x)
+            , pscmp = scaleY.invert(y)
+            , pyx_ = pyx(model)
+            , pyxp_ = pyxp(model)
+            , [pyxcs_, pyxpcs_] = pyxcs(model)(pscm)(pscmp)
+            , pxy = pyx_ * model.px
+            , pxpy = pyxp_ * model.pxp
+            // check P(yₓ|s) and P(yₓ'|s) are possible within observed prob dist
+            , poss = inPossibilityWindow(pxy)(pxpy)(pyxcs_)(pyxpcs_)(model.px)(model.pxp)
+        if (pscm >= 0 && pscm <= 1 && pscmp >= 0 && pscmp <= 1)
+            d3.select('#stats-window')
+                .html(`P(s|m) = ${round2(pscm)}, P(s|m') = ${round2(pscmp)}<br>P(y<sub>x</sub>) = ${round2(pyx_)}, P(y<sub>x'</sub>) = ${round2(pyxp_)}<br>P(y<sub>x</sub>|s) = ${round2(pyxcs_)}, P(y<sub>x'</sub>|s) = ${round2(pyxpcs_)}<br>C<sub>RD<sub>YX</sub>,RD<sub>YX|S</sub></sub> = ${round2(cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)//<br>C<sub>RR<sub>YX</sub>,RR<sub>YX|S</sub></sub> = ${round2(cRRDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)
+                .classed('impossible', !poss)
+                .style('left', `${x - 125}px`)
+                .style('top', `${y - 125}px`)
+                .style('background-color', _ => pscmp > 0.75 ? `rgba(255, 255, 255, ${2.4 * pscmp - 1.4})` : null)
+                .style('border', _ => pscmp > 0.9 ? '1px solid black' : null)
+                .transition()
+                .duration(100)
+                .style('opacity', 1)
     }
     // , hover = () => {
     //     const yx = scaleX.invert(d3.event.pageX - svgRect.x)
@@ -340,6 +358,8 @@ const width = height = 575
     , createPlot = svgElement => {
         updateProbabilities(model)
         const svg = draw(d3.select(svgElement))
+        // d3.select('path.domain').call(events)
+        svg.call(events)
         const canvas = d3.select('#plot')
         canvas.call(events)
         model.context = canvas.node().getContext('2d')
@@ -365,7 +385,7 @@ const random8DimPoint = k => {
     const [px, pm, pycxm, pycxmp, pycxpm, pycxpmp] = randoms(6)
         , pscm = randomFrom(k)
         , pscmp = pscm - k
-    return {px: 0, pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp}
+    return {px: 0.5, pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm, pscmp}
 }
 
 const possiblePoint = k => {
@@ -389,10 +409,10 @@ const c = k => ([pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm]) => {
     return cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_)
 }
 
-const alpha = 0.0001
-    , alpha2 = 0.000001
+const alpha = 0.001
+    , alpha2 = 0.0000001
     , gradientDelta = 0.000001
-    , epsilon = 0.000001
+    , epsilon = 0.000000001
 
 // const gradientC = point1 => point2 =>
 //     (c(point1) - c(point2)) / gradientDelta
@@ -412,9 +432,18 @@ const gradients = f => fPoint => point =>
             : (f(pointPlusH) - fPoint) / h
     })
 
+const gradientCostVec = k => ([pm, pycxm, pycxmp, pycxpm, pycxpmp, pscm]) =>
+    [ k*(k*(pm - 1)**2 + (2*pm - 1)*pscm)*(pycxm - pycxmp - pycxpm + pycxpmp)/(k*pm - k + pscm)**2
+    , k*pm*(pm - 1)/(k*pm - k + pscm)
+    , -k*pm*(pm - 1)/(k*pm - k + pscm)
+    , -k*pm*(pm - 1)/(k*pm - k + pscm)
+    , k*pm*(pm - 1)/(k*pm - k + pscm)
+    , k*pm*(pm - 1)*(pycxpm - pycxm - pycxpmp + pycxmp)/(k*pm - k + pscm)**2
+    ]
+
 const ascendPoint = k => increase => point => pos =>
     point.map((x, i) => i == pos
-        ? clamp(i == 5 ? k : 0)(1)(x + increase)
+        ? clamp(i == 5 ? k : i == 0 ? 0.0001 : 0)(i == 0 ? 0.9999 : 1)(x + increase)
         : x
     )
 
@@ -437,20 +466,20 @@ const changed = point1 => point2 =>
     point1.find((x, i) => Math.abs(point2[i] - x) > epsilon)
 
 const ascendUntilNoChange = pointObject => k => {
-    let previousPoint = probsArray(pointObject)//[0.5, 0, 1, 1, 0, clamp(0)(1)(0.4 + k), 0, 0.5]
-        , cOfPoint = c(k)(previousPoint)
-        , grads = gradients(c(k))(cOfPoint)(previousPoint)
+    let previousPoint = [0.28904532306567177, 0.41553169287699177, 1, 0.6021398537933064, 0.04252614444942705, clamp(0)(1)(0.03 + k), 0.4, 0.5]//[0.1718508671766165, 0.32635012535843816, 1, 0.6736496294559567, 0, clamp(0)(1)(0.03 + k), 0.4, 0.5]//probsArray(pointObject)//[0.03, 0.1, 0.9, 0.9, 0.1, clamp(0)(1)(0.4 + k), 0.4, 0.5]//
+        // , cOfPoint = c(k)(previousPoint)
+        , grads = gradientCostVec(k)(previousPoint)//gradients(c(k))(cOfPoint)(previousPoint)//
         , nextPoint = ascend(grads)(previousPoint)(k)
     while (changed(previousPoint)(nextPoint)) {
         previousPoint = nextPoint
-        cOfPoint = c(k)(previousPoint)
-        grads = gradients(c(k))(cOfPoint)(previousPoint)
+        // cOfPoint = c(k)(previousPoint)
+        grads = gradientCostVec(k)(previousPoint)//gradients(c(k))(cOfPoint)(previousPoint)//
         nextPoint = ascend(grads)(previousPoint)(k)
     }
-    return {cOfPoint, point: nextPoint}
+    return {cOfPoint: c(k)(nextPoint)/*cOfPoint*/, point: nextPoint}
 }
 
-mapRangeStep(1/*01*/)(0.01)(k => {
-    const ascended = ascendUntilNoChange(possiblePoint(k))(k)
-    console.log(`c_max(${k}):`, ascended)
-})
+// mapRangeStep(101)(0.01)(k => {
+//     const ascended = ascendUntilNoChange(possiblePoint(k))(k)
+//     console.log(`c_max(${k}):`, ascended)
+// })
