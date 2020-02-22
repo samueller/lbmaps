@@ -3,10 +3,13 @@
     <head>
         <meta charset="utf-8">
         <title>Personal Benefits</title>
-        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="js/d3.v5.min.js"></script>
+        <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
         <script src="util.js"></script>
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.min.css" rel="stylesheet">
-        <link href="https://unpkg.com/balloon-css/balloon.min.css" rel="stylesheet">
+		<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.min.css" rel="stylesheet">
+        <link href="https://unpkg.com/balloon-css/balloon.min.css" rel="stylesheet"> -->
+		<link href="css/bulma.min.css" rel="stylesheet">
+        <link href="css/balloon.min.css" rel="stylesheet">
         <link href="personal_benefits.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
@@ -14,12 +17,14 @@
         <section class="section">
             <div class="container">
                 <h1 class="title">Personal Benefits</h1>
-                <div class="choose control">
-                    <label class="radio" for="lower-bounds"><strong>Benefiting</strong>:</label>
-                    <label class="radio" for="lower-bounds"><input id="lower-bounds" name="bounds" value="0" type="radio" checked> Lower bounds</label> <span aria-label="Minimum probability of benefiting from treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="upper-bounds"><input id="upper-bounds" name="bounds" value="1" type="radio"> Upper bounds</label> <span aria-label="Maximum probability of benefiting from treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                    <label class="radio" for="range"><input id="range" name="bounds" value="2" type="radio"> Range</label> <span aria-label="Probability range of benefiting from treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                </div>
+                <form id="bounds-controls">
+                    <div class="choose control">
+                        <label class="radio" for="lower-bounds"><strong>Benefiting</strong>:</label>
+                        <label class="radio" for="lower-bounds"><input id="lower-bounds" name="bounds" value="0" type="radio" checked> Lower bounds</label> <span aria-label="Minimum probability of benefiting from treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                        <label class="radio" for="upper-bounds"><input id="upper-bounds" name="bounds" value="1" type="radio"> Upper bounds</label> <span aria-label="Maximum probability of benefiting from treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
+                        <!-- <label class="radio" for="range"><input id="range" name="bounds" value="2" type="radio"> Range</label> <span aria-label="Probability range of benefiting from treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span> -->
+                    </div>
+                </form>
                 <svg id="plot" width="575" height="575"></svg>
                 <div id="stats-window"></div>
                 <form id="plot-controls">

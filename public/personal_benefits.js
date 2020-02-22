@@ -22,6 +22,7 @@ const width = height = 575
     , axisRight = d3.axisRight(scaleY)
     , axisTop = d3.axisTop(scaleX)
     , axisBottom = d3.axisBottom(scaleX)
+    , numContours = 10
     , pxSlider = document.getElementById('px-slider')
     , pycxSlider = document.getElementById('pycx-slider')
     , pycxpSlider = document.getElementById('pycxp-slider')
@@ -34,21 +35,21 @@ const width = height = 575
     , pxypOutput = document.getElementById('pxyp-val')
     , pxpyOutput = document.getElementById('pxpy-val')
     , pxpypOutput = document.getElementById('pxpyp-val')
-    , initialModel = px => pycx => pycxp => {
+    , initialModel = bounds => px => pycx => pycxp => {
         const pxp = 1 - px
             , pxy = px * pycx
             , pxyp = px * (1 - pycx)
             , pxpy = pxp * pycxp
             , pxpyp = pxp * (1 - pycxp)
             , py = pxy + pxpy
-        return { px, pycx, pycxp, pxp, pxy, pxyp, pxpy, pxpyp, py }
+        return { bounds, px, pycx, pycxp, pxp, pxy, pxyp, pxpy, pxpyp, py }
     }
-    , model = initialModel(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
-    , textWithSub = pre => sub => post => textNode => {
-        textNode.text(pre)
-        textNode.append('tspan').attr('class', 'sub').attr('dy', '0.3em').text(sub)
-        textNode.append('tspan').attr('dy', '-0.21em').text(post)
-    }
+    , model = initialModel(0)(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
+    // , textWithSub = pre => sub => post => textNode => {
+    //     textNode.text(pre)
+    //     textNode.append('tspan').attr('class', 'sub').attr('dy', '0.3em').text(sub)
+    //     textNode.append('tspan').attr('dy', '-0.21em').text(post)
+    // }
     , drawBackground = svg => {
         svg.append('rect')
             .attr('class', 'background')
@@ -112,32 +113,67 @@ const width = height = 575
             : [ py, y ]
     , middleRightContourCoord = py => x =>
         x > 1
-            ? [ 1, py + x - 1 ]
+            ? [ 1, py - x + 1 ]
             : [ x, py ]
-    , contours = ({ py }) => d =>
+    , contoursCoordsLB = py => d =>
+        [ [ 0, Math.max(0, py - (d+1)/10) ]
+        , [ 0, Math.max(0, py - d/10) ]
+        , middleBottomContourCoord(py)(py - d/10)
+        , middleRightContourCoord(py)(py + d/10)
+        , [ Math.min(1, py + d/10), 1 ]
+        , [ Math.min(1, py + (d+1)/10), 1 ]
+        , middleRightContourCoord(py)(py + (d+1)/10)
+        , middleBottomContourCoord(py)(py - (d+1)/10)
+        , [ 0, Math.max(0, py - (d+1)/10) ]
+        ]
+    , contoursCoordsUB = y => d =>
+        1 - y < d/numContours
+            ? [ [ (d+1)/10, 0 ]
+              , [ d/10, 0 ]
+              , [ 1, 0 ]
+              , [ 1, 0 ]
+              , [ 1, 1 - d/10 ]
+              , [ 1, 1 - (d+1)/10 ]
+              , [ 1, 0 ]
+              , [ 1, 0 ]
+              , [ (d+1)/10, 0 ]
+              ]
+            : [ [ (d+1)/10, 0 ]
+              , [ d/10, 0 ]
+              , [ d/10, y ]
+              , [ 1 - y, 1 - d/10 ]
+              , [ 1, 1 - d/10 ]
+              , [ 1, 1 - (d+1)/10 ]
+              , 1 - y < (d+1)/10
+                ? [ 1, 0 ]
+                : [ 1 - y, 1 - (d+1)/10 ]
+              , 1 - y < (d+1)/10
+                ? [ 1, 0 ]
+                : [ (d+1)/10, y ]
+              , [ (d+1)/10, 0 ]
+              ]
+    , contours = ({ bounds, pxyp, pxpy, py }) => d =>
         svgStringFromCoords(
-            [ [ 0, Math.max(0, d/10 + py - 1) ]
-            , [ 0, Math.max(0, (d+1)/10 + py - 1) ]
-            // , [ py, Math.max(0, (d+1)/10 + py - 1) ]
-            , middleBottomContourCoord(py)((d+1)/10 + py - 1)
-            // , [ Math.min(1, py + (9-d)/10), py ]
-            , middleRightContourCoord(py)((9-d)/10 + py)
-            , [ Math.min(1, py + (9-d)/10), 1 ]
-            , [ Math.min(1, py + (10-d)/10), 1 ]
-            // , [ Math.min(1, py + (10-d)/10), py ]
-            , middleRightContourCoord(py)((10-d)/10 + py)
-            // , [ py, Math.max(0, d/10 + py - 1) ]
-            , middleBottomContourCoord(py)(d/10 + py - 1)
-            , [ 0, Math.max(0, d/10 + py - 1) ]
-            ]
+            bounds == 0
+                ? contoursCoordsLB(py)(d)
+                : contoursCoordsUB(pxyp + pxpy)(d)
         )
     , drawContours = svg => {
         svg.selectAll('polygon.contour')
-            .data([0,1,2,3,4,5,6,7,8,9])
+            .data(d3.range(numContours))
             .join('polygon')
             .attr('class', 'contour')
-            .attr('fill', d => d3.schemeSpectral[10][d])
+            .attr('fill', d => d3.schemeSpectral[numContours][d])
             .attr('points', contours(model))
+        svg.selectAll('text.contour')
+            .data(d3.range(numContours))
+            .join('text')
+            .attr('class', 'contour')
+            // .attr('x', scaleX(0.02))
+            // .attr('y', d => scaleY(model.py - (d+0.5)/numContours))
+            .attr('opacity', 0)
+            .attr('stroke', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
+            .text(d => `${Math.round(d/numContours*100)} to ${Math.round((d+1)/numContours*100)}%`)
         return svg
     }
     , possibilityWindowPoly = ({ pycx, pycxp, px, pxp }) => {
@@ -185,6 +221,7 @@ const width = height = 575
     , upperBound = ({ pxy, pxyp, pxpy, pxpyp }) => pyx => pyxp =>
         // outside of possibility window, this could be negative
         Math.max(0, Math.min(pyx, 1 - pyxp, pxy + pxpyp, pyx - pyxp + pxpy + pxyp))
+    // , colorRange = d3.scaleQuantize().range(d3.schemeSpectral[10])
     , updatePlot = svg => model => {
         const possibilityWindow = possibilityWindowPoly(model)
         svg.select('polygon.impossible')
@@ -199,6 +236,35 @@ const width = height = 575
             .transition()
             .duration(1000)
             .attr('points', contours(model))
+        svg.selectAll('text.contour')
+            .join('text')
+            .transition()
+            .duration(1000)
+            // .attr('x', scaleX(0.02))
+            // .attr('y', d => scaleY(model.py - (d+0.5)/numContours))
+            .attr('opacity', d => model.bounds == 0
+                ? model.py < (d+0.75)/numContours ? 0 : 0.9
+                : 1 - model.pxyp - model.pxpy < d/numContours ? 0 : 0.9
+                )
+            // .attr('stroke', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
+            // .text(d => `${Math.round(d/numContours*100)} to ${Math.round((d+1)/numContours*100)}%`)
+            .attr('transform', d => model.bounds == 0
+                ? `translate(${[scaleX(0.02), scaleY(model.py - (d+0.5)/numContours)]}) rotate(0)`
+                : `translate(${[scaleX((d+0.5)/numContours), scaleY(0.02)]}) rotate(-90)`
+                )
+        // const r = 100
+        // svg.selectAll('rect.test')
+        //     .data(d3.range(0, r*r))
+        //     .join('rect')
+        //     .attr('class', 'test')
+        //     .attr('x', d => scaleX((d%r)/r))
+        //     .attr('y', d => scaleY((Math.floor(d/r)+1)/r))
+        //     .attr('width', 500/r)
+        //     .attr('height', 500/r)
+        //     .attr('fill', d => {
+        //         const range = upperBound(model)((d%r)/r)(Math.floor(d/r)/r) - lowerBound(model)((d%r)/r)(Math.floor(d/r)/r)
+        //         return range < 0 ? 'none' : colorRange(range)
+        //     })
     }
     , move = () => {
         const [x, y] = d3.mouse(svg)
@@ -210,7 +276,7 @@ const width = height = 575
         if (pyx >= 0 && pyx <= 1 && pyxp >= 0 && pyxp <= 1)
             d3.select('#stats-window')
                 // .html(`P(y<sub>x</sub>) = ${round2(pyx)}, P(y<sub>x'</sub>) = ${round2(pyxp)}<br>${round2(lowerBound_)} &le; P(y<sub>x</sub> &gt; y'<sub>x'</sub>) &le; ${round2(upperBound_)}<br>Probability range: ${round2(upperBound_ - lowerBound_)}`)
-                .html(`Exp success rates: (${round2(pyx)}, ${round2(pyxp)})<br>Probability of benefiting &ge; ${round2(lowerBound_)}<br>Probability of benefiting &le; ${round2(upperBound_)}<br>Probability range: ${round2(upperBound_ - lowerBound_)}`)
+                .html(`${!poss ? '<h3 class="title is-4">Out Of Bounds</h3>' : ''}Exp success rates: (${round2(pyx)}, ${round2(pyxp)})<br>Probability of benefiting &ge; ${round2(lowerBound_)}<br>Probability of benefiting &le; ${round2(upperBound_)}<br>Probability range: ${round2(upperBound_ - lowerBound_)}`)
                 .classed('impossible', !poss)
                 .style('left', `${x - 125}px`)
                 .style('top', `${y - 45}px`)
@@ -267,9 +333,14 @@ const width = height = 575
         svg.call(events)
         updatePlot(svg)(model)
         Array.from(document.querySelectorAll('input[type=range]'))
-            .map(range =>
-                range.addEventListener('input', updatePlotWithInputNumber(svg)(model))
+            .map(el =>
+                el.addEventListener('input', updatePlotWithInputNumber(svg)(model))
             )
+        Array.from(document.querySelectorAll('input[name=bounds]'))
+            .map(el => el.addEventListener('input', e => {
+                model.bounds = parseInt(e.target.value)
+                updatePlot(svg)(model)
+            }))
     }
 
 createPlot('#plot')
