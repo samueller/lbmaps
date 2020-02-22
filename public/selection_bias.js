@@ -233,11 +233,11 @@ const width = height = 575
         pycxOutput.value = `P(y|x) = ${round2(pycx)}`
         pycxpOutput.value = `P(y|x') = ${round2(pycxp)}`
         pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(model.pxp)})`
-        pmcsOutput.value = `P(m|s) = ${round2(pmcs)} (P(m'|s) = ${round2(model.pmpcs)})`
-        pycxmsOutput.value = `P(y|x, m, s) = ${round2(pycxms)}`
-        pycxmpsOutput.value = `P(y|x, m', s) = ${round2(pycxmps)}`
-        pycxpmsOutput.value = `P(y|x', m, s) = ${round2(pycxpms)}`
-        pycxpmpsOutput.value = `P(y|x', m', s) = ${round2(pycxpmps)}`
+        pmcsOutput.value = `P(w|s) = ${round2(pmcs)} (P(w'|s) = ${round2(model.pmpcs)})`
+        pycxmsOutput.value = `P(y|x, w, s) = ${round2(pycxms)}`
+        pycxmpsOutput.value = `P(y|x, w', s) = ${round2(pycxmps)}`
+        pycxpmsOutput.value = `P(y|x', w, s) = ${round2(pycxpms)}`
+        pycxpmpsOutput.value = `P(y|x', w', s) = ${round2(pycxpmps)}`
         pxyOutput.value = `P(x, y) = ${round2(model.pxy)}, P(x, y') = ${round2(px - model.pxy)}, P(x', y) = ${round2(model.pxpy)}, P(x', y') = ${round2(model.pxp - model.pxpy)}`
         pyOutput.value = `P(y) = ${round2(model.py)}`
         pyxOutput.innerHTML = `P(y<sub>x</sub>|s) = ${round2(model.pyxcs)}, P(y<sub>x'</sub>|s) = ${round2(model.pyxpcs)}`

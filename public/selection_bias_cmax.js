@@ -77,11 +77,11 @@ const width = height = 575
             .call(axisRight)
         svg.append('text')
             .attr('class', 'axis-label')
-            .text('P(s|m)')
+            .text('P(s|w)')
             .attr('transform', `translate(${[plotLeft + plotWidth/2, plotBottom + 40]})`)
         svg.append('text')
             .attr('class', 'axis-label')
-            .text('P(s|m\')')
+            .text('P(s|w\')')
             .attr('transform', `translate(${[plotLeft - 40, plotTop + plotHeight/2]}) rotate(-90)`)
         return svg
     }
@@ -290,7 +290,7 @@ const width = height = 575
             , poss = inPossibilityWindow(pxy)(pxpy)(pyxcs_)(pyxpcs_)(model.px)(model.pxp)
         if (pscm >= 0 && pscm <= 1 && pscmp >= 0 && pscmp <= 1)
             d3.select('#stats-window')
-                .html(`P(s|m) = ${round2(pscm)}, P(s|m') = ${round2(pscmp)}<br>P(y<sub>x</sub>) = ${round2(pyx_)}, P(y<sub>x'</sub>) = ${round2(pyxp_)}<br>P(y<sub>x</sub>|s) = ${round2(pyxcs_)}, P(y<sub>x'</sub>|s) = ${round2(pyxpcs_)}<br>C<sub>RD<sub>YX</sub>,RD<sub>YX|S</sub></sub> = ${round2(cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)//<br>C<sub>RR<sub>YX</sub>,RR<sub>YX|S</sub></sub> = ${round2(cRRDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)
+                .html(`P(s|w) = ${round2(pscm)}, P(s|w') = ${round2(pscmp)}<br>P(y<sub>x</sub>) = ${round2(pyx_)}, P(y<sub>x'</sub>) = ${round2(pyxp_)}<br>P(y<sub>x</sub>|s) = ${round2(pyxcs_)}, P(y<sub>x'</sub>|s) = ${round2(pyxpcs_)}<br>C<sub>RD<sub>YX</sub>,RD<sub>YX|S</sub></sub> = ${round2(cRDDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)//<br>C<sub>RR<sub>YX</sub>,RR<sub>YX|S</sub></sub> = ${round2(cRRDiff(pyx_)(pyxp_)(pyxcs_)(pyxpcs_))}`)
                 .classed('impossible', !poss)
                 .style('left', `${x - 125}px`)
                 .style('top', `${y - 125}px`)
@@ -341,11 +341,11 @@ const width = height = 575
         // pscmOutput.value = `P(s|m) = ${round2(pscm)}`
         // pscmpOutput.value = `P(s|m') = ${round2(pscmp)}`
         pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(model.pxp)})`
-        pmOutput.value = `P(m) = ${round2(pm)} (P(m') = ${round2(model.pmp)})`
-        pycxmOutput.value = `P(y|x, m) = ${round2(pycxm)}`
-        pycxmpOutput.value = `P(y|x, m') = ${round2(pycxmp)}`
-        pycxpmOutput.value = `P(y|x', m) = ${round2(pycxpm)}`
-        pycxpmpOutput.value = `P(y|x', m') = ${round2(pycxpmp)}`
+        pmOutput.value = `P(w) = ${round2(pm)} (P(w') = ${round2(model.pmp)})`
+        pycxmOutput.value = `P(y|x, w) = ${round2(pycxm)}`
+        pycxmpOutput.value = `P(y|x, w') = ${round2(pycxmp)}`
+        pycxpmOutput.value = `P(y|x', w) = ${round2(pycxpm)}`
+        pycxpmpOutput.value = `P(y|x', w') = ${round2(pycxpmp)}`
         // pxyOutput.value = `P(x, y) = ${round2(model.pxy)}, P(x, y') = ${round2(px - model.pxy)}, P(x', y) = ${round2(model.pxpy)}, P(x', y') = ${round2(model.pxp - model.pxpy)}`
         // pyOutput.value = `P(y) = ${round2(model.py)}`
         // pyxOutput.innerHTML = `P(y<sub>x</sub>|s) = ${round2(model.pyxcs)}, P(y<sub>x'</sub>|s) = ${round2(model.pyxpcs)}`

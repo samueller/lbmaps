@@ -6,5 +6,7 @@ pm_cmax <- tibble(
 )
 
 ggplot(data = pm_cmax, mapping = aes(pm, cmax)) +
-  geom_smooth(se = FALSE) +
-  labs(x = "P(m)", y = expression(c[max]))
+  geom_smooth(color = 'black', size = 0.5, se = FALSE) +
+#  geom_line() +
+  theme(axis.title = element_text(size = 12), axis.text = element_text(size = 14)) +
+  labs(x = "P(w)", y = expression(c[max]))

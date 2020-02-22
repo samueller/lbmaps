@@ -1,0 +1,81 @@
+svg :not(rect.background), #stats-window {
+    pointer-events: none;
+}
+svg rect.background {
+    fill-opacity: 0;
+}
+section.section {
+    padding-top: 1rem;
+}
+.choose label {
+    margin-left: 10px;
+}
+.choose input {
+    position: relative;
+    top: -2px;
+}
+#pxy-output {
+    display: none;
+}
+table.variables {
+    display: inline-block;
+    vertical-align: top;
+}
+text {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 7pt;
+}
+.axis-label {
+    font-size: 9pt;
+    text-anchor: middle;
+}
+tspan.sub {
+    font-size: 70%;
+}
+line.grid {
+    stroke: black;
+    opacity: 0.1;
+}
+#plot-controls div.field {
+    margin-bottom: 0;
+}
+.impossible {
+    fill: black;
+    fill-opacity: 0.3;
+}
+.impossible.danger {
+    fill: red;
+    fill-opacity: 0.4;
+}
+.possible {
+    stroke: green;
+    stroke-width: 2;
+    fill: transparent;
+}
+.possible.danger {
+    stroke: darkred;
+}
+.prob-location {
+    fill: blue;
+    fill-opacity: 0.7;
+}
+.prob-location.danger {
+    fill: firebrick;
+}
+#stats-window {
+    /* display: none; */
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 230px;
+    border-radius: 5px;
+    /* border: 1px solid black; */
+    background-color: rgba(255, 255, 255, 0.4);
+    color: black;
+    line-height: 1.1;
+    padding: 4px 7px;
+}
+#stats-window.impossible {
+    color: rgb(108, 0, 0);
+}
