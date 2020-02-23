@@ -5,6 +5,18 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/personal",
+        "destination": "/personal_benefits.html",
+        "type": 302
+      },
+      {
+        "source": "/upper",
+        "destination": "/personal_benefits.html",
+        "type": 302
+      }
     ]
   }
 }

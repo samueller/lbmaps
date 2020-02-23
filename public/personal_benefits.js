@@ -172,7 +172,7 @@ const width = height = 575
             // .attr('x', scaleX(0.02))
             // .attr('y', d => scaleY(model.py - (d+0.5)/numContours))
             .attr('opacity', 0)
-            .attr('stroke', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
+            .attr('fill', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
             .text(d => `${Math.round(d/numContours*100)} to ${Math.round((d+1)/numContours*100)}%`)
         return svg
     }

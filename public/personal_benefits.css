@@ -27,6 +27,7 @@ text {
 }
 text.contour {
     font-size: 9pt;
+    font-weight: bold;
     dominant-baseline: middle;
 }
 .axis-label {
@@ -48,7 +49,7 @@ line.grid {
     fill-opacity: 0.3;
 }
 .impossible h3 {
-    margin-bottom: 0 !important;
+    margin-bottom: 2px !important;
     color: darkred;
     text-transform: uppercase;
 }
