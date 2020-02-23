@@ -1,0 +1,583 @@
+<html>
+    <head>
+        <script src="plotly-latest.min.js"></script>
+        <script src="util.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" rel="stylesheet">
+		<link href="main.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+            const impossibleColor = 'rgba(0, 0, 0, 0.7)'
+            const possibleColor = 'rgba(255, 255, 255, 0)'
+            const monotonicityColor = 'rgba(255, 255, 255, 0.18)'
+
+            const disableObservationalInputs = disabled =>
+                [ pyCxSlider
+                , pyCxpSlider
+                , pxSlider
+                ].map(disableInput(disabled))
+
+            let contourType = floatParam('data')(0)
+            let boundsType = floatParam('bounds')(0)
+            let observations = floatParam('obs')(1) == 1
+            let pyCx = floatParam('pycx')('0.5')
+            let pyCxp = floatParam('pycxp')('0.5')
+            let px = floatParam('px')('0.5')
+            let pxp = 1 - px
+            let pxy, pxpy, py
+
+            const contourDataFuncs =
+                [ py =>
+                    ({ x: [0, py, py, 1]
+                     , y: [0, py, py, 1]
+                     , z:
+                        [ [py, py, py, 1]
+                        , [0, 0, 0, 1 - py]
+                        , [null, null, 0, 1 - py]
+                        , [null, null, 0, 1 - py]
+                        ]
+                    })
+                , py =>
+                    ({ x: [0, 1]
+                     , y: [0, 1]
+                     , z:
+                        [ [ null, 0 ]
+                        , [ 0, 1 ]
+                        ]
+                    })
+                , py =>
+                    ({ x: [0, 1]
+                     , y: [0, 1]
+                     , z:
+                        [ [ 1, 0 ]
+                        , [ 0, null ]
+                        ]
+                    })
+                , py =>
+                    ({ x: [0, py, py, 1]
+                     , y: [0, py, py, 1]
+                     , z:
+                        [ [py, 0, null, null]
+                        , [py, 0, null, null]
+                        , [py, 0, 0, 0]
+                        , [1, 1 - py, 1 - py, 1 - py]
+                        ]
+                    })
+                ]
+
+            const minUpperBound = py => py_xp => py_x =>
+                Math.max(0, Math.min(py_x, 1 - py_xp, pxy + pxp - pxpy, py_x - py_xp + pxpy + px - pxy))
+
+            const steps = 101
+            const increment = 1 / (steps - 1)
+            const zeroTo1 = rangeStep(steps)(increment)
+
+            const contourDataFuncsUB =
+                [ py =>
+                    ({ x: zeroTo1
+                     , y: zeroTo1
+                     , z: zeroTo1.map(m => zeroTo1.map(minUpperBound(py)(m)))
+                     })
+                , py =>
+                    ({ x: [0, 1]
+                     , y: [0, 1]
+                     , z:
+                        [ [ null, 0 ]
+                        , [ 0, 1 ]
+                        ]
+                    })
+                , py =>
+                    ({ x: [0, 1]
+                     , y: [0, 1]
+                     , z:
+                        [ [ 1, 0 ]
+                        , [ 0, null ]
+                        ]
+                    })
+                , py =>
+                    ({ x: [0, py, py, 1]
+                     , y: [0, py, py, 1]
+                     , z:
+                        [ [py, 0, null, null]
+                        , [py, 0, null, null]
+                        , [py, 0, 0, 0]
+                        , [1, 1 - py, 1 - py, 1 - py]
+                        ]
+                    })
+                ]
+
+            const contourDataFuncsExperimental =
+                [ { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ 0, 1 ]
+                    , [ null, 0 ]
+                    ]
+                  }
+                , { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ null, 0 ]
+                    , [ 0, 1 ]
+                    ]
+                  }
+                , { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ 1, 0 ]
+                    , [ 0, null ]
+                    ]
+                  }
+                , { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ 0, null ]
+                    , [ 1, 0 ]
+                    ]
+                  }
+                ]
+
+            const contourDataFuncsUBExperimental =
+                [ { x: [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 ]
+                  , y: [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 ]
+                  , z:
+                    [ [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 ]
+                    , [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.9 ]
+                    , [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.800000000001, 0.8, 0.8 ]
+                    , [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.700000000001, 0.7, 0.7, 0.7 ]
+                    , [ 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.600000000001, 0.6, 0.6, 0.6, 0.6 ]
+                    , [ 0, 0.1, 0.2, 0.3, 0.4, 0.500000000001, 0.5, 0.5, 0.5, 0.5, 0.5 ]
+                    , [ 0, 0.1, 0.2, 0.3, 0.400000000001, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4 ]
+                    , [ 0, 0.1, 0.2, 0.300000000001, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3 ]
+                    , [ 0, 0.1, 0.200000000001, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2 ]
+                    , [ 0, 0.100000000001, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ]
+                    // , [ 0, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ]
+                    , [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+                    ]
+                  }
+                , { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ null, 0 ]
+                    , [ 0, 1 ]
+                    ]
+                  }
+                , { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ 1, 0 ]
+                    , [ 0, null ]
+                    ]
+                  }
+                , { x: [0, 1]
+                  , y: [0, 1]
+                  , z:
+                    [ [ 0, null ]
+                    , [ 1, 0 ]
+                    ]
+                  }
+                ]
+
+            const data = boundsType =>
+                ({ type: 'contour'
+                 , name: ''
+                 , line: { smoothing: 0 }
+                 , hovertemplate: boundsType == 0
+                    ? 'P(y<sub>x</sub>) = %{x}<br>P(y<sub>x\'</sub>) = %{y}<br>P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≥ %{z}'
+                    : 'P(y<sub>x</sub>) = %{x}<br>P(y<sub>x\'</sub>) = %{y}<br>P(y<sub>x</sub>, y\'<sub>x\'</sub>) ≤ %{z}'
+                 , colorbar:
+                    { title: { text: `P(y<sub>x</sub>, y\'<sub>x\'</sub>) ${boundsType == 0 ? '≥' : '≤'}` }
+                    // , len: 1.098
+                    // , x: 0.98
+                    // , y: 0.525
+                    // , thickness: 0
+                    // , outlinewidth: 0
+                    // , bgcolor: 'rgba(0, 0, 0, 0)'
+                    // , borderwidth: 0
+                    }
+                 })
+
+            const shapes = py =>
+                [ { type: 'rect'
+                  , x0: 0
+                  , y0: 0
+                  , x1: pxy
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: py - pxy + px
+                  , x1: pxy + pxp
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: 0
+                  , x1: py//pxy + pxp
+                  , y1: py - pxy
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'rect'
+                  , x0: pxy + pxp
+                  , y0: py//0
+                  , x1: 1
+                  , y1: 1
+                  , fillcolor: impossibleColor
+                  , line: { width: 0 }
+                  }
+                , { type: 'line'
+                  , x0: 0
+                  , y0: 0
+                  , x1: 1
+                  , y1: 1
+                  , line:
+                    { color: 'red'
+                    , width: 2
+                    , dash: 'dot'
+                    }
+                  }
+                , { type: 'rect'
+                  , x0: pxy
+                  , y0: py - pxy
+                  , x1: pxy + pxp
+                  , y1: py - pxy + px
+                  , fillcolor: possibleColor
+                  , line: { color: 'yellow', width: 2 }
+                  }
+                , { type: 'rect'
+                  , x0: py
+                  , y0: 0
+                  , x1: 1
+                  , y1: py
+                //   , fillcolor: monotonicityColor
+                  , line: { color: 'orange', width: 2 }
+                  }
+                ]
+
+            const shapesUB =
+                [ '#210bac'
+                , '#2732c4'
+                , '#455bdc'
+                , '#6583f3'
+                , '#9faad3'
+                , '#cfb39e'
+                , '#e39968'
+                , '#d96e4a'
+                , '#c53b32'
+                , '#b2151b'
+                ].flatMap((color, i) =>
+                    [ { type: 'line'
+                      , x0: i / 10
+                      , y0: 0
+                      , x1: 1
+                      , y1: 1 - i / 10
+                      , line:
+                        { color: 'black'//'rgba(255, 255, 0, 0.1)'
+                        , width: 2
+                        }
+                      }
+                    , { type: 'line'
+                      , x0: i / 10
+                      , y0: 0
+                      , x1: 1
+                      , y1: 1 - i / 10
+                      , line:
+                        { color
+                        , width: 2
+                        , dash: 'longdash'
+                        }
+                      }
+                    ]
+                )
+
+        </script>
+    </head>
+    <body>
+        <section class="section" style="padding-top: 10px">
+            <div class="control">
+                <label class="radio" for="compliers"><input id="compliers" name="map" type="radio" checked> Compliers</label>
+                <label class="radio" for="always-takers"><input id="always-takers" name="map" type="radio"> Always takers</label>
+                <label class="radio" for="never-takers"><input id="never-takers" name="map" type="radio"> Never takers</label>
+                <label class="radio" for="defiers"><input id="defiers" name="map" type="radio"> Defiers</label>
+            </div>
+            <div class="control">
+                <label class="radio" for="lower-bound"><input id="lower-bound" name="bound" value="0" type="radio" checked> Lower bounds</label>
+                <label class="radio" for="upper-bound"><input id="upper-bound" name="bound" value="1" type="radio"> Upper bounds</label>
+                <label class="radio" for="combo-bound"><input id="combo-bound" name="bound" value="2" type="radio" disabled> Combined</label>
+            </div>
+            <p class="content legend">
+                <span class="possibility-window">☐</span>: Possibility window,
+                <span class="monotonicity-window">☐</span>: Necessary test for monotonicity
+            </p>
+            <div id="graph"></div>
+            <div class="control">
+                <label class="checkbox"><script>document.writeln(`<input id="observations" type="checkbox" ${observations ? 'checked' : ''}>`)</script> Observational probabilities?</label>
+            </div>
+            <!-- <input id="py-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="py-output" for="py-slider">P(y) = 0.5</output>
+            <br> -->
+            <input id="pycx-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="pycx-output" for="pycx-slider">P(y|x) = 0.5</output>
+            <br>
+            <input id="pycxp-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="pycxp-output" for="pycxp-slider">P(y|x') = 0.5</output>
+            <!-- <br>
+            <input id="pxy-slider" min="0" max="1" value="0.25" step="0.05" type="range">
+            <output id="pxy-output" for="pxy-slider">P(x, y) = 0.25 (P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75)</output> -->
+            <br>
+            <input id="px-slider" min="0" max="1" value="0.5" step="0.05" type="range">
+            <output id="px-output" for="px-slider">P(x) = 0.5 (P(x') = 0.5)</output>
+            <br>
+            <output id="py-output" for="py-slider">P(y) = 0.5</output>, <output id="pxy-output">P(x, y) = 0.25, P(x, y') = 0.25, P(x', y) = 0.75, P(x', y') = 0.75</output>
+            <br><br>
+            <p><a href="3dscatter.html">3d scatter plot version</a></p>
+        </section>
+        <script>            
+            const mapNames =
+                [ 'P(y<sub>x</sub>, y\'<sub>x\'</sub>)'
+                , 'P(y<sub>x</sub>, y<sub>x\'</sub>)'
+                , 'P(y\'<sub>x</sub>, y\'<sub>x\'</sub>)'
+                , 'P(y\'<sub>x</sub>, y<sub>x\'</sub>)'
+                ]
+            
+            const boundsNames =
+                [ 'Lower'
+                , 'Upper'
+                ]
+
+            const layout = boundsType => observations =>
+                ({ title: `${boundsNames[boundsType]} Bounds on ${mapNames[contourType]}`
+                 , xaxis: { title: 'P(y<sub>x</sub>)'}
+                 , yaxis: { title: 'P(y<sub>x\'</sub>)'}
+                 , shapes: observations
+                    ? shapes(py)
+                    : shapesUB
+                 , width: 600
+                 , height: 600
+                })
+
+            const contourData = boundsType => contourType => observations =>
+                boundsType == 0
+                    ? observations
+                        ? contourDataFuncs[contourType](py)
+                        : contourDataFuncsExperimental[contourType]
+                    : observations
+                        ? contourDataFuncsUB[contourType](py)
+                        : contourDataFuncsUBExperimental[contourType]
+
+            const dataAndLayout = contourType => observations =>
+                ({ data:
+                    [ Object.assign
+                        ( {}
+                        , contourData(boundsType)(contourType)(observations)
+                        , data(boundsType)
+                        )
+                    ]
+                 , layout: layout(boundsType)(observations)
+                 })
+
+            const createGraph = graph => contourType =>
+                Plotly.newPlot
+                    ( graph
+                    , dataAndLayout(contourType)(observations)
+                    )
+            const animateGraph = graph => contourType =>
+                Plotly.react
+                    ( graph
+                    , dataAndLayout(contourType)(observations)
+                    )
+
+            const graph = document.getElementById('graph')
+            // const pySlider = document.getElementById('py-slider')
+            const pyOutput = document.getElementById('py-output')
+            const pyCxSlider = document.getElementById('pycx-slider')
+            const pyCxpSlider = document.getElementById('pycxp-slider')
+            const pyCxOutput = document.getElementById('pycx-output')
+            const pyCxpOutput = document.getElementById('pycxp-output')
+            const pxyOutput = document.getElementById('pxy-output')
+            const pxSlider = document.getElementById('px-slider')
+            const pxOutput = document.getElementById('px-output')
+
+            const updatePyCxOutput = pyCx =>
+                pyCxOutput.value = `P(y|x) = ${round2(pyCx)}`
+            const updatePyCxpOutput = pyCxp =>
+                pyCxpOutput.value = `P(y|x') = ${round2(pyCxp)}`
+            const updatePxOutput = px =>
+                pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(pxp)})`
+
+            const updateDepVars = () => {
+                pxy = pyCx * px
+                pxpy = pyCxp * pxp
+                py = pxy + pxpy
+                pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(pxpy)}, P(x', y') = ${round2(pxp - pxpy)}`
+                pyOutput.value = `P(y) = ${round2(py)}`
+            }
+
+            const update = graph => contourType => {
+                updateDepVars()
+                animateGraph(graph)(contourType)
+            }
+
+            updatePyCxOutput(pyCx)
+            updatePyCxpOutput(pyCxp)
+            updatePxOutput(px)
+            updateDepVars()
+            disableObservationalInputs(!observations)
+            createGraph(graph)(contourType)
+            // const updatePY = newPY => {
+            //     py = newPY
+            //     const pycxp = (newPY - pxy) / pxp
+            //     // pySlider.value = py
+            //     pycxpSlider.value = pycxp
+            //     pycxpOutput.value = `P(y|x') = ${round2(pycxp)}`
+            //     pyOutput.value = `P(y) = ${round2(py)}`
+            // }
+            // const updatePXY = newPXY => {
+            //     pxy = newPXY
+            //     const pycx = newPXY / px
+            //     pycxSlider.value = pycx
+            //     pycxOutput.value = `P(y|x) = ${round2(pycx)}`
+            //     pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(py - pxy)}, P(x', y') = ${round2(pxp - py + pxy)}`
+            //     // pxySlider.value = pxy
+            //     // pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+            // }            
+            const updatePyCx = newPyCx => {
+                pyCx = newPyCx
+                updatePyCxOutput(pyCx)
+                update(graph)(contourType)
+            }
+            const updatePyCxp = newPyCxp => {
+                pyCxp = newPyCxp
+                updatePyCxpOutput(pyCxp)
+                update(graph)(contourType)
+            }
+            const updatePx = newPX => {
+                px = newPX
+                pxp = 1 - px
+                updatePxOutput(px)
+                update(graph)(contourType)
+            }
+            // document.getElementById('py-slider').addEventListener('input', e => {
+            //     py = e.target.valueAsNumber
+            //     if (py < pxy)
+            //         updatePXY(py)
+            //     else if (py - pxy + px > 1)
+            //         updatePXY(py - pxp)
+            //     else
+            //         updatePXY(pxy)
+            //     pyOutput.value = `P(y) = ${round2(py)}`
+            //     createGraph(graph)(contourType)
+            // })
+
+            document
+                .getElementById('pycx-slider')
+                .addEventListener('input', onTargetNumber(updatePyCx))
+                // pycx = e.target.valueAsNumber
+                // pxy = pycx * px
+                // py = pxy + pxpy
+                // if (pxy + pxp > 1)
+                //     updatePX(pxy)
+                // else if (py - pxy + px > 1)
+                //     updatePX(pxy - py + 1)
+                // if (py < pxy)
+                //     updatePY(pxy)
+                // pyCxOutput.value = `P(y|x) = ${round2(pyCx)}`
+                // pxyOutput.value = `P(x, y) = ${round2(pxy)}, P(x, y') = ${round2(px - pxy)}, P(x', y) = ${round2(py - pxy)}, P(x', y') = ${round2(pxp - py + pxy)}`
+                // pyOutput.value = `P(y) = ${round2(py)}`
+                // createGraph(graph)(contourType)
+                // animateGraph(graph)(contourType)
+            // })
+            document
+                .getElementById('pycxp-slider')
+                .addEventListener('input', onTargetNumber(updatePyCxp))
+                // pycxp = e.target.valueAsNumber
+                // pxpy = pycxp * pxp
+                // py = pxpy + pxy
+                // if (py < pxy)
+                //     updatePXY(py)
+                // else if (py - pxy + px > 1)
+                //     updatePXY(py - pxp)
+                // else
+                //     updatePXY(pxy)
+                // pyCxpOutput.value = `P(y|x') = ${round2(pyCxp)}`
+                // pyOutput.value = `P(y) = ${round2(py)}`
+                // animateGraph(graph)(contourType)
+            // })
+            // document.getElementById('pxy-slider').addEventListener('input', e => {
+            //     pxy = e.target.valueAsNumber
+            //     if (pxy + pxp > 1)
+            //         updatePX(pxy)
+            //     else if (py - pxy + px > 1)
+            //         updatePX(pxy - py + 1)
+            //     if (py < pxy)
+            //         updatePY(pxy)
+            //     pxyOutput.value = `P(x, y) = ${pxy} (P(x, y') = ${px - pxy}, P(x', y) = ${py - pxy}, P(x', y') = ${pxp - py + pxy})`
+            //     createGraph(graph)(contourType)
+            // })
+            document.getElementById('px-slider').addEventListener('input', e => {
+                if (py - pxy + px > 1 || pxy + pxp > 1)
+                    pxSlider.value = px
+                else
+                    updatePx(e.target.valueAsNumber)
+                // px = e.target.valueAsNumber
+                // pxp = 1 - px
+                // if (py - pxy + px > 1)
+                //     updatePXY(py - pxp)
+                // else if (pxy + pxp > 1)
+                //     updatePXY(px)
+                // else
+                //     updatePXY(pxy)
+                // pxOutput.value = `P(x) = ${round2(px)} (P(x') = ${round2(pxp)})`
+                // animateGraph(graph)(contourType)
+            })
+            const setContourType = newContourType => {
+                contourType = newContourType
+                animateGraph(graph)(contourType)
+            }
+            const compliersButton = document.getElementById('compliers')
+            const alwaysTakersButton = document.getElementById('always-takers')
+            const neverTakersButton = document.getElementById('never-takers')
+            const defiersButton = document.getElementById('defiers')
+            const observationsButton = document.getElementById('observations')
+
+            compliersButton.addEventListener('input', e => setContourType(0))
+            alwaysTakersButton.addEventListener('input', e => setContourType(1))
+            neverTakersButton.addEventListener('input', e => setContourType(2))
+            defiersButton.addEventListener('input', e => setContourType(3))
+
+            const updateObservations = newObservations => {
+                observations = newObservations
+                disableObservationalInputs(!observations)
+            }
+            observationsButton.addEventListener('change', e => {
+                updateObservations(e.target.checked)
+                animateGraph(graph)(contourType)
+            })
+            // document.getElementById('bounds').addEventListener('change', e => {
+            //     observations = e.target.checked
+            //     disableObservationalInputs(!observations)
+            //     animateGraph(graph)(contourType)
+            // })            
+            Array.from(document.querySelectorAll('input[name=bound]'))
+                .map(el => el.addEventListener('input', e => {
+                    boundsType = parseInt(e.target.value)
+                    if (boundsType == 1) {
+                        if (contourType != 0) {
+                            compliersButton.checked = true
+                            contourType = 0
+                        }
+                        Array.from(document.querySelectorAll('input[name=map]'))
+                            .map(disableInput(true))
+                    } else {
+                        Array.from(document.querySelectorAll('input[name=map]'))
+                            .map(disableInput(false))
+                    }
+                    animateGraph(graph)(contourType)
+                }))
+        </script>
+    </body>
+</html>

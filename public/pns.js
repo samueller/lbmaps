@@ -2,6 +2,8 @@ const width = height = 575
     , marginLeft = marginBottom = 50
     , marginTop = marginRight = 25
     , svg = document.getElementById('plot')
+    , title = document.getElementById('plot-title')
+    , titles = ['Lower Bounds', 'Upper Bounds']
     , plotLeft = marginLeft
     , plotRight = width - marginRight
     , plotTop = marginTop
@@ -31,10 +33,10 @@ const width = height = 575
     , pycxOutput = document.getElementById('pycx-val')
     , pycxpOutput = document.getElementById('pycxp-val')
     , pyOutput = document.getElementById('py-val')
-    // , pxyOutput = document.getElementById('pxy-val')
-    // , pxypOutput = document.getElementById('pxyp-val')
-    // , pxpyOutput = document.getElementById('pxpy-val')
-    // , pxpypOutput = document.getElementById('pxpyp-val')
+    , pxyOutput = document.getElementById('pxy-val')
+    , pxypOutput = document.getElementById('pxyp-val')
+    , pxpyOutput = document.getElementById('pxpy-val')
+    , pxpypOutput = document.getElementById('pxpyp-val')
     , initialModel = bounds => px => pycx => pycxp => {
         const pxp = 1 - px
             , pxy = px * pycx
@@ -169,8 +171,6 @@ const width = height = 575
             .data(d3.range(numContours))
             .join('text')
             .attr('class', 'contour')
-            // .attr('x', scaleX(0.02))
-            // .attr('y', d => scaleY(model.py - (d+0.5)/numContours))
             .attr('opacity', 0)
             .attr('fill', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
             .text(d => `${Math.round(d/numContours*100)} to ${Math.round((d+1)/numContours*100)}%`)
@@ -211,6 +211,19 @@ const width = height = 575
             .attr('height', plotBottom - scaleY(model.px))
         return svg
     }
+    , drawDiagonal = svg => {
+        svg.append('line')
+            .attr('class', 'diagonal')
+            .attr('x1', scaleX(0))
+            .attr('y1', scaleY(0))
+            .attr('x2', scaleX(1))
+            .attr('y2', scaleY(1))
+            .attr('stroke', 'black')
+            .attr('stroke-width', 2)
+            .attr('stroke-linecap', 'round')
+            .attr('stroke-dasharray', '3 6')
+            .attr('opacity', 0.75)
+    }
     , inPossibilityWindow = ({px, pxp, pxy, pxpy}) => pyx => pyxp =>
         pxy <= pyx
             && pyx <= pxy + pxp
@@ -240,14 +253,10 @@ const width = height = 575
             .join('text')
             .transition()
             .duration(1000)
-            // .attr('x', scaleX(0.02))
-            // .attr('y', d => scaleY(model.py - (d+0.5)/numContours))
             .attr('opacity', d => model.bounds == 0
                 ? model.py < (d+0.75)/numContours ? 0 : 0.9
                 : 1 - model.pxyp - model.pxpy < d/numContours ? 0 : 0.9
                 )
-            // .attr('stroke', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
-            // .text(d => `${Math.round(d/numContours*100)} to ${Math.round((d+1)/numContours*100)}%`)
             .attr('transform', d => model.bounds == 0
                 ? `translate(${[scaleX(0.02), scaleY(model.py - (d+0.5)/numContours)]}) rotate(0)`
                 : `translate(${[scaleX((d+0.5)/numContours), scaleY(0.02)]}) rotate(-90)`
@@ -299,6 +308,7 @@ const width = height = 575
             .on('touchleave', unhover)
     , draw = compose
         ([ drawPossibilityWindow
+         , drawDiagonal
          , drawContours
          , drawGridLines
          , drawAxes
@@ -316,10 +326,10 @@ const width = height = 575
         pxpOutput.innerHTML = round2(model.pxp)
         pycxOutput.innerHTML = round2(pycx)
         pycxpOutput.innerHTML = round2(pycxp)
-        // pxyOutput.innerHTML = round2(model.pxy)
-        // pxypOutput.innerHTML = round2(model.pxyp)
-        // pxpyOutput.innerHTML = round2(model.pxpy)
-        // pxpypOutput.innerHTML = round2(model.pxpyp)
+        pxyOutput.innerHTML = round2(model.pxy)
+        pxypOutput.innerHTML = round2(model.pxyp)
+        pxpyOutput.innerHTML = round2(model.pxpy)
+        pxpypOutput.innerHTML = round2(model.pxpyp)
         pyOutput.innerHTML = round2(model.py)
     }
     , updatePlotWithInputNumber = svg => model => e => {
@@ -339,6 +349,7 @@ const width = height = 575
         Array.from(document.querySelectorAll('input[name=bounds]'))
             .map(el => el.addEventListener('input', e => {
                 model.bounds = parseInt(e.target.value)
+                title.innerHTML = titles[model.bounds]
                 updatePlot(svg)(model)
             }))
     }
