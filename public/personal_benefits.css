@@ -87,3 +87,11 @@ line.grid {
 #stats-window.impossible {
     color: rgb(108, 0, 0);
 }
+#stats-window:not(.impossible) h3 {
+    display: none;
+}
+#stats-window ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}

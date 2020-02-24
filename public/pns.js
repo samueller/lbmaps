@@ -47,11 +47,11 @@ const width = height = 575
         return { bounds, px, pycx, pycxp, pxp, pxy, pxyp, pxpy, pxpyp, py }
     }
     , model = initialModel(0)(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
-    // , textWithSub = pre => sub => post => textNode => {
-    //     textNode.text(pre)
-    //     textNode.append('tspan').attr('class', 'sub').attr('dy', '0.3em').text(sub)
-    //     textNode.append('tspan').attr('dy', '-0.21em').text(post)
-    // }
+    , textWithSub = pre => sub => post => textNode => {
+        textNode.text(pre)
+        textNode.append('tspan').attr('class', 'sub').attr('dy', '0.3em').text(sub)
+        textNode.append('tspan').attr('dy', '-0.21em').text(post)
+    }
     , drawBackground = svg => {
         svg.append('rect')
             .attr('class', 'background')
@@ -80,13 +80,11 @@ const width = height = 575
             .call(axisRight)
         svg.append('text')
             .attr('class', 'axis-label')
-            // .call(textWithSub('P(y')('x')(')'))
-            .text('Experimental success rate with treatment')
+            .call(textWithSub('P(y')('x')(')'))
             .attr('transform', `translate(${[plotLeft + plotWidth/2, plotBottom + 40]})`)
         svg.append('text')
             .attr('class', 'axis-label')
-            // .call(textWithSub('P(y')('x\'')(')'))
-            .text('Experimental success rate without treatment')
+            .call(textWithSub('P(y')('x\'')(')'))
             .attr('transform', `translate(${[plotLeft - 40, plotTop + plotHeight/2]}) rotate(-90)`)
         return svg
     }
@@ -173,7 +171,7 @@ const width = height = 575
             .attr('class', 'contour')
             .attr('opacity', 0)
             .attr('fill', d => d == 0 || d == 8 || d == 9 ? 'white' : 'black')
-            .text(d => `${Math.round(d/numContours*100)} to ${Math.round((d+1)/numContours*100)}%`)
+            .text(d => `${round2(d/numContours)} to ${round2((d+1)/numContours)}`)
         return svg
     }
     , possibilityWindowPoly = ({ pycx, pycxp, px, pxp }) => {
@@ -223,6 +221,7 @@ const width = height = 575
             .attr('stroke-linecap', 'round')
             .attr('stroke-dasharray', '3 6')
             .attr('opacity', 0.75)
+        return svg
     }
     , inPossibilityWindow = ({px, pxp, pxy, pxpy}) => pyx => pyxp =>
         pxy <= pyx
@@ -282,10 +281,10 @@ const width = height = 575
             , lowerBound_ = lowerBound(model)(pyx)(pyxp)
             , upperBound_ = upperBound(model)(pyx)(pyxp)
             , poss = inPossibilityWindow(model)(pyx)(pyxp)
-        if (pyx >= 0 && pyx <= 1 && pyxp >= 0 && pyxp <= 1)
+        if (pyx >= 0 && pyx <= 1 && pyxp >= 0 && pyxp <= 1) {
             d3.select('#stats-window')
                 // .html(`P(y<sub>x</sub>) = ${round2(pyx)}, P(y<sub>x'</sub>) = ${round2(pyxp)}<br>${round2(lowerBound_)} &le; P(y<sub>x</sub> &gt; y'<sub>x'</sub>) &le; ${round2(upperBound_)}<br>Probability range: ${round2(upperBound_ - lowerBound_)}`)
-                .html(`${!poss ? '<h3 class="title is-4">Out Of Bounds</h3>' : ''}Exp success rates: (${round2(pyx)}, ${round2(pyxp)})<br>Probability of benefiting &ge; ${round2(lowerBound_)}<br>Probability of benefiting &le; ${round2(upperBound_)}<br>Probability range: ${round2(upperBound_ - lowerBound_)}`)
+                // .html(`${!poss ? '<h3 class="title is-4">Impossible Area</h3>' : ''}${renderProbability(pyx)}, ${round2(pyxp)})<br>Probability of benefiting &ge; ${round2(lowerBound_)}<br>Probability of benefiting &le; ${round2(upperBound_)}<br>Probability range: ${round2(upperBound_ - lowerBound_)}`)
                 .classed('impossible', !poss)
                 .style('left', `${x - 125}px`)
                 .style('top', `${y - 45}px`)
@@ -294,6 +293,10 @@ const width = height = 575
                 .transition()
                 .duration(100)
                 .style('opacity', 1)
+            renderMath(document.getElementById('stats-pyx'))(`(${round2(pyx)}, ${round2(pyxp)})`)
+            renderMath(document.getElementById('stats-bounds'))(`${round2(lowerBound_)} \\leqslant P(y_x > y_{x'}) \\leqslant ${round2(upperBound_)}`)
+            renderMath(document.getElementById('stats-range'))(`${round2(upperBound_ - lowerBound_)}`)
+        }
     }
     , unhover = () =>
         d3.select('#stats-window')
@@ -314,23 +317,30 @@ const width = height = 575
          , drawAxes
          , drawBackground
          ])
+    , noThrowOnError = { throwOnError: false }
+    , renderMath = element => math =>
+        katex.render(math, element, noThrowOnError)
+    , renderProbability = element => param => val =>
+        renderMath(element)(`P(${param}) = ${round2(val)}`)
     , updateProbabilities = model => {
-        ({ px, pycx, pycxp } = model)
+        const { px, pycx, pycxp } = model
         model.pxp = 1 - px
         model.pxy = pycx * px
         model.pxyp = (1 - pycx) * px
         model.pxpy = pycxp * model.pxp
         model.pxpyp = (1 - pycxp) * model.pxp
         model.py = model.pxy + model.pxpy
-        pxOutput.innerHTML = round2(px)
-        pxpOutput.innerHTML = round2(model.pxp)
-        pycxOutput.innerHTML = round2(pycx)
-        pycxpOutput.innerHTML = round2(pycxp)
-        pxyOutput.innerHTML = round2(model.pxy)
-        pxypOutput.innerHTML = round2(model.pxyp)
-        pxpyOutput.innerHTML = round2(model.pxpy)
-        pxpypOutput.innerHTML = round2(model.pxpyp)
-        pyOutput.innerHTML = round2(model.py)
+        try {
+            renderProbability(pxOutput)('x')(px)
+            renderProbability(pxpOutput)('x\'')(model.pxp)
+            renderProbability(pycxOutput)('y|x')(pycx)
+            renderProbability(pycxpOutput)('y|x\'')(pycxp)
+            renderProbability(pxyOutput)('x, y')(model.pxy)
+            renderProbability(pxypOutput)('x, y\'')(model.pxyp)
+            renderProbability(pxpyOutput)('x\', y')(model.pxpy)
+            renderProbability(pxpypOutput)('x\', y\'')(model.pxpyp)
+            renderProbability(pyOutput)('y')(model.py)
+        } catch { console.error('Katex not loaded yet') }
     }
     , updatePlotWithInputNumber = svg => model => e => {
         model[e.target.name] = e.target.valueAsNumber
@@ -338,7 +348,7 @@ const width = height = 575
         updatePlot(svg)(model)
     }
     , createPlot = svgElement => {
-        updateProbabilities(model)
+        // updateProbabilities(model)
         const svg = draw(d3.select(svgElement))
         svg.call(events)
         updatePlot(svg)(model)
