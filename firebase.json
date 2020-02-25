@@ -14,8 +14,8 @@
       },
       {
         "source": "/upper",
-        "destination": "/personal_benefits.html",
-        "type": 302
+        "destination": "/?bounds=upper",
+        "type": 301
       }
     ]
   }

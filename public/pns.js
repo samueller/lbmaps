@@ -46,7 +46,10 @@ const width = height = 575
             , py = pxy + pxpy
         return { bounds, px, pycx, pycxp, pxp, pxy, pxyp, pxpy, pxpyp, py }
     }
-    , model = initialModel(0)(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
+    , boundsFromUrl = () => new URL(window.location).searchParams.get('bounds') == 'upper'
+        ? 1
+        : 0
+    , model = initialModel(boundsFromUrl())(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
     , textWithSub = pre => sub => post => textNode => {
         textNode.text(pre)
         textNode.append('tspan').attr('class', 'sub').attr('dy', '0.3em').text(sub)
@@ -347,10 +350,13 @@ const width = height = 575
         updateProbabilities(model)
         updatePlot(svg)(model)
     }
+    , setBoundsInput = bounds =>
+        document.querySelector(`input[name=bounds][value="${bounds}"]`).checked = true
     , createPlot = svgElement => {
         // updateProbabilities(model)
         const svg = draw(d3.select(svgElement))
         svg.call(events)
+        setBoundsInput(boundsFromUrl())
         updatePlot(svg)(model)
         Array.from(document.querySelectorAll('input[type=range]'))
             .map(el =>
