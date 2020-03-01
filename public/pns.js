@@ -3,7 +3,10 @@ const width = height = 575
     , marginTop = marginRight = 25
     , svg = document.getElementById('plot')
     , title = document.getElementById('plot-title')
-    , titles = ['Lower Bounds', 'Upper Bounds']
+    , titles =
+        [ ['Lower Bounds on the Probability of Benefit', 'Upper Bounds on the Probability of Benefit']
+        , ['Lower Bounds on the Probability of Harm', 'Upper Bounds on the Probability of Harm']
+        ]
     , plotLeft = marginLeft
     , plotRight = width - marginRight
     , plotTop = marginTop
@@ -25,6 +28,7 @@ const width = height = 575
     , axisTop = d3.axisTop(scaleX)
     , axisBottom = d3.axisBottom(scaleX)
     , numContours = 10
+    , hoverPopupCheckbox = document.getElementById('hover-popup')
     , pxSlider = document.getElementById('px-slider')
     , pycxSlider = document.getElementById('pycx-slider')
     , pycxpSlider = document.getElementById('pycxp-slider')
@@ -37,19 +41,22 @@ const width = height = 575
     , pxypOutput = document.getElementById('pxyp-val')
     , pxpyOutput = document.getElementById('pxpy-val')
     , pxpypOutput = document.getElementById('pxpyp-val')
-    , initialModel = bounds => px => pycx => pycxp => {
+    , initialModel = boundsOf => bounds => hoverPopup => px => pycx => pycxp => {
         const pxp = 1 - px
             , pxy = px * pycx
             , pxyp = px * (1 - pycx)
             , pxpy = pxp * pycxp
             , pxpyp = pxp * (1 - pycxp)
             , py = pxy + pxpy
-        return { bounds, px, pycx, pycxp, pxp, pxy, pxyp, pxpy, pxpyp, py }
+        return { boundsOf, bounds, hoverPopup, px, pycx, pycxp, pxp, pxy, pxyp, pxpy, pxpyp, py }
     }
+    , boundsOfFromUrl = () => new URL(window.location).searchParams.get('bounds-of') == 'harm'
+        ? 1
+        : 0
     , boundsFromUrl = () => new URL(window.location).searchParams.get('bounds') == 'upper'
         ? 1
         : 0
-    , model = initialModel(boundsFromUrl())(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
+    , model = initialModel(boundsOfFromUrl())(boundsFromUrl())(hoverPopupCheckbox.checked)(+pxSlider.value)(+pycxSlider.value)(+pycxpSlider.value)
     , textWithSub = pre => sub => post => textNode => {
         textNode.text(pre)
         textNode.append('tspan').attr('class', 'sub').attr('dy', '0.3em').text(sub)
@@ -110,6 +117,14 @@ const width = height = 575
             .attr('y2', scaleY)
         return svg
     }
+    , middleLeftContourCoord = py => x =>
+        x < 0
+            ? [ 0, py - x ]
+            : [ x, py ]
+    , middleTopContourCoord = py => y =>
+        y > 1
+            ? [ py - y + 1, 1 ]
+            : [ py, y ]
     , middleBottomContourCoord = py => y =>
         y < 0
             ? [ py - y, 0 ]
@@ -118,7 +133,7 @@ const width = height = 575
         x > 1
             ? [ 1, py - x + 1 ]
             : [ x, py ]
-    , contoursCoordsLB = py => d =>
+    , contoursCoordsBenefitLB = py => d =>
         [ [ 0, Math.max(0, py - (d+1)/10) ]
         , [ 0, Math.max(0, py - d/10) ]
         , middleBottomContourCoord(py)(py - d/10)
@@ -129,7 +144,7 @@ const width = height = 575
         , middleBottomContourCoord(py)(py - (d+1)/10)
         , [ 0, Math.max(0, py - (d+1)/10) ]
         ]
-    , contoursCoordsUB = y => d =>
+    , contoursCoordsBenefitUB = y => d =>
         1 - y < d/numContours
             ? [ [ (d+1)/10, 0 ]
               , [ d/10, 0 ]
@@ -155,11 +170,52 @@ const width = height = 575
                 : [ (d+1)/10, y ]
               , [ (d+1)/10, 0 ]
               ]
-    , contours = ({ bounds, pxyp, pxpy, py }) => d =>
+    , contoursCoordsHarmLB = py => d =>
+        [ [ Math.max(0, py - (d+1)/10), 0 ]
+        , [ Math.max(0, py - d/10), 0 ]
+        , middleLeftContourCoord(py)(py - d/10)
+        , middleTopContourCoord(py)(py + d/10)
+        , [ 1, Math.min(1, py + d/10) ]
+        , [ 1, Math.min(1, py + (d+1)/10) ]
+        , middleTopContourCoord(py)(py + (d+1)/10)
+        , middleLeftContourCoord(py)(py - (d+1)/10)
+        , [ Math.max(0, py - (d+1)/10), 0 ]
+        ]
+    , contoursCoordsHarmUB = y => d =>
+        1 - y < d/numContours
+            ? [ [ 0, (d+1)/10 ]
+              , [ 0, d/10 ]
+              , [ 0, 1 ]
+              , [ 0, 1 ]
+              , [ 1 - d/10, 1 ]
+              , [ 1 - (d+1)/10, 1 ]
+              , [ 0, 1 ]
+              , [ 0, 1 ]
+              , [ 0, (d+1)/10 ]
+              ]
+            : [ [ 0, (d+1)/10 ]
+              , [ 0, d/10 ]
+              , [ y, d/10 ]
+              , [ 1 - d/10, 1 - y ]
+              , [ 1 - d/10, 1 ]
+              , [ 1 - (d+1)/10, 1 ]
+              , 1 - y < (d+1)/10
+                ? [ 0, 1 ]
+                : [ 1 - (d+1)/10, 1 - y ]
+              , 1 - y < (d+1)/10
+                ? [ 0, 1 ]
+                : [ y, (d+1)/10 ]
+              , [ 0, (d+1)/10 ]
+              ]
+    , contours = ({ boundsOf, bounds, pxy, pxyp, pxpy, pxpyp, py }) => d =>
         svgStringFromCoords(
-            bounds == 0
-                ? contoursCoordsLB(py)(d)
-                : contoursCoordsUB(pxyp + pxpy)(d)
+            boundsOf == 0
+                ? bounds == 0
+                    ? contoursCoordsBenefitLB(py)(d)
+                    : contoursCoordsBenefitUB(pxyp + pxpy)(d)
+                : bounds == 0
+                    ? contoursCoordsHarmLB(py)(d)
+                    : contoursCoordsHarmUB(pxy + pxpyp)(d)
         )
     , drawContours = svg => {
         svg.selectAll('polygon.contour')
@@ -210,6 +266,20 @@ const width = height = 575
             .attr('y', scaleY(possibilityWindow[7][1]))
             .attr('width', scaleX(model.pxp) - plotLeft)
             .attr('height', plotBottom - scaleY(model.px))
+        svg.append('line')
+            .attr('class', 'possible-label')
+            .attr('x1', scaleX(possibilityWindow[5][0]/4 + possibilityWindow[6][0]*3/4))
+            .attr('y1', scaleY(possibilityWindow[6][1] - 0.075))
+            .attr('x2', scaleX(possibilityWindow[5][0]/3 + possibilityWindow[6][0]*2/3))
+            .attr('y2', scaleY(possibilityWindow[6][1]))
+            .attr('stroke', 'white')
+            .attr('stroke-width', 2)
+            .attr('marker-end', 'url(#arrow)')
+            .attr('opacity', 0.75)
+        svg.append('text')
+            .attr('class', 'possible-label')
+            .text('Possible region')
+            .attr('transform', `translate(${[scaleX(possibilityWindow[5][0]/4 + possibilityWindow[6][0]*3/4), scaleY(possibilityWindow[6][1] - 0.1)]})`)
         return svg
     }
     , drawDiagonal = svg => {
@@ -231,11 +301,16 @@ const width = height = 575
             && pyx <= pxy + pxp
             && pxpy <= pyxp
             && pyxp <= pxpy + px
-    , lowerBound = ({ py }) => pyx => pyxp =>
+    , lowerBoundBenefit = ({ py }) => pyx => pyxp =>
         Math.max(0, pyx - pyxp, py - pyxp, pyx - py)
-    , upperBound = ({ pxy, pxyp, pxpy, pxpyp }) => pyx => pyxp =>
+    , upperBoundBenefit = ({ pxy, pxyp, pxpy, pxpyp }) => pyx => pyxp =>
         // outside of possibility window, this could be negative
         Math.max(0, Math.min(pyx, 1 - pyxp, pxy + pxpyp, pyx - pyxp + pxpy + pxyp))
+    , lowerBoundHarm = ({ py }) => pyx => pyxp =>
+        Math.max(0, pyxp - pyx, pyxp - py, py - pyx)
+    , upperBoundHarm = ({ pxy, pxyp, pxpy, pxpyp }) => pyx => pyxp =>
+        // outside of possibility window, this could be negative
+        Math.max(0, Math.min(pyxp, 1 - pyx, pxyp + pxpy, pyxp - pyx + pxy + pxpyp))
     // , colorRange = d3.scaleQuantize().range(d3.schemeSpectral[10])
     , updatePlot = svg => model => {
         const possibilityWindow = possibilityWindowPoly(model)
@@ -246,6 +321,13 @@ const width = height = 575
             .attr('y', scaleY(possibilityWindow[7][1]))
             .attr('width', scaleX(model.pxp) - plotLeft)
             .attr('height', plotBottom - scaleY(model.px))
+        svg.select('line.possible-label')
+            .attr('x1', scaleX(possibilityWindow[5][0]/4 + possibilityWindow[6][0]*3/4))
+            .attr('y1', scaleY(possibilityWindow[6][1] - 0.075))
+            .attr('x2', scaleX(possibilityWindow[5][0]/3 + possibilityWindow[6][0]*2/3))
+            .attr('y2', scaleY(possibilityWindow[6][1]))
+        svg.select('text.possible-label')
+            .attr('transform', `translate(${[scaleX(possibilityWindow[5][0]/4 + possibilityWindow[6][0]*3/4), scaleY(possibilityWindow[6][1] - 0.075)]})`)
         svg.selectAll('polygon.contour')
             .join('polygon')
             .transition()
@@ -255,13 +337,21 @@ const width = height = 575
             .join('text')
             .transition()
             .duration(1000)
-            .attr('opacity', d => model.bounds == 0
-                ? model.py < (d+0.75)/numContours ? 0 : 0.9
-                : 1 - model.pxyp - model.pxpy < d/numContours ? 0 : 0.9
+            .attr('opacity', d => model.boundsOf == 0
+                ? model.bounds == 0
+                    ? model.py < (d+0.75)/numContours ? 0 : 0.9
+                    : 1 - model.pxyp - model.pxpy < d/numContours ? 0 : 0.9
+                : model.bounds == 0
+                    ? model.py < (d+0.75)/numContours ? 0 : 0.9
+                    : 1 - model.pxy - model.pxpyp < d/numContours ? 0 : 0.9
                 )
-            .attr('transform', d => model.bounds == 0
-                ? `translate(${[scaleX(0.02), scaleY(model.py - (d+0.5)/numContours)]}) rotate(0)`
-                : `translate(${[scaleX((d+0.5)/numContours), scaleY(0.02)]}) rotate(-90)`
+            .attr('transform', d => model.boundsOf == 0
+                ? model.bounds == 0
+                    ? `translate(${[scaleX(0.02), scaleY(model.py - (d+0.5)/numContours)]}) rotate(0)`
+                    : `translate(${[scaleX((d+0.5)/numContours), scaleY(0.02)]}) rotate(-90)`
+                : model.bounds == 0
+                    ? `translate(${[scaleX(model.py - (d+0.5)/numContours), scaleY(0.02)]}) rotate(-90)`
+                    : `translate(${[scaleX(0.02), scaleY((d+0.5)/numContours)]}) rotate(0)`
                 )
         // const r = 100
         // svg.selectAll('rect.test')
@@ -278,11 +368,17 @@ const width = height = 575
         //     })
     }
     , move = () => {
+        if (!model.hoverPopup)
+            return
         const [x, y] = d3.mouse(svg)
             , pyx = scaleX.invert(x)
             , pyxp = scaleY.invert(y)
-            , lowerBound_ = lowerBound(model)(pyx)(pyxp)
-            , upperBound_ = upperBound(model)(pyx)(pyxp)
+            , lowerBound = model.boundsOf == 0
+                ? lowerBoundBenefit(model)(pyx)(pyxp)
+                : lowerBoundHarm(model)(pyx)(pyxp)
+            , upperBound = model.boundsOf == 0
+                ? upperBoundBenefit(model)(pyx)(pyxp)
+                : upperBoundHarm(model)(pyx)(pyxp)
             , poss = inPossibilityWindow(model)(pyx)(pyxp)
         if (pyx >= 0 && pyx <= 1 && pyxp >= 0 && pyxp <= 1) {
             d3.select('#stats-window')
@@ -297,8 +393,8 @@ const width = height = 575
                 .duration(100)
                 .style('opacity', 1)
             renderMath(document.getElementById('stats-pyx'))(`(${round2(pyx)}, ${round2(pyxp)})`)
-            renderMath(document.getElementById('stats-bounds'))(`${round2(lowerBound_)} \\leqslant P(y_x > y_{x'}) \\leqslant ${round2(upperBound_)}`)
-            renderMath(document.getElementById('stats-range'))(`${round2(upperBound_ - lowerBound_)}`)
+            renderMath(document.getElementById('stats-bounds'))(`${round2(lowerBound)} \\leqslant P(y_x ${model.boundsOf == 0 ? '>' : '<'} y_{x'}) \\leqslant ${round2(upperBound)}`)
+            renderMath(document.getElementById('stats-range'))(`${round2(upperBound - lowerBound)}`)
         }
     }
     , unhover = () =>
@@ -350,22 +446,44 @@ const width = height = 575
         updateProbabilities(model)
         updatePlot(svg)(model)
     }
+    , setBoundsLabel = boundsOf =>
+        typeof katex == 'undefined'
+            ? document.getElementById('bounds-label').innerHTML = 'Bounds'
+            : renderMath(document.getElementById('bounds-label'))(boundsOf == 0
+                ? 'P(y_x > y_{x\'})'
+                : 'P(y_x < y_{x\'})'
+              )
+    , setBoundsOfInput = boundsOf => {
+        document.querySelector(`input[name=bounds-of][value="${boundsOf}"]`).checked = true
+        if (model.boundsOf != 0)
+            setBoundsLabel(boundsOf)
+    }
     , setBoundsInput = bounds =>
         document.querySelector(`input[name=bounds][value="${bounds}"]`).checked = true
     , createPlot = svgElement => {
-        // updateProbabilities(model)
         const svg = draw(d3.select(svgElement))
         svg.call(events)
+        setBoundsOfInput(boundsOfFromUrl())
         setBoundsInput(boundsFromUrl())
         updatePlot(svg)(model)
+        document.getElementById('hover-popup').addEventListener('input', e =>
+            model.hoverPopup = e.target.checked
+        )
         Array.from(document.querySelectorAll('input[type=range]'))
             .map(el =>
                 el.addEventListener('input', updatePlotWithInputNumber(svg)(model))
             )
+        Array.from(document.querySelectorAll('input[name=bounds-of]'))
+            .map(el => el.addEventListener('input', e => {
+                model.boundsOf = parseInt(e.target.value)
+                title.innerHTML = titles[model.boundsOf][model.bounds]
+                setBoundsLabel(model.boundsOf)
+                updatePlot(svg)(model)
+            }))
         Array.from(document.querySelectorAll('input[name=bounds]'))
             .map(el => el.addEventListener('input', e => {
                 model.bounds = parseInt(e.target.value)
-                title.innerHTML = titles[model.bounds]
+                title.innerHTML = titles[model.boundsOf][model.bounds]
                 updatePlot(svg)(model)
             }))
     }

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Causal Analysis in Theory and Practice » Predicting and Visualizing Personal Benefits</title>
+    <style type="text/css" media="screen">
+        @import url( causality_blog/style.css );
+    </style>
+    <link rel="archives" title="January 2020" href="http://causality.cs.ucla.edu/blog/index.php/2020/01/">
+    <link rel="archives" title="December 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/12/">
+    <link rel="archives" title="November 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/11/">
+    <link rel="archives" title="August 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/08/">
+    <link rel="archives" title="June 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/06/">
+    <link rel="archives" title="March 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/03/">
+    <link rel="archives" title="February 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/02/">
+    <link rel="archives" title="January 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/01/">
+    <link rel="archives" title="December 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/12/">
+    <link rel="archives" title="June 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/06/">
+    <link rel="archives" title="April 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/04/">
+    <link rel="archives" title="March 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/03/">
+    <link rel="archives" title="January 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/01/">
+    <link rel="archives" title="December 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/12/">
+    <link rel="archives" title="August 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/08/">
+    <link rel="archives" title="May 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/05/">
+    <link rel="archives" title="April 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/04/">
+    <link rel="archives" title="February 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/02/">
+    <link rel="archives" title="September 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/09/">
+    <link rel="archives" title="August 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/08/">
+    <link rel="archives" title="July 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/07/">
+    <link rel="archives" title="June 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/06/">
+    <link rel="archives" title="February 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/02/">
+    <link rel="archives" title="November 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/11/">
+    <link rel="archives" title="August 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/08/">
+    <link rel="archives" title="July 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/07/">
+    <link rel="archives" title="May 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/05/">
+    <link rel="archives" title="April 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/04/">
+    <link rel="archives" title="January 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/01/">
+    <link rel="archives" title="December 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/12/">
+    <link rel="archives" title="November 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/11/">
+    <link rel="archives" title="October 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/10/">
+    <link rel="archives" title="September 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/09/">
+    <link rel="archives" title="August 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/08/">
+    <link rel="archives" title="July 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/07/">
+    <link rel="archives" title="April 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/04/">
+    <link rel="archives" title="December 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/12/">
+    <link rel="archives" title="November 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/11/">
+    <link rel="archives" title="October 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/10/">
+    <link rel="archives" title="September 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/09/">
+    <link rel="archives" title="August 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/08/">
+    <link rel="archives" title="July 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/07/">
+    <link rel="archives" title="April 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/04/">
+    <link rel="archives" title="December 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/12/">
+    <link rel="archives" title="November 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/11/">
+    <link rel="archives" title="October 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/10/">
+    <link rel="archives" title="September 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/09/">
+    <link rel="archives" title="August 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/08/">
+    <link rel="archives" title="July 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/07/">
+    <link rel="archives" title="June 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/06/">
+    <link rel="archives" title="February 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/02/">
+    <link rel="archives" title="January 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/01/">
+    <link rel="archives" title="September 2011" href="http://causality.cs.ucla.edu/blog/index.php/2011/09/">
+    <link rel="archives" title="August 2011" href="http://causality.cs.ucla.edu/blog/index.php/2011/08/">
+    <link rel="archives" title="March 2011" href="http://causality.cs.ucla.edu/blog/index.php/2011/03/">
+    <link rel="archives" title="October 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/10/">
+    <link rel="archives" title="June 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/06/">
+    <link rel="archives" title="May 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/05/">
+    <link rel="archives" title="April 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/04/">
+    <link rel="archives" title="February 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/02/">
+    <link rel="archives" title="December 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/12/">
+    <link rel="archives" title="November 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/11/">
+    <link rel="archives" title="September 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/09/">
+    <link rel="archives" title="August 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/08/">
+    <link rel="archives" title="July 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/07/">
+    <link rel="archives" title="June 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/06/">
+    <link rel="archives" title="March 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/03/">
+    <link rel="archives" title="December 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/12/">
+    <link rel="archives" title="October 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/10/">
+    <link rel="archives" title="May 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/05/">
+    <link rel="archives" title="February 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/02/">
+    <link rel="archives" title="December 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/12/">
+    <link rel="archives" title="October 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/10/">
+    <link rel="archives" title="August 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/08/">
+    <link rel="archives" title="June 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/06/">
+    <link rel="archives" title="May 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/05/">
+    <link rel="archives" title="April 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/04/">
+    <link rel="archives" title="March 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/03/">
+    <link rel="archives" title="February 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/02/">
+    <link rel="archives" title="October 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/10/">
+    <link rel="archives" title="September 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/09/">
+    <link rel="archives" title="May 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/05/">
+    <link rel="archives" title="February 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/02/">
+    <link rel="archives" title="February 2004" href="http://causality.cs.ucla.edu/blog/index.php/2004/02/">
+    <link rel="archives" title="October 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/10/">
+    <link rel="archives" title="September 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/09/">
+    <link rel="archives" title="April 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/04/">
+    <link rel="archives" title="January 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/01/">
+    <link rel="archives" title="December 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/12/">
+    <link rel="archives" title="November 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/11/">
+    <link rel="archives" title="September 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/09/">
+    <link rel="archives" title="July 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/07/">
+    <link rel="archives" title="June 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/06/">
+    <link rel="archives" title="May 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/05/">
+    <link rel="archives" title="April 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/04/">
+    <link rel="archives" title="March 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/03/">
+    <link rel="archives" title="January 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/01/">
+    <script type="text/javascript">
+        window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/svg\/","svgExt":".svg","source":{"concatemoji":"causality_blog\/wp-emoji-release.min.js"}};
+        !function(e,a,t){var r,n,o,i,p=a.createElement("canvas"),s=p.getContext&&p.getContext("2d");function c(e,t){var a=String.fromCharCode;s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,e),0,0);var r=p.toDataURL();return s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,t),0,0),r===p.toDataURL()}function l(e){if(!s||!s.fillText)return!1;switch(s.textBaseline="top",s.font="600 32px Arial",e){case"flag":return!c([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])&&(!c([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!c([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]));case"emoji":return!c([55357,56424,55356,57342,8205,55358,56605,8205,55357,56424,55356,57340],[55357,56424,55356,57342,8203,55358,56605,8203,55357,56424,55356,57340])}return!1}function d(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(i=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},o=0;o<i.length;o++)t.supports[i[o]]=l(i[o]),t.supports.everything=t.supports.everything&&t.supports[i[o]],"flag"!==i[o]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[i[o]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(r=t.source||{}).concatemoji?d(r.concatemoji):r.wpemoji&&r.twemoji&&(d(r.twemoji),d(r.wpemoji)))}(window,document,window._wpemojiSettings);
+    </script>
+    <style type="text/css">
+        img.wp-smiley,
+        img.emoji {
+            display: inline !important;
+            border: none !important;
+            box-shadow: none !important;
+            height: 1em !important;
+            width: 1em !important;
+            margin: 0 .07em !important;
+            vertical-align: -0.1em !important;
+            background: none !important;
+            padding: 0 !important;
+        }
+    </style>
+    <link rel='stylesheet' id='wp-block-library-css'  href='causality_blog/style.min.css' type='text/css' media='all' />
+</head>
+<body>
+    <div id="rap">
+    <h1 id="header"><a href="http://causality.cs.ucla.edu/blog/">Causal Analysis in Theory and Practice</a></h1>
+    <div id="content">
+        <h2>November 5, 2019</h2>	
+        <div class="post" id="post-2059">
+            <h3 class="storytitle"><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/" rel="bookmark">Fréchet Inequalities – Visualization, Applications, and History</a></h3>
+            <div class="meta">Filed under: <a href="http://causality.cs.ucla.edu/blog/index.php/category/bounds/" rel="category tag">Bounds</a>,<a href="http://causality.cs.ucla.edu/blog/index.php/category/identification/" rel="category tag">Identification</a>,<a href="http://causality.cs.ucla.edu/blog/index.php/category/probability/" rel="category tag">Probability</a>,<a href="http://causality.cs.ucla.edu/blog/index.php/category/statistical-time/" rel="category tag">Statistical Time</a> — Judea Pearl @ 1:31 am </div>
+            <div class="storycontent">
+                <p style="text-align: right;"><em><strong>Scott Mueller and Judea Pearl</strong></em></p>
+                <h2 style="text-align: left;"><strong>Introduction</strong></h2>
+                <p><!-- insert paragraphs --></p>
+
+            </div>
+	        <div class="feedback"><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/#respond">Comments (0)</a></div>
+        </div>
+        <h2 id="comments">No Comments	<a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/#postcomment" title="Leave a comment">»</a></h2>
+        <p>No comments yet.</p>
+        <p><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/feed/"><abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.</a>	<a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/trackback/" rel="trackback">TrackBack <abbr title="Uniform Resource Identifier">URI</abbr></a></p>
+        <h2 id="postcomment">Leave a comment</h2>
+        <form action="http://causality.cs.ucla.edu/blog/wp-comments-post.php" method="post" id="commentform">
+            <p><input type="text" name="author" id="author" value="" size="22" tabindex="1">
+            <label for="author"><small>Name (required)</small></label></p>
+            <p><input type="text" name="email" id="email" value="" size="22" tabindex="2">
+            <label for="email"><small>Mail (will not be published) (required)</small></label></p>
+            <p><input type="text" name="url" id="url" value="" size="22" tabindex="3">
+            <label for="url"><small>Website</small></label></p>
+            <p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+            <p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment">
+            <input type="hidden" name="comment_post_ID" value="2059">
+            </p>
+            <p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="4fd384eada"></p><p style="display: none;"></p>
+            <input type="hidden" id="ak_js" name="ak_js" value="1582768826480">
+        </form>
+    </div>
+    <div id="menu">
+        <ul>
+        <li class="pagenav">Pages<ul><li class="page_item page-item-5"><a href="http://causality.cs.ucla.edu/blog/index.php/about/">About</a></li></ul></li>
+        <li id="categories">Categories:	<ul>
+            <li class="cat-item cat-item-2"><a href="http://causality.cs.ucla.edu/blog/index.php/category/announcement/">Announcement</a></li>
+            <li class="cat-item cat-item-3"><a href="http://causality.cs.ucla.edu/blog/index.php/category/back-door-criterion/">Back-door criterion</a></li>
+            <li class="cat-item cat-item-47"><a href="http://causality.cs.ucla.edu/blog/index.php/category/bad-control/">Bad Control</a></li>
+            <li class="cat-item cat-item-4"><a href="http://causality.cs.ucla.edu/blog/index.php/category/book-j-pearl/">Book (J Pearl)</a></li>
+            <li class="cat-item cat-item-52"><a href="http://causality.cs.ucla.edu/blog/index.php/category/bounds/">Bounds</a></li>
+            <li class="cat-item cat-item-5"><a href="http://causality.cs.ucla.edu/blog/index.php/category/causal-effect/">Causal Effect</a></li>
+            <li class="cat-item cat-item-38"><a href="http://causality.cs.ucla.edu/blog/index.php/category/conferences/">Conferences</a></li>
+            <li class="cat-item cat-item-6"><a href="http://causality.cs.ucla.edu/blog/index.php/category/counterfactual/">Counterfactual</a></li>
+            <li class="cat-item cat-item-7"><a href="http://causality.cs.ucla.edu/blog/index.php/category/covariate-selection/">covariate selection</a></li>
+            <li class="cat-item cat-item-8"><a href="http://causality.cs.ucla.edu/blog/index.php/category/d-separation/">d-separation</a></li>
+            <li class="cat-item cat-item-40"><a href="http://causality.cs.ucla.edu/blog/index.php/category/dags/">DAGs</a></li>
+            <li class="cat-item cat-item-41"><a href="http://causality.cs.ucla.edu/blog/index.php/category/data-fusion/">Data Fusion</a></li>
+            <li class="cat-item cat-item-9"><a href="http://causality.cs.ucla.edu/blog/index.php/category/decision-trees/">Decision Trees</a></li>
+            <li class="cat-item cat-item-10"><a href="http://causality.cs.ucla.edu/blog/index.php/category/definition/">Definition</a></li>
+            <li class="cat-item cat-item-11"><a href="http://causality.cs.ucla.edu/blog/index.php/category/discussion/">Discussion</a></li>
+            <li class="cat-item cat-item-12"><a href="http://causality.cs.ucla.edu/blog/index.php/category/do-calculus/">do-calculus</a></li>
+            <li class="cat-item cat-item-48"><a href="http://causality.cs.ucla.edu/blog/index.php/category/econometrics/">Econometrics</a></li>
+            <li class="cat-item cat-item-13"><a href="http://causality.cs.ucla.edu/blog/index.php/category/economics/">Economics</a></li>
+            <li class="cat-item cat-item-14"><a href="http://causality.cs.ucla.edu/blog/index.php/category/epidemiology/">Epidemiology</a></li>
+            <li class="cat-item cat-item-15"><a href="http://causality.cs.ucla.edu/blog/index.php/category/g-estimation/">G-estimation</a></li>
+            <li class="cat-item cat-item-16"><a href="http://causality.cs.ucla.edu/blog/index.php/category/general/">General</a></li>
+            <li class="cat-item cat-item-17"><a href="http://causality.cs.ucla.edu/blog/index.php/category/generalizability/">Generalizability</a></li>
+            <li class="cat-item cat-item-18"><a href="http://causality.cs.ucla.edu/blog/index.php/category/identification/">Identification</a></li>
+            <li class="cat-item cat-item-19"><a href="http://causality.cs.ucla.edu/blog/index.php/category/indirect-effects/">Indirect effects</a></li>
+            <li class="cat-item cat-item-20"><a href="http://causality.cs.ucla.edu/blog/index.php/category/intuition/">Intuition</a></li>
+            <li class="cat-item cat-item-58"><a href="http://causality.cs.ucla.edu/blog/index.php/category/journal-of-causal-inference/">Journal of Causal Inference</a></li>
+            <li class="cat-item cat-item-21"><a href="http://causality.cs.ucla.edu/blog/index.php/category/jsm/">JSM</a></li>
+            <li class="cat-item cat-item-22"><a href="http://causality.cs.ucla.edu/blog/index.php/category/linear-systems/">Linear Systems</a></li>
+            <li class="cat-item cat-item-23"><a href="http://causality.cs.ucla.edu/blog/index.php/category/marginal-structural-models/">Marginal structural models</a></li>
+            <li class="cat-item cat-item-24"><a href="http://causality.cs.ucla.edu/blog/index.php/category/matching/">Matching</a></li>
+            <li class="cat-item cat-item-25"><a href="http://causality.cs.ucla.edu/blog/index.php/category/measurement-cost/">measurement cost</a></li>
+            <li class="cat-item cat-item-26"><a href="http://causality.cs.ucla.edu/blog/index.php/category/mediated-effects/">Mediated Effects</a></li>
+            <li class="cat-item cat-item-39"><a href="http://causality.cs.ucla.edu/blog/index.php/category/missing-data/">Missing Data</a></li>
+            <li class="cat-item cat-item-27"><a href="http://causality.cs.ucla.edu/blog/index.php/category/nancy-cartwright/">Nancy Cartwright</a></li>
+            <li class="cat-item cat-item-28"><a href="http://causality.cs.ucla.edu/blog/index.php/category/noncompliance/">Noncompliance</a></li>
+            <li class="cat-item cat-item-29"><a href="http://causality.cs.ucla.edu/blog/index.php/category/opinion/">Opinion</a></li>
+            <li class="cat-item cat-item-30"><a href="http://causality.cs.ucla.edu/blog/index.php/category/path-coefficient/">Path Coefficient</a></li>
+            <li class="cat-item cat-item-31"><a href="http://causality.cs.ucla.edu/blog/index.php/category/plans/">Plans</a></li>
+            <li class="cat-item cat-item-32"><a href="http://causality.cs.ucla.edu/blog/index.php/category/presentation/">Presentation</a></li>
+            <li class="cat-item cat-item-51"><a href="http://causality.cs.ucla.edu/blog/index.php/category/probability/">Probability</a></li>
+            <li class="cat-item cat-item-33"><a href="http://causality.cs.ucla.edu/blog/index.php/category/propensity-score/">Propensity Score</a></li>
+            <li class="cat-item cat-item-42"><a href="http://causality.cs.ucla.edu/blog/index.php/category/rcts/">RCTs</a></li>
+            <li class="cat-item cat-item-34"><a href="http://causality.cs.ucla.edu/blog/index.php/category/selection-bias/">Selection Bias</a></li>
+            <li class="cat-item cat-item-35"><a href="http://causality.cs.ucla.edu/blog/index.php/category/simpsons-paradox/">Simpson's Paradox</a></li>
+            <li class="cat-item cat-item-36"><a href="http://causality.cs.ucla.edu/blog/index.php/category/statistical-time/">Statistical Time</a></li>
+            <li class="cat-item cat-item-37"><a href="http://causality.cs.ucla.edu/blog/index.php/category/structural-equations/">structural equations</a></li>
+            <li class="cat-item cat-item-1"><a href="http://causality.cs.ucla.edu/blog/index.php/category/uncategorized/">Uncategorized</a></li>
+        </ul></li>
+        <li id="search">
+            <label for="s">Search:</label>	
+            <form id="searchform" method="get" action="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/">
+                <div>
+                    <input type="text" name="s" id="s" size="15"><br>
+                    <input type="submit" value="Search">
+                </div>
+            </form>
+        </li>
+        <li id="archives">Archives: 	<ul>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2020/01/">January 2020</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/12/">December 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/">November 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/08/">August 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/06/">June 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/03/">March 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/02/">February 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/01/">January 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/12/">December 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/06/">June 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/04/">April 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/03/">March 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/01/">January 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/12/">December 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/08/">August 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/05/">May 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/04/">April 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/02/">February 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/09/">September 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/08/">August 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/07/">July 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/06/">June 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/02/">February 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/11/">November 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/08/">August 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/07/">July 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/05/">May 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/04/">April 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/01/">January 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/12/">December 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/11/">November 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/10/">October 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/09/">September 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/08/">August 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/07/">July 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/04/">April 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/12/">December 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/11/">November 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/10/">October 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/09/">September 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/08/">August 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/07/">July 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/04/">April 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/12/">December 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/11/">November 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/10/">October 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/09/">September 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/08/">August 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/07/">July 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/06/">June 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/02/">February 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/01/">January 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2011/09/">September 2011</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2011/08/">August 2011</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2011/03/">March 2011</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/10/">October 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/06/">June 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/05/">May 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/04/">April 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/02/">February 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/12/">December 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/11/">November 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/09/">September 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/08/">August 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/07/">July 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/06/">June 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/03/">March 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/12/">December 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/10/">October 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/05/">May 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/02/">February 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/12/">December 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/10/">October 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/08/">August 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/06/">June 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/05/">May 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/04/">April 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/03/">March 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/02/">February 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/10/">October 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/09/">September 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/05/">May 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/02/">February 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2004/02/">February 2004</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/10/">October 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/09/">September 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/04/">April 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/01/">January 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/12/">December 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/11/">November 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/09/">September 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/07/">July 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/06/">June 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/05/">May 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/04/">April 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/03/">March 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/01/">January 2000</a></li>
+        </ul></li>
+        <li id="meta">Meta: 	<ul>
+            <li><a href="http://causality.cs.ucla.edu/blog/wp-login.php">Log in</a></li>
+            <li><a href="feed:http://causality.cs.ucla.edu/blog/index.php/feed/" title="Syndicate this site using RSS"><abbr title="Really Simple Syndication">RSS</abbr></a></li>
+            <li><a href="feed:http://causality.cs.ucla.edu/blog/index.php/comments/feed/" title="The latest comments to all posts in RSS">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+            <li><a href="http://validator.w3.org/check/referer" title="This page validates as XHTML 1.0 Transitional">Valid <abbr title="eXtensible HyperText Markup Language">XHTML</abbr></a></li>
+            <li><a href="http://gmpg.org/xfn/"><abbr title="XHTML Friends Network">XFN</abbr></a></li>
+            <li><a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform."><abbr title="WordPress">WP</abbr></a></li>
+        </ul></li>
+        </ul>
+    </div>
+    <p class="credit"><!--22 queries. 0.254 seconds. --> <cite>Powered by <a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform."><strong>WordPress</strong></a></cite></p>
+    </div>
+    <script type='text/javascript' src='causality_blog/wp-embed.min.js'></script>
+    <script async="async" type='text/javascript' src='causality_blog/form.js'></script>
+</body>
+</html>

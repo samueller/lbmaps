@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Causal Analysis in Theory and Practice » Predicting and Visualizing Personal Benefits</title>
+    <style type="text/css" media="screen">
+        @import url( causality_blog/style.css );
+    </style>
+    <link rel="archives" title="January 2020" href="http://causality.cs.ucla.edu/blog/index.php/2020/01/">
+    <link rel="archives" title="December 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/12/">
+    <link rel="archives" title="November 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/11/">
+    <link rel="archives" title="August 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/08/">
+    <link rel="archives" title="June 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/06/">
+    <link rel="archives" title="March 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/03/">
+    <link rel="archives" title="February 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/02/">
+    <link rel="archives" title="January 2019" href="http://causality.cs.ucla.edu/blog/index.php/2019/01/">
+    <link rel="archives" title="December 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/12/">
+    <link rel="archives" title="June 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/06/">
+    <link rel="archives" title="April 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/04/">
+    <link rel="archives" title="March 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/03/">
+    <link rel="archives" title="January 2018" href="http://causality.cs.ucla.edu/blog/index.php/2018/01/">
+    <link rel="archives" title="December 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/12/">
+    <link rel="archives" title="August 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/08/">
+    <link rel="archives" title="May 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/05/">
+    <link rel="archives" title="April 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/04/">
+    <link rel="archives" title="February 2017" href="http://causality.cs.ucla.edu/blog/index.php/2017/02/">
+    <link rel="archives" title="September 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/09/">
+    <link rel="archives" title="August 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/08/">
+    <link rel="archives" title="July 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/07/">
+    <link rel="archives" title="June 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/06/">
+    <link rel="archives" title="February 2016" href="http://causality.cs.ucla.edu/blog/index.php/2016/02/">
+    <link rel="archives" title="November 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/11/">
+    <link rel="archives" title="August 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/08/">
+    <link rel="archives" title="July 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/07/">
+    <link rel="archives" title="May 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/05/">
+    <link rel="archives" title="April 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/04/">
+    <link rel="archives" title="January 2015" href="http://causality.cs.ucla.edu/blog/index.php/2015/01/">
+    <link rel="archives" title="December 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/12/">
+    <link rel="archives" title="November 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/11/">
+    <link rel="archives" title="October 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/10/">
+    <link rel="archives" title="September 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/09/">
+    <link rel="archives" title="August 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/08/">
+    <link rel="archives" title="July 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/07/">
+    <link rel="archives" title="April 2014" href="http://causality.cs.ucla.edu/blog/index.php/2014/04/">
+    <link rel="archives" title="December 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/12/">
+    <link rel="archives" title="November 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/11/">
+    <link rel="archives" title="October 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/10/">
+    <link rel="archives" title="September 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/09/">
+    <link rel="archives" title="August 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/08/">
+    <link rel="archives" title="July 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/07/">
+    <link rel="archives" title="April 2013" href="http://causality.cs.ucla.edu/blog/index.php/2013/04/">
+    <link rel="archives" title="December 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/12/">
+    <link rel="archives" title="November 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/11/">
+    <link rel="archives" title="October 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/10/">
+    <link rel="archives" title="September 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/09/">
+    <link rel="archives" title="August 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/08/">
+    <link rel="archives" title="July 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/07/">
+    <link rel="archives" title="June 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/06/">
+    <link rel="archives" title="February 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/02/">
+    <link rel="archives" title="January 2012" href="http://causality.cs.ucla.edu/blog/index.php/2012/01/">
+    <link rel="archives" title="September 2011" href="http://causality.cs.ucla.edu/blog/index.php/2011/09/">
+    <link rel="archives" title="August 2011" href="http://causality.cs.ucla.edu/blog/index.php/2011/08/">
+    <link rel="archives" title="March 2011" href="http://causality.cs.ucla.edu/blog/index.php/2011/03/">
+    <link rel="archives" title="October 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/10/">
+    <link rel="archives" title="June 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/06/">
+    <link rel="archives" title="May 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/05/">
+    <link rel="archives" title="April 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/04/">
+    <link rel="archives" title="February 2010" href="http://causality.cs.ucla.edu/blog/index.php/2010/02/">
+    <link rel="archives" title="December 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/12/">
+    <link rel="archives" title="November 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/11/">
+    <link rel="archives" title="September 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/09/">
+    <link rel="archives" title="August 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/08/">
+    <link rel="archives" title="July 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/07/">
+    <link rel="archives" title="June 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/06/">
+    <link rel="archives" title="March 2009" href="http://causality.cs.ucla.edu/blog/index.php/2009/03/">
+    <link rel="archives" title="December 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/12/">
+    <link rel="archives" title="October 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/10/">
+    <link rel="archives" title="May 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/05/">
+    <link rel="archives" title="February 2008" href="http://causality.cs.ucla.edu/blog/index.php/2008/02/">
+    <link rel="archives" title="December 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/12/">
+    <link rel="archives" title="October 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/10/">
+    <link rel="archives" title="August 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/08/">
+    <link rel="archives" title="June 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/06/">
+    <link rel="archives" title="May 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/05/">
+    <link rel="archives" title="April 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/04/">
+    <link rel="archives" title="March 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/03/">
+    <link rel="archives" title="February 2007" href="http://causality.cs.ucla.edu/blog/index.php/2007/02/">
+    <link rel="archives" title="October 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/10/">
+    <link rel="archives" title="September 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/09/">
+    <link rel="archives" title="May 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/05/">
+    <link rel="archives" title="February 2006" href="http://causality.cs.ucla.edu/blog/index.php/2006/02/">
+    <link rel="archives" title="February 2004" href="http://causality.cs.ucla.edu/blog/index.php/2004/02/">
+    <link rel="archives" title="October 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/10/">
+    <link rel="archives" title="September 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/09/">
+    <link rel="archives" title="April 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/04/">
+    <link rel="archives" title="January 2001" href="http://causality.cs.ucla.edu/blog/index.php/2001/01/">
+    <link rel="archives" title="December 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/12/">
+    <link rel="archives" title="November 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/11/">
+    <link rel="archives" title="September 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/09/">
+    <link rel="archives" title="July 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/07/">
+    <link rel="archives" title="June 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/06/">
+    <link rel="archives" title="May 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/05/">
+    <link rel="archives" title="April 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/04/">
+    <link rel="archives" title="March 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/03/">
+    <link rel="archives" title="January 2000" href="http://causality.cs.ucla.edu/blog/index.php/2000/01/">
+    <script type="text/javascript">
+        window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/12.0.0-1\/svg\/","svgExt":".svg","source":{"concatemoji":"causality_blog\/wp-emoji-release.min.js"}};
+        !function(e,a,t){var r,n,o,i,p=a.createElement("canvas"),s=p.getContext&&p.getContext("2d");function c(e,t){var a=String.fromCharCode;s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,e),0,0);var r=p.toDataURL();return s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,t),0,0),r===p.toDataURL()}function l(e){if(!s||!s.fillText)return!1;switch(s.textBaseline="top",s.font="600 32px Arial",e){case"flag":return!c([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])&&(!c([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!c([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]));case"emoji":return!c([55357,56424,55356,57342,8205,55358,56605,8205,55357,56424,55356,57340],[55357,56424,55356,57342,8203,55358,56605,8203,55357,56424,55356,57340])}return!1}function d(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(i=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},o=0;o<i.length;o++)t.supports[i[o]]=l(i[o]),t.supports.everything=t.supports.everything&&t.supports[i[o]],"flag"!==i[o]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[i[o]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(r=t.source||{}).concatemoji?d(r.concatemoji):r.wpemoji&&r.twemoji&&(d(r.twemoji),d(r.wpemoji)))}(window,document,window._wpemojiSettings);
+    </script>
+    <style type="text/css">
+        img.wp-smiley,
+        img.emoji {
+            display: inline !important;
+            border: none !important;
+            box-shadow: none !important;
+            height: 1em !important;
+            width: 1em !important;
+            margin: 0 .07em !important;
+            vertical-align: -0.1em !important;
+            background: none !important;
+            padding: 0 !important;
+        }
+    </style>
+    <link rel='stylesheet' id='wp-block-library-css'  href='causality_blog/style.min.css' type='text/css' media='all' />
+</head>
+<body>
+    <div id="rap">
+    <h1 id="header"><a href="http://causality.cs.ucla.edu/blog/">Causal Analysis in Theory and Practice</a></h1>
+    <div id="content">
+        <h2>February 26, 2020</h2>	
+        <div class="post" id="post-2059">
+            <h3 class="storytitle"><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/" rel="bookmark">Predicting and Visualizing Personal Benefits</a></h3>
+            <div class="meta">Filed under: <a href="http://causality.cs.ucla.edu/blog/index.php/category/bounds/" rel="category tag">Bounds</a>,<a href="http://causality.cs.ucla.edu/blog/index.php/category/identification/" rel="category tag">Identification</a>,<a href="http://causality.cs.ucla.edu/blog/index.php/category/probability/" rel="category tag">Probability</a>,<a href="http://causality.cs.ucla.edu/blog/index.php/category/statistical-time/" rel="category tag">Statistical Time</a> — Judea Pearl @ 1:31 am </div>
+            <div class="storycontent">
+                <style>
+                    iframe.graph {
+                        border: none;
+
+                    }
+                </style>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+                <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+                <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+                    onload="renderMathInElement(document.body);"></script>
+                <p style="text-align: right;"><em><strong>Scott Mueller and Judea Pearl</strong></em></p>
+                <h2 style="text-align: left;"><strong>Introduction</strong></h2>
+                <p>Assume that we conduct a randomized controlled trial (RCT) to evaluate the efficacy of some treatment \(X\) on survival \(Y\) of a disease, and find no effect whatsoever. For example, \(10\%\) of treated patients recovered, \(90\%\) died, and exactly the same proportions were found in the control group (those who were denied treatment), \(10\%\) recovered and \(90\%\) died.</p>
+                <p>Such treatment would no doubt be deemed ineffective by the FDA and other public policy makers. However, if you were a patient afflicted with the disease would you be interested in knowing how the treatment affected individual patients? Did it have no effect on <em>any</em> individual or, perhaps, cured some and killed others? In the worst case, you can imagine a scenario where \(10\%\) who died under treatment would have been cured if not treated. Such a nightmarish scenario should surely be of grave concern to health scientists, not to mention individual patients who are deciding whether to get treatment.</p>
+                <p>Randomized controlled studies cannot shed light on this question, because they only provide us with averages over populations, not with individual responses. In particular, they cannot tell us if a specific individual who died without treatment would have recovered had he/she received the treatment. Remarkably, however, some light on this question can be obtained if, in addition to the experimental data we also observe averages under non-experimental studies. In such studies, also called "self-selection" or "observational", people are given free choice of taking or not taking treatments, depending on their inclinations, which may reflect whatever they learned about the treatment, their idiosyncratic medical conditions, family tradition, peers experience, and perhaps even hearsay, popular myths, fears and expectations.</p>
+                <p>Before demonstrating this remarkable capability, let us ask ourselves conceptually how unreliable data, contaminated with whimsical self selection, could provide information that reliable controlled experiments cannot provide. The answer is simple. Personal fears and impulses that drive an individual to select or avoid a treatment, be it knowingly or unwittingly, may sometimes be good indicators (or predictors) of the medical conditions of that individual and could thus predict how that individual would react to the treatment. Controlled experiments purposely suppress those predictors. The amazing part is that, looking at the combined data, we can tell when those predictors provide reliable readings, and when they don't, as well as how to derive meaningful estimates on the number of individuals that responded one way or another.</p>
+                <p>To convince ourselves that observational studies are capable of providing such information, let us consider an extreme example. Assume that, in addition to the experimental results cited above we also find that, given free choice, all patients died, both treatment-choosing and treatment-avoiding. Such data tell us right away that some patients benefited from the treatment and would do worse if denied treatment. This certainly holds true for the \(10\%\) who recovered under forced treatment, because these patients, when left to their own whims would avoid treatment and die. This important information cannot be seen from the experimental study alone since, in that setup, individuals are prevented from following their inclination, which prevents us from seeing how worse off (or better off) they would then be.</p>
+                <p>While such an extreme case, will rarely occur in practice, it unveils nevertheless the logic that allows us to quantify the percentage of beneficiaries from the combined data, and why we could not assess it from a single study alone.</p>
+                <p>To extract such assessments in a more realistic setting, let us take another look at the RCT study in which we found \(10\%\) recovery in both treatment and control groups. This finding is compatible with two extreme interpretations: (1) treatment has no effect on any individual and (2) treatment saved \(10\%\) and killed \(10\%\). Call the former "no effect" and the latter "opposing effects." Let us first show how information coming from free-choice behavior can rule out the no-effect model and assure us that at least some individuals actually benefited from the treatment. Assume we observed that, when given the choice, \(50\%\) of the population chose the treatment and \(50\%\) avoided it. Moreover, the rate of recovery among those who freely chose treatment was somewhat higher than among those who freely avoided it, say \(12\%\) vs. \(10\%\). Can the no-effect model support such a finding?</p>
+                <p>One may be tempted to say, "<em>no</em>," using the following argument: If treatment has no effect on any individual, why would the treatment-choosing individuals be better off than treatment avoiding individuals? This argument however is wrong. The treatment-choosing individuals may be better off because they are predisposed to recover regardless of treatment. For example, they may choose treatment because they are financially well-to-do, which renders them both able to afford the treatment and enjoy an improved hygiene environment. These individuals will exhibit higher recovery both under treatment and under no-treatment.</p>
+                <p>A more convincing argument for ruling out the no-effect model would note that, under such a model, the rate of recovery under forced treatment, \(10\%\) in our case, should equal the overall rate of recovery under free choice, \(11\%\) in our case (\(12\%\) of half the observed individuals recovered after choosing treatment, while \(10\%\) of half the observed individuals recovered after choosing no treatment). Indeed, if treatment has no effect whatsoever on the outcome of any individual, then whoever dies/recovers under free choice condition would also die/recover in an  experimental setup, regardless of treatment. This means that the fraction of people recovering in the experimental setup should equal that under free-choice setup. The fact that a higher fraction (\(11\%\)) recovered under free choice thus rules out the no-effect model as a valid explanation of the experimental findings.</p>
+                <p>Having confirmed that free-choice data may provide information on individual behavior, we can ask whether combining experimental and observational studies can allow us to estimate the fractions of individuals actually influenced by the treatment, be it beneficially or adversely. Analysis reveals that such estimates are indeed possible, by establishing bounds on those fractions. Using our data, for example, it is possible to show that at least \(1\%\) of the population did benefit from the treatment and that fraction could even be as high as \(10\%\). More remarkably, the increase of recovery rate from \(10\%\) to \(12\%\) among the freely choosing treatment implies that at least \(1\%\) of the population were adversely affected by the treatment and that their number could also be as high as \(10\%\).</p>
+                <p>To understand why at least \(1\%\) of the population must've benefited from the treatment, let's take another look at the overall rate of recovery under free choice. The overall rate considers all individuals, whether they chose treatment or not. We'll now focus on two groups: the free choice group and the RCT control group. Free choice individuals are exchangeable with the RCT control group individuals in the sense that both groups have the same distribution of people. For example, both groups should comprise of the same percentage of financially well-to-do people. This is because, in a proper RCT and a proper observational study, individuals were chosen among the overall population at random. A percentage of free choice people will choose treatment. We should expect the same percentage, in our RCT control group, to have wanted treatment, but were denied because of their presence in our control group. Now we can compare those two subgroups, the free choice individuals who chose treatment and the control group individuals who would've chosen treatment had they been allowed. If the treatment had a positive effect, then the free choice subgroup would have a higher rate of recovery than the control group. The free choice subgroup received the beneficial treatment, while the control group did not. Whereas both subgroups wanted the same thing: treatment.</p>
+                <p>If we could identify the RCT control group individuals who would've chosen treatment if they were allowed, then we could determine a minimum percentage of the population who must've benefited from treatment by simply subtracting the recovery rate of those individuals from the recovery rate of the individuals who chose treatment. Unfortunately, we can't go back in time and give the control group free choice. However, we can still get a lower bound for the percentage of the population benefiting from treatment. There are two subgroups remaining within the free choice and RCT control groups, the free choice individuals who chose no treatment and the control group individuals who would've chosen no treatment anyway. This time, if the treatment had some positive effect, these two subgroups should have exactly the same rate of recovery. Neither of these subgroups received this beneficial treatment.</p>
+                <p>Therefore, the difference in the rates of recovery of the entire free choice group and our RCT control group provides us with our lower bound on the percentage of the population who would benefit from treatment. In our case, this is \(11\%\) - \(10\%\) = \(1\%\). Note that the treatment's effectiveness could be higher if it also killed some people.</p>
+                <p>There's another way to find a lower bound for beneficiaries of treatment. Helpfully, sometimes this alternative yields a different lower bound. This means we can potentially obtain a minimum percentage of beneficiaries that is closer to the exact percentage. The reasoning is similar to the path we just took. Imagine an RCT where the recovery rates for the treatment group and control group were again the same, this time \(12\%\). The naive intuition is still that the drug had no effect. Now imagine observing free choosing individuals recovering at the same rate as before, \(12\%\) for those choosing treatment and \(10\%\) for those not choosing treatment. We can again rule out the no effect possibility as the overall rate of recovery for the RCT group does not match the overall rate of recovery for the free choosing group. What is the minimum percentage of beneficiaries among the population? Using the previous approach, we can subtract the rate of recovery of the RCT control group from the overall rate of recovery of the free choice group. However, that gives us \(11\% - 12\% = -1\%\). Similar to this approach, we can compare the rate of recovery of the RCT treatment group to the overall rate of recovery of the free choice group. If treatment is effective for some people, then the subgroup of individuals in the RCT treatment group who would not have chosen treatment had they been given a choice should have a higher rate of recovery than the subgroup of individuals in the free choice group who chose no treatment. The subgroup of individuals in the RCT treatment group who would have chosen treatment anyway had they been given a choice should have the same rate of recovery than the subgroup of individuals in the free choice group who chose treatment. Therefore, the difference in the rates of recovery of our RCT treatment group and the entire free choice group provides us with our second lower bound on the percentage of the population who would benefit from treatment. In this case, the result is \(12\% - 11\% = 1\%\).</p>
+                <p>Lastly, there's a third technique to find a potentially different lower bound of beneficiaries. This is simply the difference between success of treatment and control groups in our RCT. Sometimes observational data doesn't help us with our lower bound. Imagine our RCT treatment group's rate of recovery was \(12\%\) and the control group's rate of recovery was \(10\%\). The free choosing treatment and no treatment groups' rate of recovery was also \(12\%\) and \(10\%\), respectively. Our above two methods would give a minimum of \(1\%\) of the population benefiting from treatment. However, it's clear just from the experimental results that \(12\% - 10\% = 2\%\) of individuals benefited from the treatment.</p>
+                <p>We now have three methods of obtaining the lower bound for beneficiaries. It turns out, all three could be negative. Imagine \(10\%\) of our RCT treatment group recovers, while \(12\%\) of our control group recovers. Those results are switched for the free choosing individuals, \(12\%\) choosing treatment recover and \(10\%\) choosing no treatment recover. The first two methods yield a minimum of \(-1\%\) beneficiaries and the third method says \(-2\%\) benefit from treatment. However, it doesn't make sense for probabilities to be negative. In these cases, \(0\%\) must be the lower bound of beneficiaries.</p>
+                <p>We have four possible lower bounds for beneficiaries now. Since they all must be true, we simply pick the biggest one to be our most accurate lower bound. Let's make \(Y\) represent recovery with \(y = \text{recovered}\) and \(y' = \text{died}\) and \(X\) represent treatment with \(x = \text{treated}\) and \(x' = \text{not treated}\). We denote \(y_x\) as recovery had the individual been treated. In probability notation, we can write a simple expression for computing the lower bound of beneficiaries using experimental and observational data:
+                \[
+                \max{\left\{\begin{array}{lr}
+                0,\\
+                P(y_x) - P(y_{x'}),\\
+                P(y) - P(y_{x'}),\\
+                P(y_x) - P(y)
+                \end{array}
+                \right\}} \leqslant P(y_x, y'_{x'})
+                \]
+                where \(P(y_x, y'_{x'})\) is the probability that you recover had you been treated <em>and</em> dies had you not been treated. This lower bound is visualized here:<br>
+                <iframe allowtransparency="true" class="graph" width="675" height="785" src="https://lbmaps.web.app/"></iframe></p>
+                <p>We can generalize \(P(y_x, y'_{x'})\) beyond a binary variable \(Y\) with \(P(y_x > y_{x'})\) (<a href="#ref-ludingdasgupta">Lu, Ding, and Dasgupta, 2018</a>), where \(Y\) can be a continuous or multi-level variable with a level of recovery. \(P(y_x > y_{x'})\) = \(P(y_x, y'_{x'})\) when \(Y\) is binary and is the probability that your recovery level had you been treated is strictly better than your recovery level had you not been treated.</p>
+                <p>Revisiting our original rates of recovery, to understand why at most \(10\%\) of the population could've benefited from the treatment, we simply need to look at the treatment group of our RCT. If more than \(10\%\) of the population benefited from treatment, then the treatment group's recovery would be more than \(10\%\). Generalizing, the treatment group's recovery tells us the maximum beneficiaries.</p>
+                <p>Similar reasoning leads to the control group's recovery also involved in placing a cap on the number of beneficiaries. The individuals who recovered in the control group couldn't have benefited from treatment. They might recover also from treatment, but that's not benefiting from treatment as they would've recovered regardless. Or they might have an adverse reaction to treatment and die. So we are just left with the individuals who didn't recover when denied treatment. At best, all of them might benefit from treatment. Therefore, the rate of non-recovery among the control group is a maximum rate of beneficiaries. In our situation, this is \(100\% - 10\% = 90\%\). Clearly, this maximum is too high to be helpful, but if the numbers were reversed then this cap would be tremendously helpful. Two remaining maximums give us the complete bounds for beneficiaries (<a href="#ref-pearl">Pearl, 2009</a>):
+                \[
+                \max{\left\{\begin{array}{lr}
+                0,\\
+                P(y_x) - P(y_{x'}),\\
+                P(y) - P(y_{x'}),\\
+                P(y_x) - P(y)
+                \end{array}
+                \right\}} \leqslant P(y_x, y'_{x'}) \leqslant \min{\left\{\begin{array}{lr}
+                P(y_x),\\
+                P(y'_{x'}),\\
+                P(y, x) + P(y', x'),\\
+                P(y_x) - P(y_{x'}) +\\
+                \ \ P(y, x') + P(y', x)
+                \end{array}
+                \right\}}\text{.}
+                \]
+                </p>
+                <p>The upper bounds can be visualized at the previous interactive graph by clicking the "Upper bounds" radio button. These bounds have been proven tight (<a href="#ref-tianpearl">Tian and Pearl, 2000</a>). We can't get any closer to the real values without further information or assumptions. Next, we can determine how <em>you</em> might personally benefit from a treatment.</p>
+
+                <h2><strong>User Manual</strong></h2>
+                <p>Suppose you have a life-threatening disease and are deciding whether to take a particular treatment. You discover a randomized controlled trial (RCT) on the disease and see that \(25\%\) of both the treatment group and the control group survived. This doesn't sound like a useful treatment. However, you realize that this treatment might have been <em>the reason</em> that some or all of \(25\%\) of the treatment group survived. In this case, that proportion of treated individuals who survived <em>because of</em> treatment would be missing from the control group. You don't see this reflected in the control group because the number of individuals in the treatment group who survived <em>because of</em> treatment equals the number of individuals in the treatment group who died <em>because of</em> treatment. With \(y = \text{recovered}\), \(y' = \text{died}\), \(x = \text{treated}\), and \(x' = \text{not treated}\), we denote \(y_x\) as recovery had the individual been treated and \(y_{x'}\) as recovery had the individual <em>not</em> been treated. We can express the above RCT result as
+                \[P(y_x) = P(y_{x'}) = 0.25\text{.}\]
+                <p>You want to find the probability of recovery had you been treated <em>and</em> death had you not been treated. This is what we mean by benefiting from the treatment. We denote this probability, also known as the probability of necessity and sufficiency, as
+                \[P(y_x, y'_{x'})\text{.}\]
+                <p>If it turns out that \(P(y_x, y'_{x'})\) is positive, then the treatment benefited some people. Unfortunately, we usually can't tell which people. Even if we know the precise value of \(P(y_x, y'_{x'})\), we usually only know the proportion of people that benefited. It's still valuable to understand \(P(y_x, y'_{x'})\), because then you'll know whether it's worth investigating further or estimating how similar you are to the treated individuals who recovered vs those that didn't recover.</p>
+                <p>You should find or conduct an observational study to get bounds on how much this treatment might benefit you. Combining these observational study results with the previous RCT results yields bounds on \(P(y_x, y'_{x'})\):
+                \[
+                \max{\left\{\begin{array}{lr}
+                0,\\
+                P(y_x) - P(y_{x'}),\\
+                P(y) - P(y_{x'}),\\
+                P(y_x) - P(y)
+                \end{array}
+                \right\}} \leqslant P(y_x, y'_{x'}) \leqslant \min{\left\{\begin{array}{lr}
+                P(y_x),\\
+                P(y'_{x'}),\\
+                P(y, x) + P(y', x'),\\
+                P(y_x) - P(y_{x'}) +\\
+                \ \ P(y, x') + P(y', x)
+                \end{array}
+                \right\}}\text{.}
+                \]
+                </p>
+                <p>We simply need to get the following four observational probabilities to calculate these bounds (\(P(y)\) can be easily derived from \(P(y, x) + P(y, x')\)):
+                <ul>
+                    <li>\(P(y, x)\)</li>
+                    <li>\(P(y, x')\)</li>
+                    <li>\(P(y', x)\)</li>
+                    <li>\(P(y', x')\)</li>
+                </ul>
+                Alternatively, those observational probabilities can be derived from just three probabilities:
+                <ul>
+                    <li>\(P(x)\)</li>
+                    <li>\(P(y|x)\)</li>
+                    <li>\(P(y|x')\)</li>
+                </ul>
+                </p>
+                <p>Let's assume you observe \(P(x) = 0.4\), \(P(y|x) = 0.45\), and \(P(y|x') = 0.3\). We can now calculate the components of the bounds of the probability that you would benefit from this treatment:
+                \[
+                \begin{aligned}
+                P(y, x) &= P(y|x) \cdot P(x) = 0.45 \cdot 0.4 = 0.18\\
+                P(y, x') &= P(y|x') \cdot (1 - P(x)) = 0.3 \cdot 0.6 = 0.18\\
+                P(y', x) &= (1 - P(y|x)) \cdot P(x) = 0.55 \cdot 0.4 = 0.22\\
+                P(y', x') &= (1 - P(y|x')) \cdot (1 - P(x)) = 0.42\\
+                P(y) &= P(y, x) + P(y, x') = 0.36\\
+                P(y_x) - P(y_{x'}) &= 0.25 - 0.25 = 0\\
+                P(y) - P(y_{x'}) &= 0.36 - 0.25 = 0.11\\
+                P(y_x) - P(y) &= 0.25 - 0.36 = -0.11\\
+                P(y'_{x'}) &= 1 - P(y_{x'}) = 1 - 0.25 = 0.75\\
+                P(y, x) + P(y', x') &= 0.18 + 0.42 = 0.6\\
+                P(y_x) - P(y_{x'}) + P(y, x') + P(y', x) &= 0.25 - 0.25 + 0.18 + 0.22 = 0.4
+                \end{aligned}
+                \]
+                Finally, we can use these components to calculate the bounds of the probability that you would benefit from this treatment:
+                \[
+                \begin{aligned}
+                \max{\{0, 0, 0.11, -0.11\}} &\leqslant P(y_x, y'_{x'}) \leqslant \min{\{0.25, 0.75, 0.6, 0.4\}}\\
+                0.11 &\leqslant P(y_x, y'_{x'}) \leqslant 0.25
+                \end{aligned}
+                \]
+                </p>
+                <p>This is encouraging! You have an \(11\%\) to \(25\%\) chance of benefiting from this treatment. To make sure this treatment doesn't have an equal chance of killing you, you'll want to investigate further why \(11\%\) to \(25\%\) of the population is benefiting from treatment. You can try and see how similar the beneficiaries are to you compared to the people in the RCT treatment group who did not survive. The RCT treatment group who did not survive includes people who would've died regardless of treatment and people who died <em>because of</em> treatment. However, you are unlikely to be able to pinpoint the individuals who benefited. It’s still helpful to look at the RCT treatment group who recovered as they include the individuals who benefited from treatment.</p>
+                <p>Your experimental and observational data can be plugged into this interactive graph to visualize how you can personally benefit from treatment:<br>
+                <iframe allowtransparency="true" class="graph" width="675" height="785" src="https://lbmaps.web.app/personal_benefits.html"></iframe></p>
+                <p>Using the above data, let's use the interactive graph. Make sure the "Lower bounds" radio button is selected so that we can visualize the lower bounds of benefiting. Move the slider for "Proportion treated" to \(0.4\). This corresponds to \(P(x)\). If it's difficult to be precise when dragging the slider, simply click once on the slider knob and use the left and right arrow keys to move the slider. Next, move the "Observational success rate when treated" slider to \(0.45\) and the "Observational success rate when untreated" slider to \(0.30\). These correspond to \(P(y|x)\) and \(P(y|x')\), respectively.</p>
+                <p>Now trace the point that is at \(0.25\) on the "Experimental success rate with treatment"-axis and at \(0.25\) on the "Experimental success rate without treatment"-axis. You'll notice that the point falls on the red band labeled "10 to 20\%". This means the lower bound for benefiting is between \(10\%\) and \(20\%\). Since the point is fairly close to the dark red band labeled "0 to 10\%", we can assume the lower bound is just a little above \(10\%\). This makes sense as we computed the lower bound to be \(11\%\) above.</p>
+                <p>To see the upper bound, click on the "Upper bounds" radio button. You'll see the graph morphs such that the point moves to the exact center of the orange band labeled "20 to 30\%". We might imagine the upper bound is \(25\%\) due to our coordinates of \((0.25, 0.25)\) pointing in the center of "20 to 30\%". \(25\%\) is precisely what we computed the upper bound to be above.</p>
+                <p>You can view exact bounds in the graph by hovering your mouse over or touching your screen at the point corresponding to your experimental success rates with and without treatment. A popup bubble will appear with the precise (rounded to two decimal places) lower and upper bounds of your probability of benefiting from treatment. The probability range tells you how narrow the bounds is.</p>
+                <p>The green rectangle within the graph looks like a window with the area outside the rectangle shaded transparent black. This window represents the only valid positions, assuming no measurement error or selection bias, so it can be referred to as the <em>possibility window</em>. Tian and Pearl derived the following bounds (<a href="#ref-pearl1999">Pearl, 1999</a>; <a href="#ref-tianpearl">Tian and Pearl, 2000</a>) and showed them to be sharp in the sense that we can't do better without additional assumptions:
+                \[
+                \begin{aligned}
+                P(x, y) & \leqslant P(y_x) \leqslant 1 - P(x, y'), \\
+                P(x', y) & \leqslant P(y_{x'}) \leqslant 1 - P(x', y').
+                \end{aligned}
+                \]
+                </p>
+                <p>The possibility window visually represents those bounds. If you hover your mouse or touch outside the possibility window, the popup bubble will declare "OUT OF BOUNDS" in red.</p>
+                <h2 id="references"><strong>References</strong></h2>
+                <p id="ref-ludingdasgupta">Jiannan Lu, Peng Ding, and Tirthankar Dasgupta. Treatment effects on ordinal outcomes: Causal estimands and sharp bounds. <em>Journal of Educationaland Behavioral Statistics</em>, 43(5):540–567, 2018.</p>
+                <p id="ref-pearl1999">Judea Pearl. Probabilities of causation: Three counterfactual interpretationsand their identification. <em>Synthese</em>, 121:93–149, 1999.</p>
+                <p id="ref-pearl">Judea Pearl. <em>Causality</em>. Cambridge University Press, 2009.</p>
+                <p id="ref-tianpearl">Jin Tian and Judea Pearl. Probabilities of causation: Bounds and identification. <em>Annals of Mathematics and Artificial Intelligence</em>, 28:287–313,2000.</p>
+            </div>
+	        <div class="feedback"><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/#respond">Comments (0)</a></div>
+        </div>
+        <h2 id="comments">No Comments	<a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/#postcomment" title="Leave a comment">»</a></h2>
+        <p>No comments yet.</p>
+        <p><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/feed/"><abbr title="Really Simple Syndication">RSS</abbr> feed for comments on this post.</a>	<a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/trackback/" rel="trackback">TrackBack <abbr title="Uniform Resource Identifier">URI</abbr></a></p>
+        <h2 id="postcomment">Leave a comment</h2>
+        <form action="http://causality.cs.ucla.edu/blog/wp-comments-post.php" method="post" id="commentform">
+            <p><input type="text" name="author" id="author" value="" size="22" tabindex="1">
+            <label for="author"><small>Name (required)</small></label></p>
+            <p><input type="text" name="email" id="email" value="" size="22" tabindex="2">
+            <label for="email"><small>Mail (will not be published) (required)</small></label></p>
+            <p><input type="text" name="url" id="url" value="" size="22" tabindex="3">
+            <label for="url"><small>Website</small></label></p>
+            <p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+            <p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment">
+            <input type="hidden" name="comment_post_ID" value="2059">
+            </p>
+            <p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="4fd384eada"></p><p style="display: none;"></p>
+            <input type="hidden" id="ak_js" name="ak_js" value="1582768826480">
+        </form>
+    </div>
+    <div id="menu">
+        <ul>
+        <li class="pagenav">Pages<ul><li class="page_item page-item-5"><a href="http://causality.cs.ucla.edu/blog/index.php/about/">About</a></li></ul></li>
+        <li id="categories">Categories:	<ul>
+            <li class="cat-item cat-item-2"><a href="http://causality.cs.ucla.edu/blog/index.php/category/announcement/">Announcement</a></li>
+            <li class="cat-item cat-item-3"><a href="http://causality.cs.ucla.edu/blog/index.php/category/back-door-criterion/">Back-door criterion</a></li>
+            <li class="cat-item cat-item-47"><a href="http://causality.cs.ucla.edu/blog/index.php/category/bad-control/">Bad Control</a></li>
+            <li class="cat-item cat-item-4"><a href="http://causality.cs.ucla.edu/blog/index.php/category/book-j-pearl/">Book (J Pearl)</a></li>
+            <li class="cat-item cat-item-52"><a href="http://causality.cs.ucla.edu/blog/index.php/category/bounds/">Bounds</a></li>
+            <li class="cat-item cat-item-5"><a href="http://causality.cs.ucla.edu/blog/index.php/category/causal-effect/">Causal Effect</a></li>
+            <li class="cat-item cat-item-38"><a href="http://causality.cs.ucla.edu/blog/index.php/category/conferences/">Conferences</a></li>
+            <li class="cat-item cat-item-6"><a href="http://causality.cs.ucla.edu/blog/index.php/category/counterfactual/">Counterfactual</a></li>
+            <li class="cat-item cat-item-7"><a href="http://causality.cs.ucla.edu/blog/index.php/category/covariate-selection/">covariate selection</a></li>
+            <li class="cat-item cat-item-8"><a href="http://causality.cs.ucla.edu/blog/index.php/category/d-separation/">d-separation</a></li>
+            <li class="cat-item cat-item-40"><a href="http://causality.cs.ucla.edu/blog/index.php/category/dags/">DAGs</a></li>
+            <li class="cat-item cat-item-41"><a href="http://causality.cs.ucla.edu/blog/index.php/category/data-fusion/">Data Fusion</a></li>
+            <li class="cat-item cat-item-9"><a href="http://causality.cs.ucla.edu/blog/index.php/category/decision-trees/">Decision Trees</a></li>
+            <li class="cat-item cat-item-10"><a href="http://causality.cs.ucla.edu/blog/index.php/category/definition/">Definition</a></li>
+            <li class="cat-item cat-item-11"><a href="http://causality.cs.ucla.edu/blog/index.php/category/discussion/">Discussion</a></li>
+            <li class="cat-item cat-item-12"><a href="http://causality.cs.ucla.edu/blog/index.php/category/do-calculus/">do-calculus</a></li>
+            <li class="cat-item cat-item-48"><a href="http://causality.cs.ucla.edu/blog/index.php/category/econometrics/">Econometrics</a></li>
+            <li class="cat-item cat-item-13"><a href="http://causality.cs.ucla.edu/blog/index.php/category/economics/">Economics</a></li>
+            <li class="cat-item cat-item-14"><a href="http://causality.cs.ucla.edu/blog/index.php/category/epidemiology/">Epidemiology</a></li>
+            <li class="cat-item cat-item-15"><a href="http://causality.cs.ucla.edu/blog/index.php/category/g-estimation/">G-estimation</a></li>
+            <li class="cat-item cat-item-16"><a href="http://causality.cs.ucla.edu/blog/index.php/category/general/">General</a></li>
+            <li class="cat-item cat-item-17"><a href="http://causality.cs.ucla.edu/blog/index.php/category/generalizability/">Generalizability</a></li>
+            <li class="cat-item cat-item-18"><a href="http://causality.cs.ucla.edu/blog/index.php/category/identification/">Identification</a></li>
+            <li class="cat-item cat-item-19"><a href="http://causality.cs.ucla.edu/blog/index.php/category/indirect-effects/">Indirect effects</a></li>
+            <li class="cat-item cat-item-20"><a href="http://causality.cs.ucla.edu/blog/index.php/category/intuition/">Intuition</a></li>
+            <li class="cat-item cat-item-58"><a href="http://causality.cs.ucla.edu/blog/index.php/category/journal-of-causal-inference/">Journal of Causal Inference</a></li>
+            <li class="cat-item cat-item-21"><a href="http://causality.cs.ucla.edu/blog/index.php/category/jsm/">JSM</a></li>
+            <li class="cat-item cat-item-22"><a href="http://causality.cs.ucla.edu/blog/index.php/category/linear-systems/">Linear Systems</a></li>
+            <li class="cat-item cat-item-23"><a href="http://causality.cs.ucla.edu/blog/index.php/category/marginal-structural-models/">Marginal structural models</a></li>
+            <li class="cat-item cat-item-24"><a href="http://causality.cs.ucla.edu/blog/index.php/category/matching/">Matching</a></li>
+            <li class="cat-item cat-item-25"><a href="http://causality.cs.ucla.edu/blog/index.php/category/measurement-cost/">measurement cost</a></li>
+            <li class="cat-item cat-item-26"><a href="http://causality.cs.ucla.edu/blog/index.php/category/mediated-effects/">Mediated Effects</a></li>
+            <li class="cat-item cat-item-39"><a href="http://causality.cs.ucla.edu/blog/index.php/category/missing-data/">Missing Data</a></li>
+            <li class="cat-item cat-item-27"><a href="http://causality.cs.ucla.edu/blog/index.php/category/nancy-cartwright/">Nancy Cartwright</a></li>
+            <li class="cat-item cat-item-28"><a href="http://causality.cs.ucla.edu/blog/index.php/category/noncompliance/">Noncompliance</a></li>
+            <li class="cat-item cat-item-29"><a href="http://causality.cs.ucla.edu/blog/index.php/category/opinion/">Opinion</a></li>
+            <li class="cat-item cat-item-30"><a href="http://causality.cs.ucla.edu/blog/index.php/category/path-coefficient/">Path Coefficient</a></li>
+            <li class="cat-item cat-item-31"><a href="http://causality.cs.ucla.edu/blog/index.php/category/plans/">Plans</a></li>
+            <li class="cat-item cat-item-32"><a href="http://causality.cs.ucla.edu/blog/index.php/category/presentation/">Presentation</a></li>
+            <li class="cat-item cat-item-51"><a href="http://causality.cs.ucla.edu/blog/index.php/category/probability/">Probability</a></li>
+            <li class="cat-item cat-item-33"><a href="http://causality.cs.ucla.edu/blog/index.php/category/propensity-score/">Propensity Score</a></li>
+            <li class="cat-item cat-item-42"><a href="http://causality.cs.ucla.edu/blog/index.php/category/rcts/">RCTs</a></li>
+            <li class="cat-item cat-item-34"><a href="http://causality.cs.ucla.edu/blog/index.php/category/selection-bias/">Selection Bias</a></li>
+            <li class="cat-item cat-item-35"><a href="http://causality.cs.ucla.edu/blog/index.php/category/simpsons-paradox/">Simpson's Paradox</a></li>
+            <li class="cat-item cat-item-36"><a href="http://causality.cs.ucla.edu/blog/index.php/category/statistical-time/">Statistical Time</a></li>
+            <li class="cat-item cat-item-37"><a href="http://causality.cs.ucla.edu/blog/index.php/category/structural-equations/">structural equations</a></li>
+            <li class="cat-item cat-item-1"><a href="http://causality.cs.ucla.edu/blog/index.php/category/uncategorized/">Uncategorized</a></li>
+        </ul></li>
+        <li id="search">
+            <label for="s">Search:</label>	
+            <form id="searchform" method="get" action="http://causality.cs.ucla.edu/blog/index.php/2019/11/05/frechet-inequalities/">
+                <div>
+                    <input type="text" name="s" id="s" size="15"><br>
+                    <input type="submit" value="Search">
+                </div>
+            </form>
+        </li>
+        <li id="archives">Archives: 	<ul>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2020/01/">January 2020</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/12/">December 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/11/">November 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/08/">August 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/06/">June 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/03/">March 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/02/">February 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2019/01/">January 2019</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/12/">December 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/06/">June 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/04/">April 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/03/">March 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2018/01/">January 2018</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/12/">December 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/08/">August 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/05/">May 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/04/">April 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2017/02/">February 2017</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/09/">September 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/08/">August 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/07/">July 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/06/">June 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2016/02/">February 2016</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/11/">November 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/08/">August 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/07/">July 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/05/">May 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/04/">April 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2015/01/">January 2015</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/12/">December 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/11/">November 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/10/">October 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/09/">September 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/08/">August 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/07/">July 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2014/04/">April 2014</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/12/">December 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/11/">November 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/10/">October 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/09/">September 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/08/">August 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/07/">July 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2013/04/">April 2013</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/12/">December 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/11/">November 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/10/">October 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/09/">September 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/08/">August 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/07/">July 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/06/">June 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/02/">February 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2012/01/">January 2012</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2011/09/">September 2011</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2011/08/">August 2011</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2011/03/">March 2011</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/10/">October 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/06/">June 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/05/">May 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/04/">April 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2010/02/">February 2010</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/12/">December 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/11/">November 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/09/">September 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/08/">August 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/07/">July 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/06/">June 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2009/03/">March 2009</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/12/">December 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/10/">October 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/05/">May 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2008/02/">February 2008</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/12/">December 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/10/">October 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/08/">August 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/06/">June 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/05/">May 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/04/">April 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/03/">March 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2007/02/">February 2007</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/10/">October 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/09/">September 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/05/">May 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2006/02/">February 2006</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2004/02/">February 2004</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/10/">October 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/09/">September 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/04/">April 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2001/01/">January 2001</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/12/">December 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/11/">November 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/09/">September 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/07/">July 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/06/">June 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/05/">May 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/04/">April 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/03/">March 2000</a></li>
+            <li><a href="http://causality.cs.ucla.edu/blog/index.php/2000/01/">January 2000</a></li>
+        </ul></li>
+        <li id="meta">Meta: 	<ul>
+            <li><a href="http://causality.cs.ucla.edu/blog/wp-login.php">Log in</a></li>
+            <li><a href="feed:http://causality.cs.ucla.edu/blog/index.php/feed/" title="Syndicate this site using RSS"><abbr title="Really Simple Syndication">RSS</abbr></a></li>
+            <li><a href="feed:http://causality.cs.ucla.edu/blog/index.php/comments/feed/" title="The latest comments to all posts in RSS">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+            <li><a href="http://validator.w3.org/check/referer" title="This page validates as XHTML 1.0 Transitional">Valid <abbr title="eXtensible HyperText Markup Language">XHTML</abbr></a></li>
+            <li><a href="http://gmpg.org/xfn/"><abbr title="XHTML Friends Network">XFN</abbr></a></li>
+            <li><a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform."><abbr title="WordPress">WP</abbr></a></li>
+        </ul></li>
+        </ul>
+    </div>
+    <p class="credit"><!--22 queries. 0.254 seconds. --> <cite>Powered by <a href="http://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform."><strong>WordPress</strong></a></cite></p>
+    </div>
+    <script type='text/javascript' src='causality_blog/wp-embed.min.js?ver=5.3.2'></script>
+    <script async="async" type='text/javascript' src='causality_blog/form.js'></script>
+</body>
+</html>
