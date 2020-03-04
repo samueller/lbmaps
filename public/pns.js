@@ -7,6 +7,12 @@ const width = height = 575
         [ ['Lower Bounds on the Probability of Benefit', 'Upper Bounds on the Probability of Benefit']
         , ['Lower Bounds on the Probability of Harm', 'Upper Bounds on the Probability of Harm']
         ]
+    , infoLowerBounds = document.getElementById('info-lower-bounds')
+    , infoUpperBounds = document.getElementById('info-upper-bounds')
+    , info =
+        [ ['Minimum probability of benefiting from treatment X', 'Maximum probability of benefiting from treatment X']
+        , ['Minimum probability of treatment X causing harm', 'Maximum probability of treatment X causing harm']
+        ]
     , plotLeft = marginLeft
     , plotRight = width - marginRight
     , plotTop = marginTop
@@ -477,6 +483,8 @@ const width = height = 575
             .map(el => el.addEventListener('input', e => {
                 model.boundsOf = parseInt(e.target.value)
                 title.innerHTML = titles[model.boundsOf][model.bounds]
+                infoLowerBounds.setAttribute('aria-label', info[model.boundsOf][0])
+                infoUpperBounds.setAttribute('aria-label', info[model.boundsOf][1])
                 setBoundsLabel(model.boundsOf)
                 updatePlot(svg)(model)
             }))
