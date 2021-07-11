@@ -18,6 +18,13 @@ section.section {
     position: relative;
     top: -2px;
 }
+input[type="range"] {
+    vertical-align: middle;
+}
+input[type="checkbox"] {
+    height: 13px;
+    width: 12px;
+}
 table.variables {
     display: inline-block;
     vertical-align: top;
@@ -53,7 +60,7 @@ line.grid {
     stroke: black;
     opacity: 0.1;
 }
-#plot-controls div.field {
+.controls div.field {
     margin-bottom: 0;
 }
 .impossible {
@@ -109,4 +116,19 @@ line.grid {
     margin: 0;
     padding: 0;
     list-style-type: none;
+}
+blockquote, dd, dl, dt, fieldset, figure, h1, h2, hr, p, pre, textarea {
+    margin: 1em 0;
+}
+#stats-window h3 {
+    border-bottom: none;
+}
+figure {
+    text-align: center;
+}
+figure img {
+    width: 75%;
+}
+ol {
+    padding-left: 40px;
 }

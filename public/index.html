@@ -54,9 +54,12 @@
                 <form id="plot-controls">
                     <div class="field">
                         <div class="control">
-                            <label class="radio" for="hover-popup"><input id="hover-popup" name="hover-popup" type="checkbox"> Display data when hovering?</label>
+                            <label class="radio" for="obs-data"><input id="obs-data" name="obs-data" type="checkbox"> Observational data</label>
+                            <label class="radio" for="hover-popup"><input id="hover-popup" name="hover-popup" type="checkbox"> Display data when hovering</label>
                         </div>
                     </div>
+                </form>
+                <form id="obs-data-controls" class="controls">
                     <div class="field">
                         <div class="control">
                             <input id="px-slider" name="px" min="0" max="1" value="0.5" step="0.01" type="range">
@@ -75,9 +78,9 @@
                             <output id="pycxp-output" for="pycxp-slider"><span id="pycxp-val">\(P(y|x') = 0.5\)</span></output>
                         </div>
                     </div>
+                    <output id="py-output" for="py-slider"><span id="py-val">\(P(y) = 0.5\)</span></output>, 
+                    <output id="pxy-output"><span id="pxy-val">\(P(x, y) = 0.25\)</span>, <span id="pxyp-val">\(P(x, y') = 0.25\)</span>, <span id="pxpy-val">\(P(x', y) = 0.25\)</span>, <span id="pxpyp-val">\(P(x', y') = 0.25\)</span></output>
                 </form>
-                <output id="py-output" for="py-slider"><span id="py-val">\(P(y) = 0.5\)</span></output>, 
-                <output id="pxy-output"><span id="pxy-val">\(P(x, y) = 0.25\)</span>, <span id="pxyp-val">\(P(x, y') = 0.25\)</span>, <span id="pxpy-val">\(P(x', y) = 0.25\)</span>, <span id="pxpyp-val">\(P(x', y') = 0.25\)</span></output>
             </div>
         </section>
         <script src="pns.js"></script>
