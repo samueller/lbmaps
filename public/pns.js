@@ -396,7 +396,7 @@ const width = (height = 575),
     svg
       .append('text')
       .attr('class', 'possible-label')
-      .text('Possible region')
+      .text('Compatible region')
       .attr(
         'transform',
         `translate(${[
