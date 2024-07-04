@@ -1,72 +1,194 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<meta name="author" content="Scott Mueller" />
+		<meta name="description" content="Monotonicity Necessity and Sufficiency" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
+			integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq"
+			crossorigin="anonymous"
+		/>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<script src="https://supr-ai.web.app/js/util.js"></script>
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://unpkg.com/balloon-css/balloon.min.css"
+			rel="stylesheet"
+		/>
+		<link href="mns.css" rel="stylesheet" />
+	</head>
 
-<head>
-  <meta charset="utf-8">
-  <title></title>
-  <meta name="author" content="Scott Mueller">
-  <meta name="description" content="Monotonicity Necessity and Sufficiency">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
-  <script src="https://d3js.org/d3.v5.min.js"></script>
-  <script src="https://sup.ai/js/util.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.min.css" rel="stylesheet">
-  <link href="https://unpkg.com/balloon-css/balloon.min.css" rel="stylesheet">
-  <link href="mns.css" rel="stylesheet">
-</head>
-
-<body>
-    <section class="section">
-        <div class="container">
-            <h1 class="title is-3" style="display: none;"><span id="plot-title">Lower Bounds on the Probability of Benefit</span></h1>
-            <form id="bounds-controls">
-                <!-- <div class="choose control"> -->
-                    <!-- <label class="radio" for="bounds-of-benefit"><strong>Probability of</strong>:</label> -->
-                    <!-- <label class="radio" for="bounds-of-benefit"><input id="bounds-of-benefit" name="bounds-of" value="0" type="radio"> Benefit</label> <span aria-label="Probability of success due to treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span> -->
-                    <!-- <label class="radio" for="bounds-of-harm"><input id="bounds-of-harm" name="bounds-of" value="1" type="radio" checked> Harm</label> <span aria-label="Probability of harm due to treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span> -->
-                <!-- </div> -->
-                <div class="choose control">
-                    <label class="radio" for="lower-bounds"><strong id="bounds-label">Monotonicity</strong>:</label> <label class="radio" for="lower-bounds"><input id="lower-bounds" name="bounds" value="0" type="radio"> Necessary</label> <span id="info-lower-bounds" aria-label="Necessary, but not sufficient, to be in white region for monotonicity to hold" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span> <label class="radio" for="upper-bounds"><input id="upper-bounds" name="bounds" value="1" type="radio"> Sufficient</label> <span id="info-upper-bounds" aria-label="Sufficient to be on outer edge of purple region for monotonicity to hold" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span>
-                </div>
-            </form><svg id="plot" width="575" height="575"><defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" /></marker></defs></svg>
-            <div id="stats-window">
-                <h3 class="title is-4">Impossible Area</h3>
-                <ul>
-                    <li>\(P(y_x)\), \(P(y_{x&apos;})\): <span id="stats-pyx">\((0.99, 0.99)\)</span></li>
-                    <li id="stats-bounds">\(0.99 \leqslant P(y&apos;_x, y_{x&apos;}) \leqslant 0.99\)</li>
-                    <li>Range: <span id="stats-range">\(0\)</span></li>
-                </ul>
-            </div>
-            <form id="plot-controls">
-                <div class="field">
-                    <div class="control">
-                        <label class="radio" for="obs-data"><input id="obs-data" name="obs-data" type="checkbox"> Observational data</label>
-                        <label style="display:none;" class="radio" for="hover-popup"><input id="hover-popup" name="hover-popup" type="checkbox" checked> Display data when hovering</label>
-                    </div>
-                </div>
-            </form>
-            <form id="obs-data-controls" class="controls">
-                <div class="field">
-                    <div class="control">
-                        <input id="px-slider" name="px" min="0" max="1" value="0.5" step="0.01" type="range"> <output id="px-output" for="px-slider"><span id="px-val">\(P(x) = 0.5\)</span>, <span id="pxp-val">\(P(x&apos;) = 0.5\)</span></output>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input id="pycx-slider" name="pycx" min="0" max="1" value="0.5" step="0.01" type="range"> <output id="pycx-output" for="pycx-slider"><span id="pycx-val">\(P(y|x) = 0.5\)</span></output>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input id="pycxp-slider" name="pycxp" min="0" max="1" value="0.5" step="0.01" type="range"> <output id="pycxp-output" for="pycxp-slider"><span id="pycxp-val">\(P(y|x&apos;) = 0.5\)</span></output>
-                    </div>
-                </div>
-                <output id="py-output" for="py-slider"><span id="py-val">\(P(y) = 0.5\)</span></output>, <output id="pxy-output"><span id="pxy-val">\(P(x, y) = 0.25\)</span>, <span id="pxyp-val">\(P(x, y&apos;) = 0.25\)</span>, <span id="pxpy-val">\(P(x&apos;, y) = 0.25\)</span>, <span id="pxpyp-val">\(P(x&apos;, y&apos;) = 0.25\)</span></output></form>
-        </div>
-    </section>
-    <script src="mns.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
-</body>
-
+	<body>
+		<section class="section">
+			<div class="container">
+				<h1 class="title is-3" style="display: none">
+					<span id="plot-title"
+						>Lower Bounds on the Probability of Benefit</span
+					>
+				</h1>
+				<form id="bounds-controls">
+					<!-- <div class="choose control"> -->
+					<!-- <label class="radio" for="bounds-of-benefit"><strong>Probability of</strong>:</label> -->
+					<!-- <label class="radio" for="bounds-of-benefit"><input id="bounds-of-benefit" name="bounds-of" value="0" type="radio"> Benefit</label> <span aria-label="Probability of success due to treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span> -->
+					<!-- <label class="radio" for="bounds-of-harm"><input id="bounds-of-harm" name="bounds-of" value="1" type="radio" checked> Harm</label> <span aria-label="Probability of harm due to treatment X" data-balloon-length="medium" data-balloon-pos="down">ⓘ</span> -->
+					<!-- </div> -->
+					<div class="choose control">
+						<label class="radio" for="lower-bounds"
+							><strong id="bounds-label">Monotonicity</strong>:</label
+						>
+						<label class="radio" for="lower-bounds"
+							><input id="lower-bounds" name="bounds" value="0" type="radio" />
+							Necessary</label
+						>
+						<span
+							id="info-lower-bounds"
+							aria-label="Necessary, but not sufficient, to be in white region for monotonicity to hold"
+							data-balloon-length="medium"
+							data-balloon-pos="down"
+							>ⓘ</span
+						>
+						<label class="radio" for="upper-bounds"
+							><input id="upper-bounds" name="bounds" value="1" type="radio" />
+							Sufficient</label
+						>
+						<span
+							id="info-upper-bounds"
+							aria-label="Sufficient to be on outer edge of purple region for monotonicity to hold"
+							data-balloon-length="medium"
+							data-balloon-pos="down"
+							>ⓘ</span
+						>
+					</div>
+				</form>
+				<svg id="plot" width="575" height="575">
+					<defs>
+						<marker
+							id="arrow"
+							viewBox="0 0 10 10"
+							refX="5"
+							refY="5"
+							markerWidth="6"
+							markerHeight="6"
+							orient="auto-start-reverse"
+						>
+							<path d="M 0 0 L 10 5 L 0 10 z" />
+						</marker>
+					</defs>
+				</svg>
+				<div id="stats-window">
+					<h3 class="title is-4">Impossible Area</h3>
+					<ul>
+						<li>
+							\(P(y_x)\), \(P(y_{x&apos;})\):
+							<span id="stats-pyx">\((0.99, 0.99)\)</span>
+						</li>
+						<li id="stats-bounds">
+							\(0.99 \leqslant P(y&apos;_x, y_{x&apos;}) \leqslant 0.99\)
+						</li>
+						<li>Range: <span id="stats-range">\(0\)</span></li>
+					</ul>
+				</div>
+				<form id="plot-controls">
+					<div class="field">
+						<div class="control">
+							<label class="radio" for="obs-data"
+								><input id="obs-data" name="obs-data" type="checkbox" />
+								Observational data</label
+							>
+							<label style="display: none" class="radio" for="hover-popup"
+								><input
+									id="hover-popup"
+									name="hover-popup"
+									type="checkbox"
+									checked
+								/>
+								Display data when hovering</label
+							>
+						</div>
+					</div>
+				</form>
+				<form id="obs-data-controls" class="controls">
+					<div class="field">
+						<div class="control">
+							<input
+								id="px-slider"
+								name="px"
+								min="0"
+								max="1"
+								value="0.5"
+								step="0.01"
+								type="range"
+							/>
+							<output id="px-output" for="px-slider"
+								><span id="px-val">\(P(x) = 0.5\)</span>,
+								<span id="pxp-val">\(P(x&apos;) = 0.5\)</span></output
+							>
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<input
+								id="pycx-slider"
+								name="pycx"
+								min="0"
+								max="1"
+								value="0.5"
+								step="0.01"
+								type="range"
+							/>
+							<output id="pycx-output" for="pycx-slider"
+								><span id="pycx-val">\(P(y|x) = 0.5\)</span></output
+							>
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<input
+								id="pycxp-slider"
+								name="pycxp"
+								min="0"
+								max="1"
+								value="0.5"
+								step="0.01"
+								type="range"
+							/>
+							<output id="pycxp-output" for="pycxp-slider"
+								><span id="pycxp-val">\(P(y|x&apos;) = 0.5\)</span></output
+							>
+						</div>
+					</div>
+					<output id="py-output" for="py-slider"
+						><span id="py-val">\(P(y) = 0.5\)</span></output
+					>,
+					<output id="pxy-output"
+						><span id="pxy-val">\(P(x, y) = 0.25\)</span>,
+						<span id="pxyp-val">\(P(x, y&apos;) = 0.25\)</span>,
+						<span id="pxpy-val">\(P(x&apos;, y) = 0.25\)</span>,
+						<span id="pxpyp-val">\(P(x&apos;, y&apos;) = 0.25\)</span></output
+					>
+				</form>
+			</div>
+		</section>
+		<script src="mns.js"></script>
+		<script
+			defer
+			src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"
+			integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz"
+			crossorigin="anonymous"
+		></script>
+		<script
+			defer
+			src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+			integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI"
+			crossorigin="anonymous"
+			onload="renderMathInElement(document.body);"
+		></script>
+	</body>
 </html>
